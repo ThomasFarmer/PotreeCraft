@@ -44,6 +44,7 @@ class PotreeCraft:
 	vector_table = []
 	ascParam = '-rgb'
 	crsParam = None
+	runCounterBecauseICannotInitiateButtonsInTheirDesignatedPlace = 0
 
 	def __init__(self, iface,PotreeCraftSupport):
 		"""Constructor.
@@ -513,54 +514,59 @@ class PotreeCraft:
 
 		# button connect didn't work in suggested locaiton by pyqgis documentation (init). so i moved it here for now.
 		#
-		self.dlg.CompileButton.clicked.connect(self.compileProject)
-		# -- pointcloud conversion panel --
-		self.dlg.crsCustomRadioButton.toggled.connect(self.onCustomCRSRadioButtonClicked)
-		self.dlg.crsFromLayerRadioButton.toggled.connect(self.onLayerCRSRadioButtonClicked)
-		self.dlg.crsFromProjectComboBox.currentTextChanged.connect(self.onCRSComboboxChanged)
+		if self.runCounterBecauseICannotInitiateButtonsInTheirDesignatedPlace == 0:
+			# -- main window --
+			self.dlg.CompileButton.clicked.connect(self.compileProject)
 
-		self.dlg.rgbColorRadioButton.toggled.connect(self.onRgbColorRadioButtonClicked)
-		self.dlg.intColorRadioButton.toggled.connect(self.onIntColorRadioButtonClicked)
-		self.dlg.intGradColorRadioButton.toggled.connect(self.onIntGradColorRadioButtonClicked)
-		self.dlg.heightColorRadioButton.toggled.connect(self.onHeightColorRadioButtonClicked)
-		self.dlg.rgbHeightColorRadioButton.toggled.connect(self.onRgbHeightColorRadioButtonClicked)
-		self.dlg.classColorRadioButton.toggled.connect(self.onClassColorRadioButtonClicked)
-		self.dlg.customColorRadioButton.toggled.connect(self.onCustomColorRadioButtonClicked)
+			# -- pointcloud conversion panel --
+			self.dlg.crsCustomRadioButton.toggled.connect(self.onCustomCRSRadioButtonClicked)
+			self.dlg.crsFromLayerRadioButton.toggled.connect(self.onLayerCRSRadioButtonClicked)
+			self.dlg.crsFromProjectComboBox.currentTextChanged.connect(self.onCRSComboboxChanged)
 
-		self.dlg.loadCloudButton.clicked.connect(self.loadCloudIntoQGIS)
-		self.dlg.selectCloudButton.clicked.connect(self.selectLASFile)
-		self.dlg.selectOutputFolderButton.clicked.connect(self.selectOutputFolder)
+			self.dlg.rgbColorRadioButton.toggled.connect(self.onRgbColorRadioButtonClicked)
+			self.dlg.intColorRadioButton.toggled.connect(self.onIntColorRadioButtonClicked)
+			self.dlg.intGradColorRadioButton.toggled.connect(self.onIntGradColorRadioButtonClicked)
+			self.dlg.heightColorRadioButton.toggled.connect(self.onHeightColorRadioButtonClicked)
+			self.dlg.rgbHeightColorRadioButton.toggled.connect(self.onRgbHeightColorRadioButtonClicked)
+			self.dlg.classColorRadioButton.toggled.connect(self.onClassColorRadioButtonClicked)
+			self.dlg.customColorRadioButton.toggled.connect(self.onCustomColorRadioButtonClicked)
 
-		self.dlg.ascGrayRadioButton.toggled.connect(self.onAscGrayColorRadioButtonClicked)
-		self.dlg.ascSlopeRadioButton.toggled.connect(self.onAscSlopeColorRadioButtonClicked)
-		self.dlg.ascRgbRadioButton.toggled.connect(self.onAscRgbColorRadioButtonClicked)
-		self.dlg.ascIntensityRadioButton.toggled.connect(self.onAscIntensityColorRadioButtonClicked)
-		self.dlg.ascElevationRadioButton.toggled.connect(self.onAscElevationColorRadioButtonClicked)
-		self.dlg.ascFalseRadioButton.toggled.connect(self.onAscFalseColorRadioButtonClicked)
+			self.dlg.loadCloudButton.clicked.connect(self.loadCloudIntoQGIS)
+			self.dlg.selectCloudButton.clicked.connect(self.selectLASFile)
+			self.dlg.selectOutputFolderButton.clicked.connect(self.selectOutputFolder)
 
-		# -- vector layer panel --
+			self.dlg.ascGrayRadioButton.toggled.connect(self.onAscGrayColorRadioButtonClicked)
+			self.dlg.ascSlopeRadioButton.toggled.connect(self.onAscSlopeColorRadioButtonClicked)
+			self.dlg.ascRgbRadioButton.toggled.connect(self.onAscRgbColorRadioButtonClicked)
+			self.dlg.ascIntensityRadioButton.toggled.connect(self.onAscIntensityColorRadioButtonClicked)
+			self.dlg.ascElevationRadioButton.toggled.connect(self.onAscElevationColorRadioButtonClicked)
+			self.dlg.ascFalseRadioButton.toggled.connect(self.onAscFalseColorRadioButtonClicked)
 
-		self.dlg.loadVectorsFromPrjButton.clicked.connect(self.loadVectors)
-		self.dlg.vectorTreeWidget.itemClicked.connect(self.onItemClicked)
+			# -- vector layer panel --
+			self.dlg.loadVectorsFromPrjButton.clicked.connect(self.loadVectors)
+			self.dlg.vectorTreeWidget.itemClicked.connect(self.onItemClicked)
 
-
-
-		# -- plugin settings panel --
-		self.dlg.selectLasToolsPushButton.clicked.connect(self.selectLASToolsFolder)
-		self.dlg.selectPotreeConverterPushButton.clicked.connect(self.selectPotreeConverterFolder)
-		self.dlg.saveConfigButton.clicked.connect(self.saveIniFileChanges)
-		#self.dlg.checkConfigButton.clicked.connect(self.checkPathValidity)
+			# -- plugin settings panel --
+			self.dlg.selectLasToolsPushButton.clicked.connect(self.selectLASToolsFolder)
+			self.dlg.selectPotreeConverterPushButton.clicked.connect(self.selectPotreeConverterFolder)
+			self.dlg.saveConfigButton.clicked.connect(self.saveIniFileChanges)
+			#self.dlg.checkConfigButton.clicked.connect(self.checkPathValidity)
 
 
 		# loading up vectors on window popup
 		self.loadVectors()
-
+		#print("is signal connected: " + str(self.dlg.CompileButton.isSignalConnected()))
 		# Run the dialog event loop
 		result = self.dlg.exec_()
-		
-		
+
+		#
+		# -- overcoming design issues --
+		#
+		self.runCounterBecauseICannotInitiateButtonsInTheirDesignatedPlace += 1
+
 		# See if OK was pressed
 		if result:
 			# Do something useful here - delete the line containing pass and
 			# substitute with your code.
+			# format c:
 			pass
