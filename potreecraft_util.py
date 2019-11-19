@@ -92,7 +92,7 @@ class PotreeCraftSupport:
         logging.info("Thread %s: finishing", threadname)
 
     @classmethod
-    def potreeconverter_thread_function(cls,input,output,outtype,pagename,proj,threadname,logfile):
+    def potreeconverter_thread_function(cls,input,output,outtype,pagename,proj,threadname):
         eov = ' "+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_' \
             '0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9,0,0,0,0 ' \
             '+units=m +no_defs "'
@@ -102,14 +102,14 @@ class PotreeCraftSupport:
         #print(threadname,input,cltype,stepsize)
         if (proj == None) or (proj == "+proj=longlat +datum=WGS84 +no_defs"):
             cmd = str(cls.potreeconverterpath + r'PotreeConverter.exe ' + input + ' -o ' + output + ' -a ' + outtype + ' --generate-page ' + pagename + '').split()
-            logfile.write(str(str(cls.potreeconverterpath + r'PotreeConverter.exe ' + input + ' -o ' + output + ' -a ' + outtype + ' --generate-page ' + pagename + '').split()))
+            #logfile.write(str(str(cls.potreeconverterpath + r'PotreeConverter.exe ' + input + ' -o ' + output + ' -a ' + outtype + ' --generate-page ' + pagename + '').split()))
             cmd[0] = cmd[0].replace("\\", "/")
-            print(str(cmd))
+            #print(str(cmd))
             subprocess.call(cmd, shell=False)
         else:
             cmd = str(cls.potreeconverterpath + r'PotreeConverter.exe ' + input + ' -o ' + output + ' -a ' + outtype + ' --generate-page ' + pagename + ' --projection "'+proj+'"').split()
-            logfile.write(str(str(cls.potreeconverterpath + r'PotreeConverter.exe ' + input + ' -o ' + output + ' -a ' + outtype + ' --generate-page ' + pagename + ' --projection "'+proj+'"').split()))
-            print(cmd)
+            #logfile.write(str(str(cls.potreeconverterpath + r'PotreeConverter.exe ' + input + ' -o ' + output + ' -a ' + outtype + ' --generate-page ' + pagename + ' --projection "'+proj+'"').split()))
+            #print(cmd)
             cmd[0] = cmd[0].replace("\\", "/")
             subprocess.call(cmd, shell=False)
         #subprocess.call(cmd, shell=False)
@@ -125,15 +125,14 @@ class PotreeCraftSupport:
         format = "%(asctime)s: %(message)s"
         logging.basicConfig(format=format, level=logging.INFO,
                             datefmt="%H:%M:%S")
-
-        logging.info("Main    : before creating thread")
+        #logging.info("Main    : before creating thread")
         x = threading.Thread(target=PotreeCraftSupport.blast2dem_thread_function, args=(input,(cls.potreeconverterpath + output) ,cltype,stepsize,"Blast2dem thread - "+output))
         #x = threading.Thread(target=PotreeCraftSupport.blast2dem_thread_function, args=(r'c:\PotreeConverter_16\3DModel_Pcld_LASCloud.las', 'caslte.asc', '-rgb', '0.1', 'asdf'))
-        logging.info("Main    : before running thread")
+        #logging.info("Main    : before running thread")
         x.start()
-        logging.info("Main    : wait for the thread to finish")
+        #logging.info("Main    : wait for the thread to finish")
         x.join()
-        logging.info("Main    : all done")
+        #logging.info("Main    : all done")
         return output
 
     @classmethod
@@ -141,31 +140,18 @@ class PotreeCraftSupport:
         timefortempname = datetime.now()
         #output = 'cloud_'+str(timefortempname.strftime("%y%m%d%H%M%S"))+'.asc'
         PotreeCraftSupport.readcfg()
-        f = open("d:\pcconvertlog.txt", "a")
-
 
         format = "%(asctime)s: %(message)s"
         logging.basicConfig(format=format, level=logging.INFO,
                             datefmt="%H:%M:%S")
-
-        logging.info("Main    : before creating thread")
-        x = threading.Thread(target=PotreeCraftSupport.potreeconverter_thread_function, args=(input,output,outtype,pagename,proj,"PotreeConverter thread - "+threadname,f))
+        #logging.info("Main    : before creating thread")
+        x = threading.Thread(target=PotreeCraftSupport.potreeconverter_thread_function, args=(input,output,outtype,pagename,proj,"PotreeConverter thread - "+threadname))
         #x = threading.Thread(target=PotreeCraftSupport.blast2dem_thread_function, args=(r'c:\PotreeConverter_16\3DModel_Pcld_LASCloud.las', 'caslte.asc', '-rgb', '0.1', 'asdf'))
-        f.write("time: "+ str(timefortempname)+"\n")
-        f.write("args: ")
-        f.write("input: "+ str(input)+"\n")
-        f.write("output: " +str(output)+"\n")
-        f.write("outtype: "+ str(outtype)+"\n")
-        f.write("pagename: "+str(pagename)+"\n")
-        f.write("proj: "+str(proj)+"\n")
-        f.write("threadname: "+str(threadname)+"\n")
-        f.write(str(x))
-        logging.info("Main    : before running thread")
+        #logging.info("Main    : before running thread")
         x.start()
-        logging.info("Main    : wait for the thread to finish")
+        #logging.info("Main    : wait for the thread to finish")
         x.join()
-        logging.info("Main    : all done")
-        f.close()
+        #logging.info("Main    : all done")
         return output
     #
     # # TO DO
@@ -514,68 +500,10 @@ class PotreeCraftSupport:
         f.write('</html>\n')
 
 
-class PotreeGenericLayerInfo():
-    # This class is more-or-less an abstact which serves as a common base for all layer info storage classes.
-    # Provides empty functions which will be overridden for shape, json and shape layer processing.
-    # Generic values stored about each layer we add to the potree project.
-    layername = None
-    layertype = None
-    layercrs = None
-    layerhexcolor = None
-    fileName: object = None
-
-    def __init__(self, layername, layertype, layercrs, layerhexcolor, filename):
-        self.layername = layername
-        self.layertype = layertype
-        self.layercrs = layercrs
-        self.layerhexcolor = layerhexcolor
-        self.filename = filename
-
-    def setBasicInfo(self, layername, layertype, layercrs, layerhexcolor, filename):
-        pass
-
-    def getBasicInfo(self):
-        pass
-
-class PotreeJsonVectorLayerInfo(PotreeGenericLayerInfo):
-    def __init__(self, layername, layertype, layercrs, layerhexcolor, filename):
-        super().__init__(layername, layertype, layercrs, layerhexcolor, filename)
-
-    def setBasicInfo(self, layername, layertype, layercrs, layerhexcolor, filename):
-        pass
-
-    def getBasicInfo(self):
-        return [self.layername,self.layertype,self.layercrs,self.layerhexcolor,self.filename]
-
-class PotreeShapeVectorLayerInfo(PotreeGenericLayerInfo):
-    pass
-
-class PotreeCloudObjectInfo(PotreeGenericLayerInfo):
-    pass
-
-
-
-
 if __name__ == "__main__":
-
-    #cloudname = PotreeCraftSupport.lasconvert_isready(r'c:\PotreeConverter_16\3DModel_Pcld_LASCloud.las','-rgb','0.1')
-    #print(cloudname)
-
-    #projecthtmlpath,cloudname,cloudparams,layerNameArray,layerColorArray):
-    asdLayerName = []
-    asdlayerColorArray = []
-    asdLayerName.append("edges_of_road")
-    asdLayerName.append("random_pts")
-    asdlayerColorArray.append("#fffa4f")
-    asdlayerColorArray.append("e77148")
-
-    x = PotreeCraftSupport
-    #x.writeHtml('D:/potreewritetest2.html','lofaszcloud',['INTENSITY',None],asdLayerName,asdlayerColorArray)
-    x.prepareProject(r"C:/Users/tberes/Documents/test_las",['C:/Users/tberes/Documents/test_las/random_points_on_the_road.shp','C:/Users/tberes/Documents/test_las/edges_of_the_road.shp'])
+    pass
 
 
-    #x = PotreeJsonVectorLayerInfo('d','s','s','a','fn')
-    #print(x.getBasicInfo())
 
 
 

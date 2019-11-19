@@ -43,6 +43,7 @@ class PotreeCraft:
 
 	vector_table = []
 	ascParam = '-rgb'
+	pcrParam = 'INTENSITY'
 	crsParam = None
 	runCounterBecauseICannotInitiateButtonsInTheirDesignatedPlace = 0
 
@@ -374,6 +375,7 @@ class PotreeCraft:
 
 	def onRgbColorRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
+		self.pcrParam = thisRadioButton.text()
 		#self.loadLayerCRSsForComboBox()
 		if thisRadioButton.isChecked():
 			print("selected: %s" % (thisRadioButton.text()))
@@ -383,6 +385,7 @@ class PotreeCraft:
 
 	def onIntColorRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
+		self.pcrParam = thisRadioButton.text()
 		#self.loadLayerCRSsForComboBox()
 		if thisRadioButton.isChecked():
 			print("selected: %s" % (thisRadioButton.text()))
@@ -391,6 +394,7 @@ class PotreeCraft:
 
 	def onIntGradColorRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
+		self.pcrParam = thisRadioButton.text()
 		#self.loadLayerCRSsForComboBox()
 		if thisRadioButton.isChecked():
 			print("selected: %s" % (thisRadioButton.text()))
@@ -399,6 +403,7 @@ class PotreeCraft:
 
 	def onHeightColorRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
+		self.pcrParam = thisRadioButton.text()
 		#self.loadLayerCRSsForComboBox()
 		if thisRadioButton.isChecked():
 			print("selected: %s" % (thisRadioButton.text()))
@@ -407,6 +412,7 @@ class PotreeCraft:
 
 	def onRgbHeightColorRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
+		self.pcrParam = thisRadioButton.text()
 		#self.loadLayerCRSsForComboBox()
 		if thisRadioButton.isChecked():
 			print("selected: %s" % (thisRadioButton.text()))
@@ -414,6 +420,7 @@ class PotreeCraft:
 
 	def onClassColorRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
+		self.pcrParam = thisRadioButton.text()
 		#self.loadLayerCRSsForComboBox()
 		if thisRadioButton.isChecked():
 			print("selected: %s" % (thisRadioButton.text()))
@@ -421,6 +428,7 @@ class PotreeCraft:
 
 	def onCustomColorRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
+		self.pcrParam = self.dlg.CustomColoringLineEdit.text()
 		#self.loadLayerCRSsForComboBox()
 		if thisRadioButton.isChecked():
 			print("selected: %s" % (thisRadioButton.text()))
@@ -502,9 +510,9 @@ class PotreeCraft:
 			vectorColorList.append(l[6])
 			vectorPathList.append(l[7])
 		#print(vectorPathList)
-		self.PotreeCraftSupport.pcconvert_isready(self.dlg.pointCloudPathLineEdit.text(),self.dlg.outputFolderLineEdit.text(),self.dlg.intColorRadioButton.text(),self.dlg.potreePageLineEdit.text(),self.crsParam,self.dlg.potreePageLineEdit.text())
+		self.PotreeCraftSupport.pcconvert_isready(self.dlg.pointCloudPathLineEdit.text(),self.dlg.outputFolderLineEdit.text(),self.pcrParam,self.dlg.potreePageLineEdit.text(),self.crsParam,self.dlg.potreePageLineEdit.text())
 		self.PotreeCraftSupport.prepareProject(self.dlg.outputFolderLineEdit.text(),vectorPathList)
-		self.PotreeCraftSupport.writeHtml(self.dlg.outputFolderLineEdit.text()+'main.html',self.dlg.potreePageLineEdit.text(),[self.dlg.intColorRadioButton.text(),None,None,None],vectorNameList,vectorColorList)
+		self.PotreeCraftSupport.writeHtml(self.dlg.outputFolderLineEdit.text()+'main.html',self.dlg.potreePageLineEdit.text(),[self.pcrParam,None,None,None],vectorNameList,vectorColorList)
 	def run(self):
 		"""Run method that performs all the real work"""
 		# Create the dialog with elements (after translation) and keep reference
