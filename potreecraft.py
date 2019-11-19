@@ -208,8 +208,9 @@ class PotreeCraft:
 		self.dlg.potreeVectorBameLineEdit.setText(filename)
 
 	def selectOutputFolder(self):
-		#filename = QFileDialog.getSaveFileName(self.dlg,"Select output file ","","*.asc")
 		fpath = QFileDialog.getExistingDirectory(self.dlg, "Select Directory")
+		if fpath[-1] != '/' or fpath[-1] != '\\':
+			fpath = fpath+'/'
 		self.dlg.outputFolderLineEdit.setText(str(fpath))
 
 	def selectLASToolsFolder(self):
@@ -291,7 +292,7 @@ class PotreeCraft:
 				current_color_box = QtWidgets.QTreeWidgetItem.setForeground(current_color_box,0, QtGui.QBrush(QtGui.QColor(str(vl.renderer().symbol().color().name()))))
 				current_vl.setExpanded(bool(1))
 
-				self.vector_table.append([lctr,vl.name(),LYR_TYPE,vl.crs().description(),vl.crs().authid(),vl.crs().toProj4(),str(vl.renderer().symbol().color().name())])
+				self.vector_table.append([lctr,vl.name(),LYR_TYPE,vl.crs().description(),vl.crs().authid(),vl.crs().toProj4(),str(vl.renderer().symbol().color().name()),vl.dataProvider().dataSourceUri().split('|')[0]])
 
 		# '▣ ⏹ ⚫ ●  █☰  ☡ ☈ ☓ ┼   .dataProvider().dataSourceUri()'
 		# adjusting the size of the first header column to resize itself to the length which allows the longest layer name to fit.
@@ -493,9 +494,17 @@ class PotreeCraft:
 
 	def compileProject(self):
 		#input,output,outtype,pagename,proj,threadname
-
+		vectorPathList = []
+		vectorNameList = []
+		vectorColorList = []
+		for l in self.vector_table:
+			vectorNameList.append((l[1]))
+			vectorColorList.append(l[6])
+			vectorPathList.append(l[7])
+		#print(vectorPathList)
 		self.PotreeCraftSupport.pcconvert_isready(self.dlg.pointCloudPathLineEdit.text(),self.dlg.outputFolderLineEdit.text(),self.dlg.intColorRadioButton.text(),self.dlg.potreePageLineEdit.text(),self.crsParam,self.dlg.potreePageLineEdit.text())
-
+		self.PotreeCraftSupport.prepareProject(self.dlg.outputFolderLineEdit.text(),vectorPathList)
+		self.PotreeCraftSupport.writeHtml(self.dlg.outputFolderLineEdit.text()+'main.html',self.dlg.potreePageLineEdit.text(),[self.dlg.intColorRadioButton.text(),None,None,None],vectorNameList,vectorColorList)
 	def run(self):
 		"""Run method that performs all the real work"""
 		# Create the dialog with elements (after translation) and keep reference

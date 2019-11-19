@@ -4,6 +4,7 @@ import time
 import subprocess
 from datetime import datetime, date
 import os
+import shutil
 
 class PotreeCraftSupport:
 
@@ -178,7 +179,340 @@ class PotreeCraftSupport:
     # - shape és .js file másolás .html törlése/felülírása
     # - javascript editing
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    #
+    # js THREE point
+    # https://threejs.org/docs/#api/en/objects/Points
+    @classmethod
+    def prepareProject(cls,projectPath,layerList):
+        if not os.path.exists(projectPath+"/vector_data/"):
+            os.makedirs(projectPath+"/vector_data/")
+        #copyfile("./shapefile-w3d.js", projectPath+"/libs/shapefile/")
+        #os.path.isfile(file_path)
+        shutil.copy2('./shapefile-w3d.js', projectPath+'libs/shapefile/')
+        for lyr in layerList:
+            #print(lyr[0:-3])
+
+            # .shp
+            if os.path.isfile(lyr):
+                shutil.copy2(lyr, projectPath + '/vector_data/')
+            else:
+                print(lyr + ' -- file not found')
+
+            # .shx
+            if os.path.isfile(lyr[0:-3]+'shx'):
+                shutil.copy2(lyr[0:-3]+'shx', projectPath + '/vector_data/')
+            else:
+                print(lyr[0:-3]+'shx' + ' -- file not found')
+
+            # .dbf
+            if os.path.isfile(lyr[0:-3]+'dbf'):
+                shutil.copy2(lyr[0:-3]+'dbf', projectPath + '/vector_data/')
+            else:
+                print(lyr[0:-3]+'dbf' + ' -- file not found')
+
+            # .prj
+            if os.path.isfile(lyr[0:-3]+'prj'):
+                shutil.copy2(lyr[0:-3]+'prj', projectPath + '/vector_data/')
+            else:
+                print(lyr[0:-3]+'prj' + ' -- file not found')
+
+            # .cpg
+            if os.path.isfile(lyr[0:-3]+'cpg'):
+                shutil.copy2(lyr[0:-3]+'cpg', projectPath + '/vector_data/')
+            else:
+                print(lyr[0:-3]+'cpg' + ' -- file not found')
+
+            # .qpj
+            if os.path.isfile(lyr[0:-3]+'qpj'):
+                shutil.copy2(lyr[0:-3]+'qpj', projectPath + '/vector_data/')
+            else:
+                print(lyr[0:-3]+'qpj' + ' -- file not found')
+
+
+    @classmethod
+    def writeHtml(cls,projecthtmlpath,cloudname,cloudparams,layerNameArray,layerColorArray):
+        # cloudparams[0]: coloring, pl 'INTENSITY'
+        # cloudparams[1]: crs tömb, név és proj, pl ["WGS84", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"], opcionális, default bejövőérték: None
+        # cloudparams[2]: opacity? később.
+        f = open(projecthtmlpath, "a")
+        path = "./vector_data/"
+
+        # -------------------------------------------------------------------------------------------------
+        f.write('<!DOCTYPE html>\n')
+        f.write('<html lang="en">\n')
+        f.write('<head>\n')
+        f.write('	<meta charset="utf-8">\n')
+        f.write('	<meta name="description" content="">\n')
+        f.write('	<meta name="author" content="">\n')
+        f.write('	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">\n')
+        f.write('	<title>Potree Viewer</title>\n')
+        f.write('\n')
+        f.write('	<link rel="stylesheet" type="text/css" href="libs/potree/potree.css">\n')
+        f.write('	<link rel="stylesheet" type="text/css" href="libs/jquery-ui/jquery-ui.min.css">\n')
+        f.write('	<link rel="stylesheet" type="text/css" href="libs/perfect-scrollbar/css/perfect-scrollbar.css">\n')
+        f.write('	<link rel="stylesheet" type="text/css" href="libs/openlayers3/ol.css">\n')
+        f.write('	<link rel="stylesheet" type="text/css" href="libs/spectrum/spectrum.css">\n')
+        f.write('	<link rel="stylesheet" type="text/css" href="libs/jstree/themes/mixed/style.css">\n')
+        f.write('</head>\n')
+        f.write('\n')
+        f.write('<body>\n')
+        f.write('	<script src="libs/jquery/jquery-3.1.1.min.js"></script>\n')
+        f.write('	<script src="libs/spectrum/spectrum.js"></script>\n')
+        f.write('	<script src="libs/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>\n')
+        f.write('	<script src="libs/jquery-ui/jquery-ui.min.js"></script>\n')
+        f.write('	<script src="libs/three.js/build/three.min.js"></script>\n')
+        f.write('	<script src="libs/other/BinaryHeap.js"></script>\n')
+        f.write('	<script src="libs/tween/tween.min.js"></script>\n')
+        f.write('	<script src="libs/d3/d3.js"></script>\n')
+        f.write('	<script src="libs/proj4/proj4.js"></script>\n')
+        f.write('	<script src="libs/openlayers3/ol.js"></script>\n')
+        f.write('	<script src="libs/i18next/i18next.js"></script>\n')
+        f.write('	<script src="libs/jstree/jstree.js"></script>\n')
+        f.write('	<script src="libs/potree/potree.js"></script>\n')
+        f.write('	<script src="libs/plasio/js/laslaz.js"></script>\n')
+        f.write('	<script src="libs/shapefile/shapefile-w3d.js"></script>\n')
+        f.write('	\n')
+        f.write('	\n')
+        f.write('	<!-- INCLUDE ADDITIONAL DEPENDENCIES HERE -->\n')
+        f.write('		document.title = "";\n')
+        f.write('		viewer.setEDLEnabled(false);\n')
+        f.write('		viewer.setBackground("gradient"); // ["skybox", "gradient", "black", "white"];\n')
+        f.write('		viewer.setDescription(``);\n')
+        f.write('	\n')
+        f.write('	<div class="potree_container" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px; ">\n')
+        f.write('		<div id="potree_render_area"></div>\n')
+        f.write('		<div id="potree_sidebar_container"> </div>\n')
+        f.write('	</div>\n')
+        f.write('	\n')
+        f.write('	<script>\n')
+        f.write('	\n')
+        f.write('		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));\n')
+        f.write('		\n')
+        f.write('		viewer.setEDLEnabled(true);\n')
+        f.write('		viewer.setFOV(60);\n')
+        f.write('		viewer.setPointBudget(1*1000*1000);\n')
+        f.write('		document.title = "";\n')
+        f.write('		viewer.setEDLEnabled(false);\n')
+        f.write('		viewer.setBackground("gradient"); // ["skybox", "gradient", "black", "white"];\n')
+        f.write('		viewer.setDescription(``);\n')
+        f.write('		viewer.loadSettingsFromURL();\n')
+        f.write('		\n')
+        f.write('		viewer.loadGUI(() => {\n')
+        f.write("			viewer.setLanguage('en');\n")
+        f.write('			$("#menu_appearance").next().show();\n')
+        f.write('			$("#menu_tools").next().show();\n')
+        f.write('			$("#menu_scene").next().show();\n')
+        f.write('			viewer.toggleSidebar();\n')
+        f.write('		});\n')
+        f.write('		\n')
+        f.write('		Potree.loadPointCloud("pointclouds/'+cloudname+'/cloud.js", "'+cloudname+'", e => {\n')
+        f.write('			let pointcloud = e.pointcloud;\n')
+        f.write('			let material = pointcloud.material;\n')
+        f.write('			viewer.scene.addPointCloud(pointcloud);\n')
+        f.write('			material.pointColorType = Potree.PointColorType.'+cloudparams[0]+'; // any Potree.PointColorType.XXXX \n')
+        f.write('			material.size = 1;\n')
+        f.write('			material.pointSizeType = Potree.PointSizeType.ATTENUATED;\n')
+        f.write('			material.shape = Potree.PointShape.SQUARE;\n')
+        f.write('			material.opacity = 0.08;\n')
+        f.write('			//material.rgbGamma = 2.20;\n')
+        f.write('			material.intensityGamma = 1.70;\n')
+        f.write('			material.intensityRange = [25000,59000];\n')
+        f.write('			material.intensityMin = 24200\n')
+        f.write('			viewer.fitToScreen();\n')
+        f.write('			{\n')
+        f.write('				// *** shape beolvasó kódrész ***\n')
+        f.write('				// *** shape reading code section ***\n')
+        f.write('\n')
+        f.write('				//proj4.defs("pointcloud", pointcloud.projection);\n')
+        f.write('				//proj4.defs("WGS84", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");\n')
+        f.write('				//let toScene = proj4("WGS84", "pointcloud");\n')
+        f.write('\n')
+        f.write(
+            '				// *** proj4 könyvtár jelen pillanatban nem működik ezzel a példával, figyelj rá, hogy minden felhasznált file megfelelő crs-ben van. ***\n')
+        f.write(
+            '				// *** proj4 library is currently not working with this example, make sure that all your files are in the right crs. ***\n')
+        f.write('\n')
+        f.write('				let featureToSceneNode = (feature, color) => {\n')
+        f.write('					let geometry = feature.geometry;\n')
+        f.write('\n')
+        f.write('					var color = color ? color : new THREE.Color(1, 1, 1);\n')
+        f.write('\n')
+        f.write('					if(feature.geometry.type === "Point"){\n')
+        f.write('						let sg = new THREE.SphereGeometry(1, 18, 18);\n')
+        f.write('						let sm = new THREE.MeshNormalMaterial();\n')
+        f.write('						let s = new THREE.Mesh(sg, sm);\n')
+        f.write('\n')
+        f.write('						let [long, lat] = geometry.coordinates;\n')
+        f.write('						let pos = ([long, lat]);\n')
+        f.write('						let alt = geometry.coordinates[2]?geometry.coordinates[2]:20;\n')
+        f.write('						s.position.set(...pos, alt);\n')
+        f.write('						s.scale.set(0.3, 0.3, 0.05);\n')
+        f.write('\n')
+        f.write('						return s;\n')
+        f.write('					}else if(geometry.type === "LineString"){\n')
+        f.write('						let coordinates = [];\n')
+        f.write('						let min = new THREE.Vector3(Infinity, Infinity, Infinity);\n')
+        f.write('\n')
+        f.write('						for(let i = 0; i < geometry.coordinates.length; i++){\n')
+        f.write('							let [long, lat] = geometry.coordinates[i];\n')
+        f.write('							let pos = ([long, lat]);\n')
+        f.write('\n')
+        f.write('							//console.log("LSZ: ",pos, geometry.coordinates[i][2])\n')
+        f.write('\n')
+        f.write('							let alt = 20;\n')
+        f.write('							min.x = Math.min(min.x, pos[0]);\n')
+        f.write('							min.y = Math.min(min.y, pos[1]);\n')
+        f.write('							min.z = Math.min(min.z, alt);\n')
+        f.write('\n')
+        f.write('							coordinates.push(...pos, alt);\n')
+        f.write('							if(i > 0 && i < geometry.coordinates.length - 1){\n')
+        f.write('								coordinates.push(...pos, alt);\n')
+        f.write('							}\n')
+        f.write('						}\n')
+        f.write('\n')
+        f.write('						for(let i = 0; i < coordinates.length; i += 3){\n')
+        f.write('							coordinates[i+0] -= min.x;\n')
+        f.write('							coordinates[i+1] -= min.y;\n')
+        f.write('							coordinates[i+2] -= min.z;\n')
+        f.write('						}\n')
+        f.write('\n')
+        f.write('						let positions = new Float32Array(coordinates);\n')
+        f.write('						let lineGeometry = new THREE.BufferGeometry();\n')
+        f.write('						lineGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));\n')
+        f.write('\n')
+        f.write('						let material = new THREE.LineBasicMaterial( { color: color} );\n')
+        f.write('						let line = new THREE.LineSegments(lineGeometry, material);\n')
+        f.write('						line.position.copy(min);\n')
+        f.write('\n')
+        f.write('						return line;\n')
+        f.write('\n')
+        f.write('					}else if(geometry.type === "LineStringZ"){\n')
+        f.write('						let coordinates = [];\n')
+        f.write('						let min = new THREE.Vector3(Infinity, Infinity, Infinity);\n')
+        f.write('\n')
+        f.write('						for(let i = 0; i < geometry.coordinates.length; i++){\n')
+        f.write('							let [long, lat] = geometry.coordinates[i];\n')
+        f.write('							let pos = ([long, lat]);\n')
+        f.write('\n')
+        f.write('							//console.log("LSZ: ",pos, geometry.coordinates[i][2])\n')
+        f.write('\n')
+        f.write('							let alt = geometry.coordinates[i][2]?geometry.coordinates[i][2]:20;\n')
+        f.write('							min.x = Math.min(min.x, pos[0]);\n')
+        f.write('							min.y = Math.min(min.y, pos[1]);\n')
+        f.write('							min.z = Math.min(min.z, alt);\n')
+        f.write('\n')
+        f.write('							coordinates.push(...pos, alt);\n')
+        f.write('							if(i > 0 && i < geometry.coordinates.length - 1){\n')
+        f.write('								coordinates.push(...pos, alt);\n')
+        f.write('							}\n')
+        f.write('						}\n')
+        f.write('						for(let i = 0; i < coordinates.length; i += 3){\n')
+        f.write('							coordinates[i+0] -= min.x;\n')
+        f.write('							coordinates[i+1] -= min.y;\n')
+        f.write('							coordinates[i+2] -= min.z;\n')
+        f.write('						}\n')
+        f.write('\n')
+        f.write('						let positions = new Float32Array(coordinates);\n')
+        f.write('						let lineGeometry = new THREE.BufferGeometry();\n')
+        f.write('						lineGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));\n')
+        f.write('\n')
+        f.write('						let material = new THREE.LineBasicMaterial( { color: color} );\n')
+        f.write('						let line = new THREE.LineSegments(lineGeometry, material);\n')
+        f.write('						line.position.copy(min);\n')
+        f.write('\n')
+        f.write('						return line;\n')
+        f.write('\n')
+        f.write('					}else if(geometry.type === "Polygon"){\n')
+        f.write('						for(let pc of geometry.coordinates){\n')
+        f.write('							let coordinates = [];\n')
+        f.write('\n')
+        f.write('							let min = new THREE.Vector3(Infinity, Infinity, Infinity);\n')
+        f.write('							for(let i = 0; i < pc.length; i++){\n')
+        f.write('								let [long, lat] = pc[i];\n')
+        f.write('								let pos = ([long, lat]);\n')
+        f.write('								let alt = pc[i][2]?pc[i][2]:20;\n')
+        f.write('								min.x = Math.min(min.x, pos[0]);\n')
+        f.write('								min.y = Math.min(min.y, pos[1]);\n')
+        f.write('								min.z = Math.min(min.z, alt);\n')
+        f.write('\n')
+        f.write('								coordinates.push(...pos, alt);\n')
+        f.write('								if(i > 0 && i < pc.length - 1){\n')
+        f.write('									coordinates.push(...pos, alt);\n')
+        f.write('								}\n')
+        f.write('							}\n')
+        f.write('\n')
+        f.write('							for(let i = 0; i < coordinates.length; i += 3){\n')
+        f.write('								coordinates[i+0] -= min.x;\n')
+        f.write('								coordinates[i+1] -= min.y;\n')
+        f.write('								coordinates[i+2] -= min.z;\n')
+        f.write('							}\n')
+        f.write('\n')
+        f.write('							let positions = new Float32Array(coordinates);\n')
+        f.write('\n')
+        f.write('							let lineGeometry = new THREE.BufferGeometry();\n')
+        f.write(
+            '							lineGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));\n')
+        f.write('\n')
+        f.write('							let material = new THREE.LineBasicMaterial( { color: color} );\n')
+        f.write('							let line = new THREE.LineSegments(lineGeometry, material);\n')
+        f.write('							line.position.copy(min);\n')
+        f.write('\n')
+        f.write('							return line;\n')
+        f.write('						}\n')
+        f.write('					}else{\n')
+        f.write('						console.log("unhandled feature: ", feature);\n')
+        f.write('					}\n')
+        f.write('				};\n')
+        f.write('\n')
+        f.write('// --- automated generator of shape layers -- \n')
+        f.write('\n')
+
+
+        for rowNo in range(len(layerNameArray)):
+
+            lyrHex = '999999'
+            # row[1 ] -> shn_xx
+            # row[2] -> nodeID_xx
+            # path + row[0] -> ./shp/EP_Lepcso_line.shp"
+            # lyrName -> EP_Lepcso_line
+            # lyrHex -> A0522D
+
+            f.write("				let shn_" + str(rowNo) + " = new THREE.Object3D();\n")
+            f.write("				viewer.scene.scene.add(shn_" + str(rowNo) + ");\n")
+            f.write('\n')
+
+            f.write(
+                '			    Potree.utils.loadShapefileFeatures("' + path + layerNameArray[rowNo] + '.shp", features => {\n')
+            f.write('					// feature-ök felláncolása\n')
+            f.write('					// chaining up features\n')
+            f.write('					for(let feature of features){\n')
+
+            f.write('						let node = featureToSceneNode(feature, 0x' + layerColorArray[rowNo].replace("#","").upper() + ');\n')
+            f.write('						shn_' + str(rowNo) + '.add(node);	\n')
+            f.write('					}\n')
+            f.write('					viewer.onGUILoaded(() => {\n')
+            f.write('					let tree = $(`#jstree_scene`);\n')
+            f.write('					let parentNode = "other";\n')
+            f.write('					//console.log(tree);\n')
+            f.write('\n')
+            f.write("					let nodeID_" + str(rowNo) + " = tree.jstree('create_node', parentNode, { \n")
+            f.write('						"text": "' + layerNameArray[rowNo] + '", \n')
+            f.write('						"icon": `${Potree.resourcePath}/icons/triangle.svg`,\n')
+            f.write('						"data": shn_' + str(rowNo) +'\n')
+            f.write('					}, \n')
+            f.write('					"last", false, false);\n')
+            f.write(
+                '					tree.jstree(shn_' + str(rowNo) + '.visible ? "check_node" : "uncheck_node", nodeID_' + str(rowNo) + ');\n')
+            f.write('					});\n')
+            f.write('				});\n')
+            f.write('\n')
+
+        f.write('\n')
+        f.write('			}\n')
+        f.write('		});\n')
+        f.write('	</script>\n')
+        f.write('  </body>\n')
+        f.write('</html>\n')
+
 
 class PotreeGenericLayerInfo():
     # This class is more-or-less an abstact which serves as a common base for all layer info storage classes.
@@ -227,8 +561,21 @@ if __name__ == "__main__":
     #cloudname = PotreeCraftSupport.lasconvert_isready(r'c:\PotreeConverter_16\3DModel_Pcld_LASCloud.las','-rgb','0.1')
     #print(cloudname)
 
-    x = PotreeJsonVectorLayerInfo('d','s','s','a','fn')
-    print(x.getBasicInfo())
+    #projecthtmlpath,cloudname,cloudparams,layerNameArray,layerColorArray):
+    asdLayerName = []
+    asdlayerColorArray = []
+    asdLayerName.append("edges_of_road")
+    asdLayerName.append("random_pts")
+    asdlayerColorArray.append("#fffa4f")
+    asdlayerColorArray.append("e77148")
+
+    x = PotreeCraftSupport
+    #x.writeHtml('D:/potreewritetest2.html','lofaszcloud',['INTENSITY',None],asdLayerName,asdlayerColorArray)
+    x.prepareProject(r"C:/Users/tberes/Documents/test_las",['C:/Users/tberes/Documents/test_las/random_points_on_the_road.shp','C:/Users/tberes/Documents/test_las/edges_of_the_road.shp'])
+
+
+    #x = PotreeJsonVectorLayerInfo('d','s','s','a','fn')
+    #print(x.getBasicInfo())
 
 
 
