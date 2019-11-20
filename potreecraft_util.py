@@ -92,7 +92,7 @@ class PotreeCraftSupport:
         logging.info("Thread %s: finishing", threadname)
 
     @classmethod
-    def potreeconverter_thread_function(cls,input,output,outtype,pagename,proj,threadname):
+    def potreeconverter_thread_function(cls,input,output,outtype,pagename,proj,threadname='lol'):
         eov = ' "+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_' \
             '0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9,0,0,0,0 ' \
             '+units=m +no_defs "'
@@ -114,7 +114,7 @@ class PotreeCraftSupport:
             subprocess.call(cmd, shell=False)
         #subprocess.call(cmd, shell=False)
 
-        logging.info("Thread %s: finishing", threadname)
+        logging.info("Thread is finishing")
 
     @classmethod
     def lasconvert_isready(cls, input, cltype, stepsize):
@@ -136,8 +136,9 @@ class PotreeCraftSupport:
         return output
 
     @classmethod
-    def pcconvert_isready(cls, input,output,outtype,pagename,proj,threadname):
+    def pcconvert_isready(cls, input,output,outtype,pagename,proj,threadname='lol'):
         timefortempname = datetime.now()
+
         #output = 'cloud_'+str(timefortempname.strftime("%y%m%d%H%M%S"))+'.asc'
         PotreeCraftSupport.readcfg()
 
@@ -171,9 +172,10 @@ class PotreeCraftSupport:
     def prepareProject(cls,projectPath,layerList):
         if not os.path.exists(projectPath+"/vector_data/"):
             os.makedirs(projectPath+"/vector_data/")
+        print(projectPath)
         #copyfile("./shapefile-w3d.js", projectPath+"/libs/shapefile/")
         #os.path.isfile(file_path)
-        shutil.copy2('./shapefile-w3d.js', projectPath+'libs/shapefile/')
+        shutil.copy('./shapefile-w3d.js', projectPath+'libs/shapefile/')
         for lyr in layerList:
             #print(lyr[0:-3])
 

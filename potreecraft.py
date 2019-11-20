@@ -199,10 +199,11 @@ class PotreeCraft:
 	def selectLASFile(self):
 		filename = QFileDialog.getOpenFileName(self.dlg,"Select LAS cloud ","","*.las")
 		self.dlg.pointCloudPathLineEdit.setText(str(filename[0]))
-		onlyName = str(filename[0]).replace("\\","/").split("/")[-1]
-		onlyName = onlyName.split(".")[0]
-		#self.dlg.ascFileNameLineEdit.setText(onlyName+".asc")
-		self.dlg.potreePageLineEdit.setText(onlyName)
+		if len(filename) > 0:
+			onlyName = str(filename[0]).replace("\\","/").split("/")[-1]
+			onlyName = onlyName.split(".")[0]
+			#self.dlg.ascFileNameLineEdit.setText(onlyName+".asc")
+			self.dlg.potreePageLineEdit.setText(onlyName)
 
 	def selectOutputFile(self):
 		filename = QFileDialog.getSaveFileName(self.dlg,"Select output file ","","*.asc")
@@ -210,8 +211,9 @@ class PotreeCraft:
 
 	def selectOutputFolder(self):
 		fpath = QFileDialog.getExistingDirectory(self.dlg, "Select Directory")
-		if fpath[-1] != '/' or fpath[-1] != '\\':
-			fpath = fpath+'/'
+		if len(fpath) > 0:
+			if fpath[-1] != '/' or fpath[-1] != '\\':
+				fpath = fpath+'/'
 		self.dlg.outputFolderLineEdit.setText(str(fpath))
 
 	def selectLASToolsFolder(self):
