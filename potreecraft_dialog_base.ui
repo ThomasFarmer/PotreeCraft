@@ -51,7 +51,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="pointcloud_tab">
     <attribute name="title">
@@ -837,7 +837,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>If you are missing an installment of either LASTools or PotreeConverter 1.6 visit the webpage of either of these proejcts, or you can find a download link for the required files on my GitHub page.</string>
+      <string>If you are missing an installment of either LAStools or PotreeConverter 1.6 visit the webpage of either of these projects, or you can find a download link for the required files on my GitHub page.</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
