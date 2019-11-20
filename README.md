@@ -13,7 +13,7 @@ and you can download PotreeConverter 1.6 stable release from the project's [gith
 This project was created and tested with the version 1.6, migration to 1.7 will follow soon.
 
 ## Known issues
-- The base Python threading seems to be incompatible with QT5 / QGIS. While the window itself can be moved during process calls, the interface freezes. Migration to QThread class required. With this the process bar in the bottom left corner lacks any functionality.
+- The base Python threading seems to be incompatible with QT5 / QGIS. While the window itself can be moved during process calls, the interface freezes. Migration to QThread class required. With this I think it is needless to say that the process bar in the bottom left corner absolutely lacks any functionality.
 - Interface and functions to set Page title, Description, Opacity and other cloud paramters are not implemented yet.
 - Point layer coloring does not matter, because in current state of the hardwired javascript code forces points to appear as a flattened mesh sphere. 
 - Layer functionality interface (vector layer settings tab) are not implemented yet. Point layers later may get the "Annotation" function, which will allow them to appear as such in Potree. The text appearing above these points will be read from a selected record of the shape file itself.
