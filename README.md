@@ -22,8 +22,7 @@ This project was created and tested with the version 1.6, migration to 1.7 will 
 
 ## How to use the plugin
 
-First, download the ZIP here, and install it in QGIS. (plugins -> manage and install plugins -> install plugin from zip)
-Link:
+First, download the [.ZIP here](https://mega.nz/#!n0EmnAba!89xgc26mj9cXzEOWJwJhgF77SrZauNRknPybSzd9e6Q), and install it in QGIS. *(plugins -> manage and install plugins -> install plugin from zip)*
 
 After the installation go to the settings tab, and show the plugin where can it find LAStools and PotreeConverter, and press "save". If the locations are correct and the plugin found the required files the plugin will enable the rest of the interface, and will prompt the user that it is ready for use.
 
