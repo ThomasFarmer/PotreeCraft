@@ -12,7 +12,7 @@ and you can download PotreeConverter from the project's github page, or this lin
 
 This project was created and tested with the version 1.6, migration to 1.7 will follow soon.
 
-# Known issues
+## Known issues
 - The base Python threading seems to be incompatible with QT5 / QGIS. While the window itself can be moved during process calls, the interface freezes. Migration to QThread class required. With this the process bar in the bottom left corner lacks any functionality.
 - Interface and functions to set Page title, Description, Opacity and other cloud paramters are not implemented yet.
 - Point layer coloring does not matter, because in current state of the hardwired javascript code forces points to appear as a flattened mesh sphere. 
@@ -20,7 +20,7 @@ This project was created and tested with the version 1.6, migration to 1.7 will 
 - Possible issue on certain computers with the copying of the shapefile-w3d.js library.
 
 
-# How to use the plugin
+## How to use the plugin
 
 First, download the ZIP here, and install it in QGIS. (plugins -> manage and install plugins -> install plugin from zip)
 Link:
@@ -33,18 +33,20 @@ After the installation go to the settings tab, and show the plugin where can it 
 - [x] 4. Then select an output folder for the potree project and press "Compile project", let it run like in the previous case.
 - [x] 5. Finally, check it in the browser. *Note: Potree requires a web server to operate, such as python's SimpleHTTPServer, or Apache. For more information on this topic check out the official Potree github page.*
 
+## Screenshots
+
 **Step 1:**
 ![pointcloud_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/pointcloud_window.jpg)
 ![blast2dem](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/blast2dem_running.jpg)
 
-**Step 2: **
+**Step 2:**
 ![qgis](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/qgis_project.jpg)
 
-**Step 3: **
+**Step 3:**
 ![vector_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/vector_window.jpg)
 
-**Step 4: **
+**Step 4:**
 ![potreeconverter](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/potreeconverter_running.jpg)
 
-**Step 5: **
+**Step 5:**
 ![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/potree_running_1119.jpg)
