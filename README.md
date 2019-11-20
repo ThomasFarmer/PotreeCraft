@@ -7,8 +7,8 @@ The plugin itself relies on LAStools and PotreeConverter:
 - LAStools' blast2dem function allows this widget to import pointclouds as raster layers, so the users would be able to check if the vector layers align,
 - PotreeConverter will create the blank Potree project itself, which later recieves the additional vector data files and a new homepage for the project with the necessary javascript code added.
 
-If you do not have these installed on your computer, you can download a copy of LAStools here: 
-and you can download PotreeConverter from the project's github page, or this link:
+If you do not have these installed on your computer, you can download a copy of LAStools through [this link](https://mega.nz/#!GhFxVKqD!7fD5PeldRdDT6j9O4_zoIgSDc82KnOjP0B2bgHPlH-s). 
+and you can download PotreeConverter 1.6 stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/1.6).
 
 This project was created and tested with the version 1.6, migration to 1.7 will follow soon.
 
