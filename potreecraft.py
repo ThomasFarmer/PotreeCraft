@@ -13,12 +13,11 @@
  ***************************************************************************/
 
 /***************************************************************************
- *																		 *
+ *																		   *
  *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or	 *
- *   (at your option) any later version.								   *
- *																		 *
+ *   it under the terms of the GNU General Public License (GNU GPLv3 as    *
+ *   published by the Free Software Foundation; 						   *
+ *     																	   *
  ***************************************************************************/
 """
 from qgis.PyQt import QtWidgets, QtGui
@@ -78,7 +77,7 @@ class PotreeCraft:
 		
 		# Declare instance attributes
 		self.actions = []
-		self.menu = self.tr(u'&Potree Craft')
+		self.menu = self.tr(u'&PotreeCraft')
 
 
 		# Check if plugin was started the first time in current QGIS session
@@ -241,13 +240,13 @@ class PotreeCraft:
 			self.dlg.loadCloudButton.setEnabled(False)
 			self.dlg.CompileButton.setEnabled(False)
 			self.dlg.blast2demGroupBox.setEnabled(False)
-			self.dlg.conversionTextLabel.setText("Invalid LAS Tools or PotreeConverter path given - please visit the settings panel.")
+			self.dlg.conversionTextLabel.setText("Invalid LAStools or PotreeConverter path given - please visit the settings panel.")
 
 	def unload(self):
 		"""Removes the plugin menu item and icon from QGIS GUI."""
 		for action in self.actions:
 			self.iface.removePluginMenu(
-				self.tr(u'&Potree Craft'),
+				self.tr(u'&PotreeCraft'),
 				action)
 			self.iface.removeToolBarIcon(action)
 
@@ -463,7 +462,7 @@ class PotreeCraft:
 			self.dlg.pointCloudPathLineEdit.setEnabled(False)
 			self.dlg.stepSizeSpinBox.setEnabled(False)
 			self.dlg.blast2demGroupBox.setEnabled(False)
-			self.dlg.consoleCommandPlainTextEdit.setEnabled(False)
+			self.dlg.pageDescPlainTextEdit.setEnabled(False)
 
 			#cloudfile = self.PotreeCraftSupport.lasconvert_isready(r'c:\PotreeConverter_16\3DModel_Pcld_LASCloud.las', '-rgb', '0.1')
 			cloudfile = self.PotreeCraftSupport.lasconvert_isready(self.dlg.pointCloudPathLineEdit.text(), self.ascParam, self.dlg.stepSizeSpinBox.text().replace(',','.'))
@@ -489,7 +488,7 @@ class PotreeCraft:
 			self.dlg.pointCloudPathLineEdit.setEnabled(True)
 			self.dlg.stepSizeSpinBox.setEnabled(True)
 			self.dlg.blast2demGroupBox.setEnabled(True)
-			self.dlg.consoleCommandPlainTextEdit.setEnabled(True)
+			self.dlg.pageDescPlainTextEdit.setEnabled(True)
 
 		except Exception as genex:
 			print('PYTHON EXCEPTOIN CAUGHT:')
@@ -500,7 +499,7 @@ class PotreeCraft:
 			self.dlg.pointCloudPathLineEdit.setEnabled(True)
 			self.dlg.stepSizeSpinBox.setEnabled(True)
 			self.dlg.blast2demGroupBox.setEnabled(True)
-			self.dlg.consoleCommandPlainTextEdit.setEnabled(True)
+			self.dlg.pageDescPlainTextEdit.setEnabled(True)
 
 	def compileProject(self):
 		#input,output,outtype,pagename,proj,threadname
@@ -514,7 +513,7 @@ class PotreeCraft:
 		#print(vectorPathList)
 		self.PotreeCraftSupport.pcconvert_isready(self.dlg.pointCloudPathLineEdit.text(),self.dlg.outputFolderLineEdit.text(),self.pcrParam,self.dlg.potreePageLineEdit.text(),self.crsParam,self.dlg.potreePageLineEdit.text())
 		self.PotreeCraftSupport.prepareProject(self.dlg.outputFolderLineEdit.text(),vectorPathList)
-		self.PotreeCraftSupport.writeHtml(self.dlg.outputFolderLineEdit.text()+'main.html',self.dlg.potreePageLineEdit.text(),[self.pcrParam,None,None,None],vectorNameList,vectorColorList)
+		self.PotreeCraftSupport.writeHtml(self.dlg.outputFolderLineEdit.text()+'main.html',self.dlg.potreePageLineEdit.text(),[self.pcrParam,None,None,None],vectorNameList,vectorColorList,str(self.dlg.pageDescPlainTextEdit.toPlainText()))
 	def run(self):
 		"""Run method that performs all the real work"""
 		# Create the dialog with elements (after translation) and keep reference

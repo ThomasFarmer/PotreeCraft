@@ -51,7 +51,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="pointcloud_tab">
     <attribute name="title">
@@ -323,7 +323,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Console command</string>
+      <string>Page description</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -352,7 +352,7 @@
       <string>Select cloud</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="consoleCommandPlainTextEdit">
+    <widget class="QPlainTextEdit" name="pageDescPlainTextEdit">
      <property name="geometry">
       <rect>
        <x>110</x>
@@ -360,6 +360,9 @@
        <width>421</width>
        <height>151</height>
       </rect>
+     </property>
+     <property name="plainText">
+      <string>Created with &lt;a href=&quot;https://github.com/ThomasFarmer/PotreeCraft/&quot;&gt;PotreeCraft&lt;/a&gt;.</string>
      </property>
     </widget>
     <widget class="QPushButton" name="loadCloudButton">
@@ -844,6 +847,230 @@
      </property>
      <property name="wordWrap">
       <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>About</string>
+    </attribute>
+    <widget class="QGroupBox" name="contactInfoGroupbox">
+     <property name="geometry">
+      <rect>
+       <x>560</x>
+       <y>20</y>
+       <width>291</width>
+       <height>391</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Licencing, project webpage and contact info</string>
+     </property>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>261</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PotreeCraft is a free tool made to help people with no knowledge of JavaScript use Potree. This plugin was created as a portfolio / passion project. Because of that, this plugin is a free software, you can redistribute it and/or modify it under the terms of the GNU General Public License (GNU GPLv3) as published by the Free Software Foundation. </string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="openExternalLinks">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>170</y>
+        <width>261</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>For newer releases and more information visit the PotreeCraft &lt;a href=&quot;https://github.com/ThomasFarmer/PotreeCraft/&quot;&gt;GitHub&lt;/a&gt; page</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="openExternalLinks">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>140</y>
+        <width>251</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PotreeCraft was created by &lt;a href=&quot;https://www.linkedin.com/in/tamás-béres-087618189/&quot;&gt;Béres Tamás&lt;/a&gt;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>340</y>
+        <width>251</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Potree was created by &lt;a href=&quot;http://potree.org/contact.html&quot;&gt;Markus Schütz&lt;/a&gt;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>360</y>
+        <width>251</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LAStools is developed by &lt;a href=&quot;https://rapidlasso.com/contact/&quot;&gt;rapidlasso GmbH&lt;/a&gt;</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>521</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;b&gt;How to use the plugin:&lt;/b&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_14">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>521</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step 1:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>50</y>
+       <width>491</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Download &lt;a href=&quot;https://mega.nz/#!GhFxVKqD!7fD5PeldRdDT6j9O4_zoIgSDc82KnOjP0B2bgHPlH-s&quot;&gt;LAStools&lt;/a&gt;  and &lt;a href=&quot;https://github.com/potree/PotreeConverter/releases/tag/1.6&quot;&gt;PotreeConverter 1.6&lt;/a&gt;.&lt;br&gt;On the &lt;i&gt;&quot;Plugin settings&quot;&lt;/i&gt; page mark the installation folders for the plugin, so later it could call these programs as subprocesses.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_17">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>120</y>
+       <width>491</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Go to the &lt;i&gt;&quot;Pointcloud conversion&quot;&lt;/i&gt; tab, click on &lt;i&gt;&quot;Select cloud&quot;&lt;/i&gt;, and select a suitable coloring method on the &lt;i&gt;&quot;blast2dem coloring for QGIS&quot;&lt;/i&gt; groupbox. After that modify the step size if needed, then click &lt;i&gt;&quot;Load cloud into QGIS&quot;&lt;/i&gt;. This process may take a while, so be patient. Select CRS after it's done.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_18">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>100</y>
+       <width>521</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step 2:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_21">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>170</y>
+       <width>521</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step 3:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_23">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>190</y>
+       <width>491</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Use QGIS's interface to add ESRI Shapefile data to the current open project. Memory objects are not processed, so make sure to save every vector layer you need prior to compilation. Use the &lt;i&gt;&quot;Styles&quot;&lt;/i&gt; -&gt; &lt;i&gt;&quot;Edit Symbol&quot;&lt;/i&gt; to color your vector layers. On the &lt;i&gt;&quot;Vector layer settings&quot; &lt;/i&gt;page you can check which layers are going to be compiled into the Potree project, and with what sort of properties. Make sure you press &lt;i&gt;&quot;Reload layers from current project&quot;&lt;/i&gt; after editing them.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>290</y>
+       <width>491</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>After adding the vector data, go back to the &lt;i&gt;&quot;Pointcloud conversion&quot;&lt;/i&gt; tab, and select an empty directory by clicking the &lt;i&gt;&quot;Select output folder&quot;&lt;/i&gt; button. You can also modify the LAS coloring through the &lt;i&gt;&quot;Potree default coloring&quot;&lt;/i&gt; groupbox, the potree cloud object's name through &lt;i&gt;&quot;Page name&quot;&lt;/i&gt; textbox, you can also select the cloud CRS from either the project or add a custom one through a textbox, while also you can set a custom description (text hovering at the top of the Potree window) through the &lt;i&gt;&quot;Page Description&quot;&lt;/i&gt; textbox.&lt;br&gt; After all this, hit &lt;i&gt;&quot;Compile project&quot;&lt;/i&gt; and wait. To check the result copy the output folder to a server and visit the address, or set up your own http server (if you have python installed, open &quot;cmd&quot;, go to the project folder, and type &lt;i&gt;&quot;python3 -m http.server&quot;&lt;/i&gt; for example) and visit the&lt;br&gt; &lt;a href=&quot;127.0.0.1:8000/main.html&quot;&gt;127.0.0.1:8000/main.html&lt;/a&gt; address.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_22">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>270</y>
+       <width>521</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step 4:</string>
      </property>
     </widget>
    </widget>

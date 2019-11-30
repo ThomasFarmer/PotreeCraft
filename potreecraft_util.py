@@ -2,6 +2,7 @@ import logging
 import threading
 import time
 import subprocess
+import win32file
 from datetime import datetime, date
 import os
 import shutil
@@ -175,7 +176,11 @@ class PotreeCraftSupport:
         print(projectPath)
         #copyfile("./shapefile-w3d.js", projectPath+"/libs/shapefile/")
         #os.path.isfile(file_path)
-        shutil.copy('./shapefile-w3d.js', projectPath+'libs/shapefile/')
+        try:
+            shutil.copy('./shapefile-w3d.js', projectPath+'libs/shapefile/')
+        except:
+            #win32file.CopyFile('./shapefile-w3d.js', projectPath+'libs/shapefile/',1)
+            os.system("copy %s %s" % ('./shapefile-w3d.js', projectPath+'libs/shapefile/'))
         for lyr in layerList:
             #print(lyr[0:-3])
 
@@ -217,7 +222,7 @@ class PotreeCraftSupport:
 
 
     @classmethod
-    def writeHtml(cls,projecthtmlpath,cloudname,cloudparams,layerNameArray,layerColorArray):
+    def writeHtml(cls,projecthtmlpath,cloudname,cloudparams,layerNameArray,layerColorArray,pageDescription):
         # cloudparams[0]: coloring, pl 'INTENSITY'
         # cloudparams[1]: crs tömb, név és proj, pl ["WGS84", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"], opcionális, default bejövőérték: None
         # cloudparams[2]: opacity? később.
@@ -291,7 +296,9 @@ class PotreeCraftSupport:
         f.write('			$("#menu_scene").next().show();\n')
         f.write('			viewer.toggleSidebar();\n')
         f.write('		});\n')
-        f.write('		\n')
+        f.write('\n')
+        f.write('		viewer.setDescription(`'+pageDescription+'`);\n')
+        f.write('\n')
         f.write('		Potree.loadPointCloud("pointclouds/'+cloudname+'/cloud.js", "'+cloudname+'", e => {\n')
         f.write('			let pointcloud = e.pointcloud;\n')
         f.write('			let material = pointcloud.material;\n')
@@ -305,6 +312,13 @@ class PotreeCraftSupport:
         f.write('			material.intensityGamma = 1.70;\n')
         f.write('			material.intensityRange = [25000,59000];\n')
         f.write('			material.intensityMin = 24200\n')
+        f.write('\n')
+        f.write('			// let pointcloudProjection = e.pointcloud.projection;\n')
+        f.write('			// let mapProjection = proj4.defs("WGS84");\n')
+        f.write('\n')
+        f.write('			// window.toMap = proj4(pointcloudProjection, mapProjection);\n')
+        f.write('			// window.toScene = proj4(mapProjection, pointcloudProjection);\n')
+        f.write('\n')
         f.write('			viewer.fitToScreen();\n')
         f.write('			{\n')
         f.write('				// *** shape beolvasó kódrész ***\n')
@@ -325,6 +339,23 @@ class PotreeCraftSupport:
         f.write('					var color = color ? color : new THREE.Color(1, 1, 1);\n')
         f.write('\n')
         f.write('					if(feature.geometry.type === "Point"){\n')
+        f.write('						let measure = new Potree.Measure();\n')
+        f.write('						//measure.name = "asdf";\n')
+        f.write('						measure.showDistances = false;\n')
+        f.write('						measure.showCoordinates = false;\n')
+        f.write('				    	measure.closed = false;\n')
+        f.write('						measure.showEdges = false;\n')
+        f.write('						measure.color = color;\n')
+        f.write('\n')
+        f.write('						let [long, lat] = geometry.coordinates;\n')
+        f.write('						let pos = ([long, lat]);\n')
+        f.write('						let alt = geometry.coordinates[2]?geometry.coordinates[2]:20;\n')
+        f.write('				    	measure.addMarker(new THREE.Vector3(pos[0], pos[1], alt));\n')
+        f.write('\n')
+        f.write('						return measure;\n')
+        f.write('\n')
+
+        f.write('					/*if(feature.geometry.type === "Point"){\n')
         f.write('						let sg = new THREE.SphereGeometry(1, 18, 18);\n')
         f.write('						let sm = new THREE.MeshNormalMaterial();\n')
         f.write('						let s = new THREE.Mesh(sg, sm);\n')
@@ -335,7 +366,7 @@ class PotreeCraftSupport:
         f.write('						s.position.set(...pos, alt);\n')
         f.write('						s.scale.set(0.3, 0.3, 0.05);\n')
         f.write('\n')
-        f.write('						return s;\n')
+        f.write('						return s;*/\n')
         f.write('					}else if(geometry.type === "LineString"){\n')
         f.write('						let coordinates = [];\n')
         f.write('						let min = new THREE.Vector3(Infinity, Infinity, Infinity);\n')
