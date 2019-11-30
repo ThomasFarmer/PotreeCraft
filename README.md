@@ -20,7 +20,9 @@ This project was created and tested with the version 1.6, migration to 1.7 will 
 
 ## How to use the plugin
 
-First, download the [.ZIP here](https://mega.nz/#!n0EmnAba!89xgc26mj9cXzEOWJwJhgF77SrZauNRknPybSzd9e6Q), and install it in QGIS. *(plugins -> manage and install plugins -> install plugin from zip)*
+First, download the [.ZIP here](https://github.com/ThomasFarmer/PotreeCraft/master/_build_/), and install it in QGIS. *(plugins -> manage and install plugins -> install plugin from zip)*
+
+For testing purposes the same .las cloud and two shape files which can be seen on the screenshots can be downloaded from [this link here](https://mega.nz/#!m48E3SrC!GvYnKGQ_2k2lBCbRszaMi26UjHj7SSvO9VVOP-p0y9Q).
 
 After the installation go to the settings tab, and show the plugin where can it find LAStools and PotreeConverter, and press "save". If the locations are correct and the plugin found the required files the plugin will enable the rest of the interface, and will prompt the user that it is ready for use.
 
@@ -31,19 +33,25 @@ After the installation go to the settings tab, and show the plugin where can it 
 - [x] 5. Finally, check it in the browser. *Note: Potree requires a web server to operate, such as python's SimpleHTTPServer, or Apache. For more information on this topic check out the official Potree github page.*
 
 ## Screenshots
+**Landing / information page:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/about_window.jpg)
 
-**Step 1:**
-![pointcloud_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/pointcloud_window.jpg)
-![blast2dem](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/blast2dem_running.jpg)
+**Configuring the plugin:**
+![settings](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/settings_window.jpg)
 
-**Step 2:**
-![qgis](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/qgis_project.jpg)
+**Loading the pointcloud into QGIS as a raster layer:**
+![pointcloud_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/pointcloud_window.jpg)
+![blast2dem](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/blast2dem_running.jpg)
 
-**Step 3:**
-![vector_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/vector_window.jpg)
+**The demo project in QGIS before passing it over to PotreeConverter:**
+![qgis](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/qgis_project.jpg)
 
-**Step 4:**
-![potreeconverter](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/potreeconverter_running.jpg)
+**A final check on the vector layer window:**
+![vector_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/vector_window.jpg)
 
-**Step 5:**
-![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/doc/potree_running_1119.jpg)
+**Compiling the project:**
+![potreeconverter](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potreeconverter_running.jpg)
+
+**The final state of the demo project:**
+![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_running_1130.jpg)
+
