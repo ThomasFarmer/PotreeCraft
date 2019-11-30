@@ -20,7 +20,7 @@ This project was created and tested with the version 1.6, migration to 1.7 will 
 
 ## How to use the plugin
 
-First, download the [.ZIP here](https://github.com/ThomasFarmer/PotreeCraft/master/_build_), and install it in QGIS. *(plugins -> manage and install plugins -> install plugin from zip)*
+First, download the [.ZIP here](https://github.com/ThomasFarmer/PotreeCraft/tree/master/_build_), and install it in QGIS. *(plugins -> manage and install plugins -> install plugin from zip)*
 
 For testing purposes the same .las cloud and two shape files which can be seen on the screenshots can be downloaded from [this link here](https://mega.nz/#!m48E3SrC!GvYnKGQ_2k2lBCbRszaMi26UjHj7SSvO9VVOP-p0y9Q).
 
