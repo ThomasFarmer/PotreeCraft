@@ -44,7 +44,7 @@ After the installation go to the settings tab, and show the plugin where can it 
 ![pointcloud_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/pointcloud_window.jpg)
 ![blast2dem](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/blast2dem_running.jpg)
 
-**The demo project in QGIS before passing it over to PotreeConverter:**
+**The demo project in QGIS before passing it over to PotreeConverter - no annotations in this case:**
 ![qgis](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/qgis_project.jpg)
 
 **The same demo project in QGIS with a point layer added as annotations:**
@@ -56,7 +56,7 @@ After the installation go to the settings tab, and show the plugin where can it 
 **Compiling the project:**
 ![potreeconverter](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potreeconverter_running.jpg)
 
-**The final state of the demo project:**
+**The final state of the demo project with no annotations:**
 ![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_running_1130.jpg)
 
 **The final state of the demo project with the first verse of "The Rocky Road To Dublin" added as annotations:**
