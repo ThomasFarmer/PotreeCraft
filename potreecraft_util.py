@@ -2,10 +2,16 @@ import logging
 import threading
 import time
 import subprocess
+import random
+
 import win32file
 from datetime import datetime, date
 import os
 import shutil
+
+from qgis._core import QgsProject, QgsMapLayer, QgsPoint, QgsDistanceArea, QgsPointXY, QgsUnitTypes, QgsSpatialIndex, \
+    QgsCoordinateReferenceSystem
+
 
 class PotreeCraftSupport:
 
@@ -220,12 +226,52 @@ class PotreeCraftSupport:
             else:
                 print(lyr[0:-3]+'qpj' + ' -- file not found')
 
+    @classmethod
+    def getFeatureData(cls,layer,titleField,descField):
+        pts_features = layer.getFeatures()
+
+        # preproc, feature id, coords and hnd/subcatch to table
+        point_table = []
+        for thisPoint in pts_features:
+            pointGeom = thisPoint.geometry()
+            pointID = thisPoint.id()
+            wktpoint = pointGeom.asWkt()
+            titleField_of_thisPoint = thisPoint[titleField]
+            descField_of_thisPoint = thisPoint[descField]
+            splitWktPoint = wktpoint.split(" ")
+            print(splitWktPoint[0])
+            if splitWktPoint[0].strip().upper() == 'POINTZ':
+                rxpoint = round(float(splitWktPoint[1].replace('(', '')), 3)
+                rypoint = round(float(splitWktPoint[2]), 3)
+                rzpoint = round(float(splitWktPoint[3].replace(')', '')), 3)
+                point_table.append([pointID, rxpoint, rypoint, rzpoint, str(titleField_of_thisPoint), str(descField_of_thisPoint)])
+            elif splitWktPoint[0].strip().upper() == 'MULTIPOINT':
+                pass
+
+            # print(len(wktpoint))
+            # print(str(wktpoint))
+            # print(str(titleField_of_thisPoint))
+            # print(str(descField_of_thisPoint))
+            #for pointElem in xpoint:
+            # rxpoint = round(wktpoint.get().x(), 2)
+            # rypoint = round(wktpoint.get().y(), 2)
+            # rzpoint = round(wktpoint.get().z(), 2)
+            # point_table.append([pointID, rxpoint, rypoint, rzpoint,titleField_of_thisPoint,descField_of_thisPoint])
+        for pt in (point_table):
+            print(str(pt))
+        return point_table
 
     @classmethod
-    def writeHtml(cls,projecthtmlpath,cloudname,cloudparams,layerNameArray,layerColorArray,pageDescription):
+    def writeHtml(cls,projecthtmlpath,cloudname,cloudparams,layerNameArray,layerColorArray,pageDescription,pointfunctionTable):
         # cloudparams[0]: coloring, pl 'INTENSITY'
         # cloudparams[1]: crs tömb, név és proj, pl ["WGS84", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"], opcionális, default bejövőérték: None
         # cloudparams[2]: opacity? később.
+        annoList = []
+        for ptLayer in pointfunctionTable:
+            if ptLayer[1] == 'Annotation':
+                annoList.append(ptLayer[2].name())
+        
+
         f = open(projecthtmlpath, "a")
         path = "./vector_data/"
 
@@ -482,48 +528,80 @@ class PotreeCraftSupport:
         f.write('					}\n')
         f.write('				};\n')
         f.write('\n')
-        f.write('// --- automated generator of shape layers -- \n')
+        f.write('// --- automated output of shape layers --- \n')
         f.write('\n')
 
 
+
         for rowNo in range(len(layerNameArray)):
+            if layerNameArray[rowNo] not in annoList:
+                lyrHex = '999999'
+                # row[1 ] -> shn_xx
+                # row[2] -> nodeID_xx
+                # path + row[0] -> ./shp/EP_Lepcso_line.shp"
+                # lyrName -> EP_Lepcso_line
+                # lyrHex -> A0522D
 
-            lyrHex = '999999'
-            # row[1 ] -> shn_xx
-            # row[2] -> nodeID_xx
-            # path + row[0] -> ./shp/EP_Lepcso_line.shp"
-            # lyrName -> EP_Lepcso_line
-            # lyrHex -> A0522D
 
-            f.write("				let shn_" + str(rowNo) + " = new THREE.Object3D();\n")
-            f.write("				viewer.scene.scene.add(shn_" + str(rowNo) + ");\n")
-            f.write('\n')
+                f.write("				let shn_" + str(rowNo) + " = new THREE.Object3D();\n")
+                f.write("				viewer.scene.scene.add(shn_" + str(rowNo) + ");\n")
+                f.write('\n')
 
-            f.write(
-                '			    Potree.utils.loadShapefileFeatures("' + path + layerNameArray[rowNo] + '.shp", features => {\n')
-            f.write('					// feature-ök felláncolása\n')
-            f.write('					// chaining up features\n')
-            f.write('					for(let feature of features){\n')
+                f.write(
+                    '			    Potree.utils.loadShapefileFeatures("' + path + layerNameArray[rowNo] + '.shp", features => {\n')
+                f.write('					// feature-ök felláncolása\n')
+                f.write('					// chaining up features\n')
+                f.write('					for(let feature of features){\n')
 
-            f.write('						let node = featureToSceneNode(feature, 0x' + layerColorArray[rowNo].replace("#","").upper() + ');\n')
-            f.write('						shn_' + str(rowNo) + '.add(node);	\n')
-            f.write('					}\n')
-            f.write('					viewer.onGUILoaded(() => {\n')
-            f.write('					let tree = $(`#jstree_scene`);\n')
-            f.write('					let parentNode = "other";\n')
-            f.write('					//console.log(tree);\n')
-            f.write('\n')
-            f.write("					let nodeID_" + str(rowNo) + " = tree.jstree('create_node', parentNode, { \n")
-            f.write('						"text": "' + layerNameArray[rowNo] + '", \n')
-            f.write('						"icon": `${Potree.resourcePath}/icons/triangle.svg`,\n')
-            f.write('						"data": shn_' + str(rowNo) +'\n')
-            f.write('					}, \n')
-            f.write('					"last", false, false);\n')
-            f.write(
-                '					tree.jstree(shn_' + str(rowNo) + '.visible ? "check_node" : "uncheck_node", nodeID_' + str(rowNo) + ');\n')
-            f.write('					});\n')
-            f.write('				});\n')
-            f.write('\n')
+                f.write('						let node = featureToSceneNode(feature, 0x' + layerColorArray[rowNo].replace("#","").upper() + ');\n')
+                f.write('						shn_' + str(rowNo) + '.add(node);	\n')
+                f.write('					}\n')
+                f.write('					viewer.onGUILoaded(() => {\n')
+                f.write('					let tree = $(`#jstree_scene`);\n')
+                f.write('					let parentNode = "other";\n')
+                f.write('					//console.log(tree);\n')
+                f.write('\n')
+                f.write("					let nodeID_" + str(rowNo) + " = tree.jstree('create_node', parentNode, { \n")
+                f.write('						"text": "' + layerNameArray[rowNo] + '", \n')
+                f.write('						"icon": `${Potree.resourcePath}/icons/triangle.svg`,\n')
+                f.write('						"data": shn_' + str(rowNo) +'\n')
+                f.write('					}, \n')
+                f.write('					"last", false, false);\n')
+                f.write(
+                    '					tree.jstree(shn_' + str(rowNo) + '.visible ? "check_node" : "uncheck_node", nodeID_' + str(rowNo) + ');\n')
+                f.write('					});\n')
+                f.write('				});\n')
+
+                f.write('\n')
+        # annotations
+
+        for ptLayer in pointfunctionTable:
+            if ptLayer[1] == 'Annotation':
+                preProcLayer = cls.getFeatureData(ptLayer[2],ptLayer[3],ptLayer[4])
+                for annoPoint in preProcLayer:
+                    #
+                    # round(random.uniform(1,2), N)
+                    # random kameratávot hozzáadni poshoz
+                    #
+                    cRandomx = round(random.uniform(ptLayer[5], ptLayer[6]), 3)
+                    cRandomy = round(random.uniform(ptLayer[5], ptLayer[6]), 3)
+                    f.write('				//  --- automated output of annotation points --- \n')
+                    f.write('				{\n')
+                    f.write('					let anno = new Potree.Annotation({\n')
+                    f.write('						position: ['+str(annoPoint[1])+', '+str(annoPoint[2])+', '+str(annoPoint[3])+'],\n')
+                    f.write('						cameraPosition: ['+str(annoPoint[1]+cRandomx)+', '+str(annoPoint[2]+cRandomy)+' , '+str(annoPoint[3]+5.0)+'],\n')
+                    f.write('						cameraTarget: ['+str(annoPoint[1])+', '+str(annoPoint[2])+' ,'+str(annoPoint[3])+'],\n')
+                    f.write('						title: "'+str(annoPoint[4])+'",\n')
+                    f.write('						description: `'+str(annoPoint[5])+'`,\n')
+                    f.write('					});\n')
+                    f.write('					anno.domElement.off("mouseenter");\n')
+                    f.write('					anno.domElement.off("mouseleave");\n')
+                    f.write('					anno.addEventListener("click", () => {\n')
+                    f.write('						anno.setHighlighted(!anno.isHighlighted);\n')
+                    f.write('					});\n')
+                    f.write('					viewer.scene.annotations.add(anno);\n')
+                    f.write('				}\n')
+                    f.write('\n')
 
         f.write('\n')
         f.write('			}\n')

@@ -41,6 +41,10 @@ class PotreeCraft:
 	"""QGIS Plugin Implementation."""
 
 	vector_table = []
+	#anno_table = []
+	pointfunction_table = []
+	pointfunction_table.append([0, 'Cloud', None, None, None, None, None])
+	selectedLayerNo = 0
 	ascParam = '-rgb'
 	pcrParam = 'INTENSITY'
 	crsParam = None
@@ -253,6 +257,8 @@ class PotreeCraft:
 	def loadVectors(self):
 		# load vectors from qgis table of contents
 		self.vector_table = []
+		self.pointfunction_table = []
+		self.pointfunction_table.append([0, 'Cloud', None])
 		#self.dlg.cb_invector.clear()
 		#QMessageBox.about(self, "Title", "Message")
 		self.dlg.vectorTreeWidget.clear()
@@ -287,10 +293,12 @@ class PotreeCraft:
 				elif str(vl.geometryType()) == '2':
 					LYR_TYPE = 'Polygon'
 					LYR_ICON = '⏹'
-
+				# [number of layer, mode of layer (anno/point/mesh), the layer object, title field, description field, min cam distance, max cam distance]
+				self.pointfunction_table.append([lctr, LYR_TYPE, vl, -1, -1, 1.0, 10.0])
 				current_vl = QtWidgets.QTreeWidgetItem(tr, [vl.name(), vl.crs().description(), LYR_TYPE,str(lctr) ])
 				current_path = QtWidgets.QTreeWidgetItem(current_vl, [vl.dataProvider().dataSourceUri().split('|')[0], vl.crs().authid(),str(vl.featureCount()),str(lctr)])
-				current_color_box = QtWidgets.QTreeWidgetItem(current_vl, [LYR_ICON,vl.crs().toProj4(),str(vl.renderer().symbol().color().name()),str(lctr)])
+
+				current_color_box = QtWidgets.QTreeWidgetItem(current_vl, [LYR_ICON, vl.crs().toProj4(), str(vl.renderer().symbol().color().name()), str(lctr)])
 				current_color_box = QtWidgets.QTreeWidgetItem.setForeground(current_color_box,0, QtGui.QBrush(QtGui.QColor(str(vl.renderer().symbol().color().name()))))
 				current_vl.setExpanded(bool(1))
 
@@ -310,19 +318,140 @@ class PotreeCraft:
 		print(it, col, it.text(col),it.parent())
 		if it.parent() != None:
 			if str(it.parent().text(col)) == "cloud.js":
-				print('király')
+				self.selectedLayerNo = int(it.text(3))
+				print('layer no: ' + str(it.text(3)))
+				self.setUseOfPointLayer()
 			else:
-				print('fos')
-				#it.setSelected(bool(0))
-				#it.parent().setSelected(bool(1))
-				print(it.parent().text(0),it.parent().text(1),it.parent().text(2))
+				#print(it.parent().text(0),it.parent().text(1),it.parent().text(2))
+				self.selectedLayerNo = int(it.parent().text(3))
+				print('layer no: '+ str(it.parent().text(3)))
+				self.setUseOfPointLayer()
 
 		else:
-			print('ez a gyökér')
+			self.selectedLayerNo = 0
+			self.setUseOfPointLayer()
 			#it.setSelected(bool(0))
+		print(self.pointfunction_table)
 
-	def returnClickedData(self, node):
-		pass
+	def setUseOfPointLayer(self):
+		if self.selectedLayerNo != 0:
+			self.dlg.vectorPathLineEdit.setText(self.pointfunction_table[self.selectedLayerNo][2].name())
+			print(str(self.pointfunction_table[self.selectedLayerNo][2].geometryType()))
+			print(type(self.pointfunction_table[self.selectedLayerNo][2].geometryType()))
+			if str(self.pointfunction_table[self.selectedLayerNo][2].geometryType()) == '0':
+				self.dlg.vectorLayerModeCBox.setEnabled(True)
+
+				self.dlg.annoTitleCBox.clear()
+				self.dlg.annoDescCBox.clear()
+
+				prov = self.pointfunction_table[self.selectedLayerNo][2].dataProvider()
+				fields = prov.fields()
+				for field in fields:
+					self.dlg.annoTitleCBox.addItem(field.name())
+					self.dlg.annoDescCBox.addItem(field.name())
+				if self.pointfunction_table[self.selectedLayerNo][1] == 'Point':
+					# Marking Point vector for a Measure-shpere based visualization in form of colorful small spheres borrowed from Potree's Measure class.
+					self.dlg.annoTitleCBox.clear()
+					self.dlg.annoDescCBox.clear()
+					self.dlg.vectorLayerModeCBox.setCurrentIndex(0)
+					self.dlg.annoTitleCBox.setEnabled(False)
+					self.dlg.annoDescCBox.setEnabled(False)
+					self.dlg.minDistanceDoubleSpinBox.setEnabled(False)
+					self.dlg.maxDistanceDoubleSpinBox.setEnabled(False)
+					self.dlg.minDistanceDoubleSpinBox.setValue(float(0.0))
+					self.dlg.maxDistanceDoubleSpinBox.setValue(float(0.0))
+				elif self.pointfunction_table[self.selectedLayerNo][1] == 'Annotation':
+					# Marking Point vector for a rehashing as a set of annotations. title and description will be read from the shape file itself.
+					self.dlg.vectorLayerModeCBox.setCurrentIndex(1)
+					self.dlg.annoTitleCBox.setEnabled(True)
+					self.dlg.annoDescCBox.setEnabled(True)
+					self.dlg.minDistanceDoubleSpinBox.setEnabled(True)
+					self.dlg.maxDistanceDoubleSpinBox.setEnabled(True)
+					print('getindex: '+str(self.pointfunction_table[self.selectedLayerNo][3]))
+					self.dlg.annoTitleCBox.setCurrentIndex(self.pointfunction_table[self.selectedLayerNo][3])
+					self.dlg.annoDescCBox.setCurrentIndex(self.pointfunction_table[self.selectedLayerNo][4])
+					self.dlg.minDistanceDoubleSpinBox.setValue(self.pointfunction_table[self.selectedLayerNo][5])
+					self.dlg.maxDistanceDoubleSpinBox.setValue(self.pointfunction_table[self.selectedLayerNo][6])
+				elif self.pointfunction_table[self.selectedLayerNo][1] == 'Mesh':
+					# Marking Point vector for a Mesh-based visualization in form of a rainbow-colored sphere or donut.
+					self.dlg.annoTitleCBox.clear()
+					self.dlg.annoDescCBox.clear()
+					self.dlg.vectorLayerModeCBox.setCurrentIndex(2)
+					self.dlg.annoTitleCBox.setEnabled(False)
+					self.dlg.annoDescCBox.setEnabled(False)
+					self.dlg.minDistanceDoubleSpinBox.setEnabled(False)
+					self.dlg.maxDistanceDoubleSpinBox.setEnabled(False)
+					self.dlg.minDistanceDoubleSpinBox.setValue(float(0.0))
+					self.dlg.maxDistanceDoubleSpinBox.setValue(float(0.0))
+				else:
+					# Nothing should ever trigger this.
+					self.dlg.annoTitleCBox.clear()
+					self.dlg.annoDescCBox.clear()
+					self.dlg.annoTitleCBox.setEnabled(False)
+					self.dlg.annoDescCBox.setEnabled(False)
+					self.dlg.vectorLayerModeCBox.setEnabled(False)
+					self.dlg.minDistanceDoubleSpinBox.setEnabled(False)
+					self.dlg.maxDistanceDoubleSpinBox.setEnabled(False)
+					self.dlg.minDistanceDoubleSpinBox.setValue(float(0.0))
+					self.dlg.maxDistanceDoubleSpinBox.setValue(float(0.0))
+			else:
+				# -> anything that ain't a point. (linestring, polygon, or some bug resulting an unknown format slipping through the cracks.)
+				self.dlg.annoTitleCBox.clear()
+				self.dlg.annoDescCBox.clear()
+				self.dlg.annoTitleCBox.setEnabled(False)
+				self.dlg.annoDescCBox.setEnabled(False)
+				self.dlg.vectorLayerModeCBox.setEnabled(False)
+				self.dlg.minDistanceDoubleSpinBox.setEnabled(False)
+				self.dlg.maxDistanceDoubleSpinBox.setEnabled(False)
+				self.dlg.minDistanceDoubleSpinBox.setValue(float(0.0))
+				self.dlg.maxDistanceDoubleSpinBox.setValue(float(0.0))
+		else:
+			self.dlg.vectorPathLineEdit.setText('')
+			self.dlg.vectorLayerModeCBox.setEnabled(False)
+		#self.dlg.crsFromProjectComboBox.addItem(
+
+	def selectPointMode(self):
+		if self.dlg.vectorLayerModeCBox.currentText() == 'Annotation':
+			prov = self.pointfunction_table[self.selectedLayerNo][2].dataProvider()
+			fields = prov.fields()
+			for field in fields:
+				self.dlg.annoTitleCBox.addItem(field.name())
+				self.dlg.annoDescCBox.addItem(field.name())
+			self.dlg.annoTitleCBox.setEnabled(True)
+			self.dlg.annoDescCBox.setEnabled(True)
+			self.dlg.minDistanceDoubleSpinBox.setEnabled(True)
+			self.dlg.maxDistanceDoubleSpinBox.setEnabled(True)
+		elif self.dlg.vectorLayerModeCBox.currentText() == 'Mesh':
+			self.dlg.annoTitleCBox.setEnabled(False)
+			self.dlg.annoDescCBox.setEnabled(False)
+			self.dlg.annoTitleCBox.clear()
+			self.dlg.annoDescCBox.clear()
+			self.dlg.minDistanceDoubleSpinBox.setEnabled(False)
+			self.dlg.maxDistanceDoubleSpinBox.setEnabled(False)
+		elif self.dlg.vectorLayerModeCBox.currentText() == 'Point':
+			self.dlg.annoTitleCBox.setEnabled(False)
+			self.dlg.annoDescCBox.setEnabled(False)
+			self.dlg.annoTitleCBox.clear()
+			self.dlg.annoDescCBox.clear()
+			self.dlg.minDistanceDoubleSpinBox.setEnabled(False)
+			self.dlg.maxDistanceDoubleSpinBox.setEnabled(False)
+
+	def savePointLayerFunction(self):
+		for pvl in self.pointfunction_table:
+			if self.selectedLayerNo == pvl[0]:
+				pvl[1] = self.dlg.vectorLayerModeCBox.currentText()
+				pvl[3] = self.dlg.annoTitleCBox.findText(self.dlg.annoTitleCBox.currentText())
+				#print(str(self.dlg.annoTitleCBox.currentText()))
+				#print(str(self.dlg.annoTitleCBox.findText(self.dlg.annoTitleCBox.currentText())))
+				pvl[4] = self.dlg.annoTitleCBox.findText(self.dlg.annoDescCBox.currentText())
+				pvl[5] = float(self.dlg.minDistanceDoubleSpinBox.text().replace(',', '.'))
+				pvl[6] = float(self.dlg.maxDistanceDoubleSpinBox.text().replace(',', '.'))
+				#print('thisisit' + str(pvl))
+
+	def testFunction(self,layer):
+		self.PotreeCraftSupport.getFeatureData(self.pointfunction_table[2][2],'id','something')
+
+
 	# CRS Radio button methods
 	def onCustomCRSRadioButtonClicked(self):
 		thisRadioButton = self.dlg.sender()
@@ -506,6 +635,7 @@ class PotreeCraft:
 		vectorPathList = []
 		vectorNameList = []
 		vectorColorList = []
+
 		for l in self.vector_table:
 			vectorNameList.append((l[1]))
 			vectorColorList.append(l[6])
@@ -513,7 +643,7 @@ class PotreeCraft:
 		#print(vectorPathList)
 		self.PotreeCraftSupport.pcconvert_isready(self.dlg.pointCloudPathLineEdit.text(),self.dlg.outputFolderLineEdit.text(),self.pcrParam,self.dlg.potreePageLineEdit.text(),self.crsParam,self.dlg.potreePageLineEdit.text())
 		self.PotreeCraftSupport.prepareProject(self.dlg.outputFolderLineEdit.text(),vectorPathList)
-		self.PotreeCraftSupport.writeHtml(self.dlg.outputFolderLineEdit.text()+'main.html',self.dlg.potreePageLineEdit.text(),[self.pcrParam,None,None,None],vectorNameList,vectorColorList,str(self.dlg.pageDescPlainTextEdit.toPlainText()))
+		self.PotreeCraftSupport.writeHtml(self.dlg.outputFolderLineEdit.text()+'main.html',self.dlg.potreePageLineEdit.text(),[self.pcrParam,None,None,None],vectorNameList,vectorColorList,str(self.dlg.pageDescPlainTextEdit.toPlainText()),self.pointfunction_table)
 	def run(self):
 		"""Run method that performs all the real work"""
 		# Create the dialog with elements (after translation) and keep reference
@@ -522,6 +652,15 @@ class PotreeCraft:
 		if self.first_start == True:
 			self.first_start = False
 			self.dlg = PotreeCraftDialog()
+
+		# i gotta put these somewhere
+		self.dlg.annoTitleCBox.setEnabled(False)
+		self.dlg.annoDescCBox.setEnabled(False)
+		self.dlg.minDistanceDoubleSpinBox.setEnabled(False)
+		self.dlg.maxDistanceDoubleSpinBox.setEnabled(False)
+		self.dlg.vectorLayerModeCBox.setEnabled(False)
+		self.dlg.annoTitleCBox.clear()
+		self.dlg.annoDescCBox.clear()
 
 		# show the dialog
 		self.dlg.show()
@@ -563,12 +702,19 @@ class PotreeCraft:
 			# -- vector layer panel --
 			self.dlg.loadVectorsFromPrjButton.clicked.connect(self.loadVectors)
 			self.dlg.vectorTreeWidget.itemClicked.connect(self.onItemClicked)
+			self.dlg.saveAnnoChangesButton.clicked.connect(self.savePointLayerFunction)
+
+			self.dlg.vectorLayerModeCBox.currentTextChanged.connect(self.selectPointMode)
+			self.dlg.vectorLayerModeCBox.addItem('Point')
+			self.dlg.vectorLayerModeCBox.addItem('Annotation')
 
 			# -- plugin settings panel --
 			self.dlg.selectLasToolsPushButton.clicked.connect(self.selectLASToolsFolder)
 			self.dlg.selectPotreeConverterPushButton.clicked.connect(self.selectPotreeConverterFolder)
 			self.dlg.saveConfigButton.clicked.connect(self.saveIniFileChanges)
 			#self.dlg.checkConfigButton.clicked.connect(self.checkPathValidity)
+
+			self.dlg.ApplyChangesButton.clicked.connect(self.testFunction)
 
 
 		# loading up vectors on window popup
