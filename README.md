@@ -47,6 +47,9 @@ After the installation go to the settings tab, and show the plugin where can it 
 **The demo project in QGIS before passing it over to PotreeConverter:**
 ![qgis](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/qgis_project.jpg)
 
+**The same demo project in QGIS with a point layer added as annotations:**
+![qgis_atbl](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/attribute_table.jpg)
+
 **A final check on the vector layer window:**
 ![vector_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/vector_window.jpg)
 
@@ -55,4 +58,10 @@ After the installation go to the settings tab, and show the plugin where can it 
 
 **The final state of the demo project:**
 ![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_running_1130.jpg)
+
+**The final state of the demo project with the first verse of "The Rocky Road To Dublin" added as annotations:**
+![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_running_with_annots_1203.jpg)
+
+**A section of the generated source code of the page:**
+![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_page_source_code.jpg)
 
