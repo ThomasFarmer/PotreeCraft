@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 0.3.1130, Pre-alpha build
+###### version 0.3.1203, Pre-alpha build
 
 PotreeCraft is a QGIS plugin which provides a graphic UI for integrating vector-based data into Potree projects.
 This is an open source tool for beginner users of the potree project or colleagues with no javascript knowledge. The PotreeCraft tool builds on the well-known Potree project, and lets users create pointcloud publications with integrated shapefile-based vector data with little to no effort. The plugin reads the added vector layer information of a given QGIS project and passed over the layer metadata and coloring styles to Potree, thus allowing the user to manage the vector-based data through a familiar and user-friendly interface what QGIS 3 provides.
@@ -15,7 +15,8 @@ This project was created and tested with the version 1.6, migration to 1.7 will 
 ## Known issues
 - The base Python threading seems to be incompatible with Qt5 in general or QGIS. While the window itself can be moved during process calls, the interface freezes. Migration to QThread class required. With this I think it is needless to say that the process bar in the bottom left corner absolutely lacks any functionality.
 - Interface and functions to set Page title, Opacity and other cloud paramters are not implemented yet.
-- Layer functionality interface (vector layer settings tab) are not implemented yet. Point layers later may get the "Annotation" function, which will allow them to appear as such in Potree. The text appearing above these points will be read from a selected record of the shape file itself.
+- Layer functionality interface (vector layer settings tab) is in a "rough-at-the-edges" state. Point layers later have the option to be marked as "Annotation" layers, which allows them to appear as such in Potree. The text appearing above these points are read from a selected record of the shape file itself. These layer markings are not represented yet in the QTreeView object itself.
+- The vector layer handling needs a rework, because with the implementation of the annotations there are a lot of redundant data, extra checks and design issues in the code. The plan is to create distinct memory tables / dictionaries which can store the required information for points and annotations (and other elements added later), and the QTreeView widget will get its information from that. In its current state the load vectors function reads and parses the data it finds directly from QGIS, which makes the editing methods a lot more complicated than they should be.
 
 
 ## How to use the plugin
