@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 0.3.1203, Pre-alpha build
+###### version 0.3b.0128, Pre-alpha build
 
 PotreeCraft is a QGIS plugin which provides a graphic UI for integrating vector-based data into Potree projects.
 This is an open source tool for beginner users of the potree project or colleagues with no javascript knowledge. The PotreeCraft tool builds on the well-known Potree project, and lets users create pointcloud publications with integrated shapefile-based vector data with little to no effort. The plugin reads the added vector layer information of a given QGIS project and passed over the layer metadata and coloring styles to Potree, thus allowing the user to manage the vector-based data through a familiar and user-friendly interface what QGIS 3 provides.
