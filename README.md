@@ -13,10 +13,11 @@ and you can download PotreeConverter 1.6 stable release from the project's [gith
 This project was created and tested with the version 1.6, migration to 1.7 will follow soon.
 
 ## Known issues
-- The base Python threading seems to be incompatible with Qt5 in general or QGIS. While the window itself can be moved during process calls, the interface freezes. Migration to QThread class required. With this I think it is needless to say that the process bar in the bottom left corner absolutely lacks any functionality.
+- There seems to be an issue with the base Python threading in QGIS. While the window itself can be moved during process calls, the interface freezes. Migration to QThread class required. With this I think it is needless to say that the process bar in the bottom left corner absolutely lacks any functionality.
 - Interface and functions to set Page title, Opacity and other cloud paramters are not implemented yet.
 - Layer functionality interface (vector layer settings tab) is in a "rough-at-the-edges" state. Point layers later have the option to be marked as "Annotation" layers, which allows them to appear as such in Potree. The text appearing above these points are read from a selected record of the shape file itself. These layer markings are not represented yet in the QTreeView object itself.
 - The vector layer handling needs a rework, because with the implementation of the annotations there are a lot of redundant data, extra checks and design issues in the code. The plan is to create distinct memory tables / dictionaries which can store the required information for points and annotations (and other elements added later), and the QTreeView widget will get its information from that. In its current state the load vectors function reads and parses the data it finds directly from QGIS, which makes the editing methods a lot more complicated than they should be.
+- Due to the incomplete code in the javascript template, the WGS84 CRS is required for all vectors and pointclouds. 
 
 
 ## How to use the plugin
