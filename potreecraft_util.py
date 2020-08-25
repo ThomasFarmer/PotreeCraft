@@ -4,7 +4,7 @@ import time
 import subprocess
 import random
 
-import win32file
+#import win32file
 from datetime import datetime, date
 import os
 import shutil
