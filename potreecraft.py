@@ -25,6 +25,7 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QFileInfo
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from qgis.core import QgsMessageLog
 
 # Initialize Qt resources from file resources.py
 from qgis._core import QgsMapLayer, QgsProject, QgsRasterLayer, QgsCoordinateReferenceSystem
@@ -255,6 +256,7 @@ class PotreeCraft:
 			self.iface.removeToolBarIcon(action)
 
 	def loadVectors(self):
+		QgsMessageLog.logMessage("loadvectorsfunc")
 		# load vectors from qgis table of contents
 		self.vector_table = []
 		self.pointfunction_table = []
@@ -277,22 +279,26 @@ class PotreeCraft:
 				raster_layers.append(layer)
 			if layer.type() == QgsMapLayer.VectorLayer:
 				vector_layers.append(layer)
-
+		#QMessageBox.about(self, "Title", "Message")
 		# checking layer type
 		for vl in vector_layers:
+			#print(vl, vl.geometryType())
+			#print("THIS SHIT " + str(vl.geometryType()))
+			QgsMessageLog.logMessage("vlgeotype: " + str(vl.geometryType()))
 			if ("memory?geometry" not in vl.dataProvider().dataSourceUri().split('|')[0]):
 				lctr+=1
 				LYR_TYPE = 'Unknown'
 				LYR_ICON = '?'
-				if str(vl.geometryType()) == '0':
+				if str(vl.geometryType()) == '0' or str(vl.geometryType()) == 'GeometryType.Point':
 					LYR_TYPE = 'Point'
 					LYR_ICON = '⚫'
-				elif str(vl.geometryType()) == '1':
+				elif str(vl.geometryType()) == '1' or str(vl.geometryType()) == 'GeometryType.Line':
 					LYR_TYPE = 'Linestring'
 					LYR_ICON = '☰'
-				elif str(vl.geometryType()) == '2':
+				elif str(vl.geometryType()) == '2' or str(vl.geometryType()) == 'GeometryType.Polygon':
 					LYR_TYPE = 'Polygon'
 					LYR_ICON = '⏹'
+
 				# [number of layer, mode of layer (anno/point/mesh), the layer object, title field, description field, min cam distance, max cam distance]
 				self.pointfunction_table.append([lctr, LYR_TYPE, vl, -1, -1, 1.0, 10.0])
 				current_vl = QtWidgets.QTreeWidgetItem(tr, [vl.name(), vl.crs().description(), LYR_TYPE,str(lctr) ])
@@ -316,29 +322,34 @@ class PotreeCraft:
 	#@QtCore.pyqtSlot(QtWidgets.QTreeWidgetItem, int)
 	def onItemClicked(self, it, col):
 		print(it, col, it.text(col),it.parent())
+		QgsMessageLog.logMessage("onitemclicked")
 		if it.parent() != None:
-			if str(it.parent().text(col)) == "cloud.js":
-				self.selectedLayerNo = int(it.text(3))
-				print('layer no: ' + str(it.text(3)))
-				self.setUseOfPointLayer()
-			else:
-				#print(it.parent().text(0),it.parent().text(1),it.parent().text(2))
-				self.selectedLayerNo = int(it.parent().text(3))
-				print('layer no: '+ str(it.parent().text(3)))
-				self.setUseOfPointLayer()
+			try:
+				if str(it.parent().text(col)) == "cloud.js":
+					self.selectedLayerNo = int(it.text(3))
+					print('layer no: ' + str(it.text(3)))
+					self.setUseOfPointLayer()
+				else:
+					#print(it.parent().text(0),it.parent().text(1),it.parent().text(2))
+					self.selectedLayerNo = int(it.parent().text(3))
+					print('layer no: '+ str(it.parent().text(3)))
+					self.setUseOfPointLayer()
+			except ValueError as va:
+				print(va)
 
 		else:
 			self.selectedLayerNo = 0
 			self.setUseOfPointLayer()
 			#it.setSelected(bool(0))
 		print(self.pointfunction_table)
+		QgsMessageLog.logMessage(str(self.pointfunction_table))
 
 	def setUseOfPointLayer(self):
 		if self.selectedLayerNo != 0:
 			self.dlg.vectorPathLineEdit.setText(self.pointfunction_table[self.selectedLayerNo][2].name())
 			print(str(self.pointfunction_table[self.selectedLayerNo][2].geometryType()))
 			print(type(self.pointfunction_table[self.selectedLayerNo][2].geometryType()))
-			if str(self.pointfunction_table[self.selectedLayerNo][2].geometryType()) == '0':
+			if str(self.pointfunction_table[self.selectedLayerNo][2].geometryType()) == '0' or str(self.pointfunction_table[self.selectedLayerNo][2].geometryType()) == 'GeometryType.Point':
 				self.dlg.vectorLayerModeCBox.setEnabled(True)
 
 				self.dlg.annoTitleCBox.clear()
@@ -447,6 +458,7 @@ class PotreeCraft:
 				pvl[5] = float(self.dlg.minDistanceDoubleSpinBox.text().replace(',', '.'))
 				pvl[6] = float(self.dlg.maxDistanceDoubleSpinBox.text().replace(',', '.'))
 				#print('thisisit' + str(pvl))
+				QgsMessageLog.logMessage(str(self.vector_table))
 
 	def testFunction(self,layer):
 		self.PotreeCraftSupport.getFeatureData(self.pointfunction_table[2][2],'id','something')
@@ -719,6 +731,7 @@ class PotreeCraft:
 
 		# loading up vectors on window popup
 		self.loadVectors()
+		QgsMessageLog.logMessage("ASDFmessage")
 		#print("is signal connected: " + str(self.dlg.CompileButton.isSignalConnected()))
 		# Run the dialog event loop
 		result = self.dlg.exec_()

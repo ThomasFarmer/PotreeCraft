@@ -8,7 +8,7 @@ import random
 from datetime import datetime, date
 import os
 import shutil
-
+from qgis.core import QgsMessageLog
 from qgis._core import QgsProject, QgsMapLayer, QgsPoint, QgsDistanceArea, QgsPointXY, QgsUnitTypes, QgsSpatialIndex, \
     QgsCoordinateReferenceSystem
 
@@ -269,12 +269,13 @@ class PotreeCraftSupport:
         # cloudparams[0]: coloring, pl 'INTENSITY'
         # cloudparams[1]: crs tömb, név és proj, pl ["WGS84", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"], opcionális, default bejövőérték: None
         # cloudparams[2]: opacity? később.
+        QgsMessageLog.logMessage("inwritehtml")
         annoList = []
         for ptLayer in pointfunctionTable:
             if ptLayer[1] == 'Annotation':
                 annoList.append(ptLayer[2].name())
         
-
+        QgsMessageLog.logMessage("writehtmlannolist: " + str(annoList))
         f = open(projecthtmlpath, "a")
         path = "./vector_data/"
 
