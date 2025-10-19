@@ -5,11 +5,12 @@ import rasterio
 from rasterio.transform import from_origin
 
 # step 1 - get raw data from file with laspy
-#las = laspy.read("roadsection.las")
+las = laspy.read("/home/troll4hire/Documents/GitKraken/PotreeCraft/test_data/roadsection.las")
+
 #las = laspy.read("autzen-classified.copc.laz")
 
-with laspy.open("autzen_wgs84.laz", laz_backend=laspy.LazBackend.Laszip) as lazf:
-    las = lazf.read()
+# with laspy.open("autzen_wgs84.laz", laz_backend=laspy.LazBackend.Laszip) as lazf:
+#     las = lazf.read()
 
 x = las.x
 y = las.y
@@ -36,14 +37,14 @@ print("zi:", zi)
 transform = from_origin(x.min(), y.max(), (x.max()-x.min())/zi.shape[1], (y.max()-y.min())/zi.shape[0])
 
 with rasterio.open(
-    "test4.tif",
+    "road_test1.tif",
     "w",
     driver="GTiff",
     height=zi.shape[0],
     width=zi.shape[1],
     count=1,
     dtype="float32",
-    crs="EPSG:4326",  # adjust to your coordinate system
+    crs="EPSG:23700",  # adjust to your coordinate system
     transform=transform,
     nodata=np.nan,
 ) as dst:
