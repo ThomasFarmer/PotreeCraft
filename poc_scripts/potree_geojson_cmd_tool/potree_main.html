@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>Potree Viewer</title>
+
+	<link rel="stylesheet" type="text/css" href="./libs/potree/potree.css">
+	<link rel="stylesheet" type="text/css" href="./libs/jquery-ui/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="./libs/openlayers3/ol.css">
+	<link rel="stylesheet" type="text/css" href="./libs/spectrum/spectrum.css">
+	<link rel="stylesheet" type="text/css" href="./libs/jstree/themes/mixed/style.css">
+</head>
+
+<body>
+	<script src="./libs/jquery/jquery-3.1.1.min.js"></script>
+	<script src="./libs/spectrum/spectrum.js"></script>
+	<script src="./libs/jquery-ui/jquery-ui.min.js"></script>
+	<script src="./libs/three.js/build/three.min.js"></script>
+	<script src="./libs/three.js/extra/lines.js"></script>
+	<script src="./libs/other/BinaryHeap.js"></script>
+	<script src="./libs/tween/tween.min.js"></script>
+	<script src="./libs/d3/d3.js"></script>
+	<script src="./libs/proj4/proj4.js"></script>
+	<script src="./libs/openlayers3/ol.js"></script>
+	<script src="./libs/i18next/i18next.js"></script>
+	<script src="./libs/jstree/jstree.js"></script>
+	<script src="./libs/potree/potree.js"></script>
+	<script src="./libs/plasio/js/laslaz.js"></script>
+	
+	<!-- INCLUDE ADDITIONAL DEPENDENCIES HERE -->
+		document.title = "";
+		viewer.setEDLEnabled(false);
+		viewer.setBackground("gradient"); // ["skybox", "gradient", "black", "white"];
+		viewer.setDescription(``);
+	
+	<div class="potree_container" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px; ">
+		<div id="potree_render_area" style="background-image: url('./libs/potree/resources/images/background.jpg');"></div>
+		<div id="potree_sidebar_container"> </div>
+	</div>
+	
+	<script>
+	
+		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
+		
+		viewer.setEDLEnabled(true);
+		viewer.setFOV(60);
+		viewer.setPointBudget(2_000_000);
+		document.title = "";
+		viewer.setEDLEnabled(false);
+		viewer.setBackground("gradient"); // ["skybox", "gradient", "black", "white"];
+		viewer.setDescription(``);
+		viewer.loadSettingsFromURL();
+		
+		viewer.setDescription("");
+		
+		viewer.loadGUI(() => {
+			viewer.setLanguage('en');
+			$("#menu_appearance").next().show();
+			$("#menu_tools").next().show();
+			$("#menu_clipping").next().show();
+			viewer.toggleSidebar();
+		});
+		
+		Potree.loadPointCloud("pointclouds/asdlol/cloud.js", "asdlol", e => {
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			viewer.scene.addPointCloud(pointcloud);
+			//material.activeAttributeName = "rgba"; //[rgba, intensity, classification, ...]
+			material.size = 1;
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.shape = Potree.PointShape.SQUARE;
+			viewer.fitToScreen();
+		});
+
+	</script>
+                    
+ 	<script>
+
+		// basic vector drawing script, v2
+		// create instances of LineOnScreen class with coordinates matching the cloud's crs, and give proper parameters for coloring
+
+		class LineOnScreen {
+			constructor(coords, lcolor, lwidth, lopacity, groupname) {
+			this.coords = coords;
+			this.lcolor = lcolor;
+			this.lwidth = lwidth;
+			this.lopacity = lopacity;
+			this.groupname = groupname;
+			}
+			displayline(){
+				//console.log("drawing line at: " + this.coords);
+
+				const positions = new Float32Array(this.coords);
+				const geometry = new THREE.BufferGeometry();
+				geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+				//console.log(geometry);
+
+				const material = new THREE.LineBasicMaterial({
+				linewidth: this.lwidth,          // note: linewidth only works on special builds / some platforms
+				transparent: true,
+				color: this.lcolor,
+				opacity: this.lopacity
+				});
+
+				const line = new THREE.Line(geometry, material);
+
+				const vectorGroup = new THREE.Group();
+				vectorGroup.name = this.groupname;
+				vectorGroup.add(line);
+
+				this.vectorGroup = vectorGroup;
+
+				viewer.scene.scene.add(vectorGroup);
+				//console.log("Added line group to scene:", vectorGroup);
+				
+			}
+  
+		}
+		// pole of street sign
+		const paks_underline2_1 = new LineOnScreen(
+           [628086.584738614, 134529.25421690458, 0.0, 628300.6616127787, 134547.42507523333, 0.0, 628315.3763736361, 134335.89844553132, 0.0, 628090.9605519542, 134315.27117689414, 0.0, 628089.6977902466, 134533.73160931453, 0.0],
+           "#7720d0",
+           1,
+           0.75,
+           "vectorclass");
+		paks_underline2_1.displayline();
+
+
+		// pole of street sign
+		const paks_underline2_2 = new LineOnScreen(
+           [628246.7521126188, 134388.5176253541, 0.0, 628155.498125383, 134368.40175467674, 0.0, 628212.9365603307, 134362.20678373973, 0.0, 628181.5784506265, 134349.35360335457, 0.0, 628201.5220302162, 134345.78945131516, 0.0, 628192.2010405883, 134337.34461306047, 0.0],
+           "#7720d0",
+           1,
+           0.75,
+           "vectorclass");
+		paks_underline2_2.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_1 = new LineOnScreen(
+           [628146.1762510606, 134453.7234037642, 0.0, 628144.9332563916, 134490.13725225598, 0.0, 628155.2625513369, 134492.09447931193, 0.0, 628161.4265565297, 134484.09180872605, 0.0, 628160.7128807541, 134477.11181419512, 0.0, 628156.2181087281, 134471.1431676632, 0.0, 628145.207945498, 134471.183461215, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_1.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_2 = new LineOnScreen(
+           [628165.0963761669, 134452.65666309226, 0.0, 628172.8190549497, 134494.5240546519, 0.0, 628183.6815516402, 134454.08499362523, 0.0, 628165.5061099794, 134470.6104348668, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_2.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_3 = new LineOnScreen(
+           [628188.6515693193, 134495.962464465, 0.0, 628191.6005945994, 134455.55233391895, 0.0, 628205.1412555672, 134488.91963955894, 0.0, 628198.8824919472, 134470.98722116728, 0.0, 628206.4137462924, 134460.48581713767, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_3.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_4 = new LineOnScreen(
+           [628227.1596980336, 134488.3405420167, 0.0, 628217.569505844, 134500.34570418464, 0.0, 628211.9971048838, 134481.91201062387, 0.0, 628229.145892126, 134466.8867268692, 0.0, 628221.8749839608, 134454.4443079713, 0.0, 628211.2398024143, 134462.96198965725, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_4.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_5 = new LineOnScreen(
+           [628190.4590726027, 134425.6310538189, 0.0, 628184.6408602437, 134434.13118816697, 0.0, 628176.7217872821, 134432.66385706468, 0.0, 628174.2731862798, 134421.70014284126, 0.0, 628176.2482762522, 134397.2538050694, 0.0, 628183.1096651732, 134391.74239559312, 0.0, 628189.3120742115, 134394.21352137, 0.0, 628192.4469795526, 134404.67597731014, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_5.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_6 = new LineOnScreen(
+           [628204.4730923143, 134400.1432445349, 0.0, 628199.785391806, 134435.5721418893, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_6.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_7 = new LineOnScreen(
+           [628229.3881124235, 134438.9554242604, 0.0, 628207.0199571886, 134438.03951700288, 0.0, 628219.0642093894, 134438.49432200647, 0.0, 628223.05114382, 134399.57669375872, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_7.displayline();
+
+
+		// pole of street sign
+		const paks_city_test_8 = new LineOnScreen(
+           [628238.3375540732, 134439.92031157512, 0.0, 628245.8616474757, 134427.42395366088, 0.0, 628252.4752847097, 134448.347672973, 0.0, 628239.2279679325, 134401.01398216689, 0.0],
+           "#b7149",
+           1,
+           0.75,
+           "vectorclass");
+		paks_city_test_8.displayline();
+
+
+        // ------------------------------------------------------------------
+
+		viewer.renderer.render(viewer.scene.scene, viewer.scene.getActiveCamera());
+
+		</script>
+	
+  </body>
+</html>
+ 

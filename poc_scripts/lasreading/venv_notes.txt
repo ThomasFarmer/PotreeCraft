@@ -1,0 +1,24 @@
+# Create virtual environment
+python3 -m venv lidar_env
+source lidar_env/bin/activate
+
+# Upgrade pip
+pip install --upgrade pip
+
+# Install dependencies
+pip install -r requirements.txt
+
+https://viewer.copc.io/?copc=https://s3.amazonaws.com/hobu-lidar/autzen-classified.copc.laz
+
+pdal info --summary autzen-classified.copc.laz
+pdal info --metadata autzen-classified.copc.laz | jq
+
+pdal translate autzen-classified.copc.laz autzen_wgs84.laz reprojection \
+  --filters.reprojection.out_srs="EPSG:4326"
+
+pdal translate autzen-classified.copc.laz autzen_wgs84.laz reprojection \
+  --readers.las.srs="EPSG:xxxxx" \
+  --filters.reprojection.out_srs="EPSG:4326"
+
+
+  oregon sample uses this 3644

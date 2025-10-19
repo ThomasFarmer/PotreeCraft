@@ -1,0 +1,22 @@
+2025-10-19 15:59:08,613 root INFO Files to be processed: ['paks_underline2.geojson', 'paks_city_test.geojson']
+2025-10-19 15:59:08,613 root INFO Name: paks_underline2
+2025-10-19 15:59:08,613 root INFO CRS info: {'name': 'urn:ogc:def:crs:EPSG::23700'}
+2025-10-19 15:59:08,613 root INFO geometry info: LineString
+2025-10-19 15:59:08,613 root INFO feature count: 2
+2025-10-19 15:59:08,614 root DEBUG LineString
+2025-10-19 15:59:08,614 root DEBUG LineString
+2025-10-19 15:59:08,614 root DEBUG []
+2025-10-19 15:59:08,614 root INFO Files to be processed: ['paks_underline2.geojson', 'paks_city_test.geojson']
+2025-10-19 15:59:08,614 root INFO Name: paks_city_test
+2025-10-19 15:59:08,614 root INFO CRS info: {'name': 'urn:ogc:def:crs:EPSG::23700'}
+2025-10-19 15:59:08,614 root INFO geometry info: MultiLineString
+2025-10-19 15:59:08,614 root INFO feature count: 8
+2025-10-19 15:59:08,614 root DEBUG MultiLineString
+2025-10-19 15:59:08,614 root DEBUG MultiLineString
+2025-10-19 15:59:08,614 root DEBUG MultiLineString
+2025-10-19 15:59:08,614 root DEBUG MultiLineString
+2025-10-19 15:59:08,615 root DEBUG MultiLineString
+2025-10-19 15:59:08,615 root DEBUG MultiLineString
+2025-10-19 15:59:08,615 root DEBUG MultiLineString
+2025-10-19 15:59:08,615 root DEBUG MultiLineString
+2025-10-19 15:59:08,615 root DEBUG []
