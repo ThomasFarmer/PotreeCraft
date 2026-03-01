@@ -86,6 +86,35 @@ class simple_geojson_reader():
 						logging.debug("point-in-coorddata: "+str(point))
 						linectr+=1
 						pts_gjs_feature_list.append({"line_color": lcolor ,"coordinates": point, "linename": self.name+"_"+str(linectr) })
+
+				elif ft.get('geometry').get('type') == "Polygon":
+					logging.debug("Polygon")
+					exterior = coorddata[0]
+					if len(exterior) < 3:
+						logging.warning("Polygon exterior ring has fewer than 3 points, skipping")
+						continue
+					exterior_3d = [list(pt) if len(pt) >= 3 else [pt[0], pt[1], 0] for pt in exterior]
+					linectr += 1
+					ply_gjs_feature_list.append({
+						"line_color": lcolor,
+						"coordinates": exterior_3d,
+						"linename": self.name + "_" + str(linectr)
+					})
+
+				elif ft.get('geometry').get('type') == "MultiPolygon":
+					logging.debug("MultiPolygon")
+					for polygon in coorddata:
+						exterior = polygon[0]
+						if len(exterior) < 3:
+							logging.warning("MultiPolygon exterior ring has fewer than 3 points, skipping")
+							continue
+						exterior_3d = [list(pt) if len(pt) >= 3 else [pt[0], pt[1], 0] for pt in exterior]
+						linectr += 1
+						ply_gjs_feature_list.append({
+							"line_color": lcolor,
+							"coordinates": exterior_3d,
+							"linename": self.name + "_" + str(linectr)
+						})
 						
 		logging.debug(self.feature_list)
 				
@@ -264,40 +293,46 @@ class potree_html_generator():
 				this.opacity = opacity;
 				this.groupname = groupname;
 			}
-			// --- displays horizontal polygons only!!!
+			// --- displays polygons with per-vertex z (3D) ---
 			displaypolygon() {
 				if (this.points.length < 3) {
 					console.warn("Polygon needs at least 3 points");
 					return;
 				}
 
-				// Create shape (z constant due to technical limitations)
-				const shape = new THREE.Shape();
-				shape.moveTo(this.points[0][0], this.points[0][1]);
-				for (let i = 1; i < this.points.length; i++) {
-					shape.lineTo(this.points[i][0], this.points[i][1]);
+				// 2D contour for triangulation (x, y only)
+				const contour = this.points.map(p => new THREE.Vector2(p[0], p[1]));
+				const faces = THREE.ShapeUtils.triangulateShape(contour, []);
+
+				// 3D positions: each vertex keeps its own x, y, z
+				const positions = new Float32Array(this.points.length * 3);
+				for (let i = 0; i < this.points.length; i++) {
+					positions[i * 3]     = this.points[i][0];
+					positions[i * 3 + 1] = this.points[i][1];
+					positions[i * 3 + 2] = this.points[i][2] != null ? this.points[i][2] : 0;
 				}
-				shape.lineTo(this.points[0][0], this.points[0][1]); // close shape
 
-				// Generate geometry from shape
-				const geometry = new THREE.ShapeGeometry(shape);
+				// Index array from triangulation result
+				const indices = [];
+				for (let i = 0; i < faces.length; i++) {
+					indices.push(faces[i][0], faces[i][1], faces[i][2]);
+				}
 
-				// Create material (filled)
+				const geometry = new THREE.BufferGeometry();
+				geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+				geometry.setIndex(indices);
+				geometry.computeVertexNormals();
+
 				const material = new THREE.MeshBasicMaterial({
 					color: this.color,
 					transparent: true,
 					opacity: this.opacity,
-					side: THREE.DoubleSide,   // visible from both sides
-					depthWrite: false          // prevents z-buffer flicker
+					side: THREE.DoubleSide,
+					depthWrite: false
 				});
 
 				const mesh = new THREE.Mesh(geometry, material);
 
-				// Position polygon in 3D (z from first vertex)
-				const z = this.points[0][2] || 0;
-				mesh.position.set(0, 0, z);
-
-				// Add to scene
 				const polyGroup = new THREE.Group();
 				polyGroup.name = this.groupname;
 				polyGroup.add(mesh);
@@ -329,6 +364,15 @@ class potree_html_generator():
 				f.write('           {jslineopacity},'.format(jslineopacity=0.75)+'\n')
 				f.write('           "{jsgroup}");'.format(jsgroup="vectorclass")+'\n')
 				f.write('		{}.displaycircle();\n\n'.format(ft.get("linename"))+'\n')
+
+			for ft in ply_gjs_feature_list:
+				f.write(r'		// ------------------------------------------------------------------'+'\n')
+				f.write("		const {} = new PolygonOnScreen(".format(ft.get("linename"))+'\n')
+				f.write('           {},'.format(json.dumps(ft.get('coordinates')))+'\n')
+				f.write('           "{jslinecolor}",'.format(jslinecolor=ft.get('line_color'))+'\n')
+				f.write('           {jslineopacity},'.format(jslineopacity=0.75)+'\n')
+				f.write('           "{jsgroup}");'.format(jsgroup="vectorclass")+'\n')
+				f.write('		{}.displaypolygon();\n\n'.format(ft.get("linename"))+'\n')
 
 			
 			#const circle_example = new CircleOnScreen(
