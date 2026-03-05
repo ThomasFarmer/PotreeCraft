@@ -8,7 +8,7 @@ This is an open source tool for beginner users of the potree project or colleagu
 The plugin itself relies on PotreeConverter:
 - PotreeConverter will create the blank Potree project itself, which later recieves the additional vector data files and a new homepage for the project with the necessary javascript code added.
 
-and you can download PotreeConverter 1.6 stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/2.1.1).
+and you can download PotreeConverter 2.1.1 stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/2.1.1).
 
 This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
