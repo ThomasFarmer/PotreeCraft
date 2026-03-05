@@ -73,4 +73,3 @@ The vector layers all get a randomly generated color, and currently not implemen
 ## Screenshots
 **Landing / information page:**
 ![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/cli_test_output1.png)
-
