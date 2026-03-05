@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI skeleton for wrapping PotreeConverter."""
+"""PotreeCraft CLI wrapper for PotreeConverter + vector HTML generation."""
 
 import argparse
 import configparser
@@ -14,82 +14,60 @@ CONFIG_SECTION = "potreeconverter_location"
 CONFIG_KEY = "path"
 
 
+def resolve_custom_lib_sources():
+    candidates = [
+        JSLIBS_DIR,
+        Path(__file__).resolve().parents[1] / "poc_scripts" / "base_html_examples",
+    ]
+
+    for base in candidates:
+        cesium_dir = base / "Cesium183"
+        three_dir = base / "three.js"
+        if cesium_dir.exists() and cesium_dir.is_dir() and three_dir.exists() and three_dir.is_dir():
+            return cesium_dir, three_dir
+
+    return None, None
+
+
+def parse_bool(value: str) -> bool:
+    normalized = value.strip().lower()
+    if normalized in {"1", "true", "yes", "y", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "n", "off"}:
+        return False
+    raise argparse.ArgumentTypeError("expected true/false")
+
+
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="PotreeConverter wrapper skeleton (prints parsed inputs)."
+    parser = argparse.ArgumentParser(description="PotreeConverter wrapper for PotreeCraft.")
+    parser.add_argument("--configure", action="store_true", help="Configure PotreeConverter executable location.")
+    parser.add_argument("-i", "--input", type=Path, help="Input LAS/LAZ file path.")
+    parser.add_argument("-o", "--output", type=Path, help="Output directory path.")
+    parser.add_argument("-p", "--generate-page", dest="project_name", metavar="PROJECT_NAME", help="Generate page with project name.")
+    parser.add_argument("--projection", metavar="PROJ4", nargs="+", help="Projection in Proj4 format.")
+    parser.add_argument("--encoding", choices=["BROTLI", "UNCOMPRESSED"], help="Encoding type.")
+    parser.add_argument("-m", "--method", choices=["poisson", "poisson_average", "random"], help="Point sampling method.")
+    parser.add_argument("--chunkMethod", dest="chunk_method", help="Chunking method.")
+    parser.add_argument("--keep-chunks", action="store_true", help="Keep temporary chunks.")
+    parser.add_argument("--no-chunking", action="store_true", help="Disable chunking.")
+    parser.add_argument("--no-indexing", action="store_true", help="Disable indexing.")
+    parser.add_argument("--attributes", help="Attributes in output file.")
+    parser.add_argument("--title", help="Page title for generated web page.")
+    parser.add_argument("--vector-data", type=Path, help="Path to vector data folder.")
+
+    parser.add_argument(
+        "--cesium-map",
+        type=parse_bool,
+        nargs="?",
+        const=True,
+        default=False,
+        help="Enable Cesium 1.83 baseline map integration (true/false).",
     )
     parser.add_argument(
-        "--configure",
-        action="store_true",
-        help="Configure the PotreeConverter executable location.",
-    )
-    parser.add_argument(
-        "-i",
-        "--input",
-        type=Path,
-        help="Input LAS/LAZ file path.",
-    )
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=Path,
-        help="Output directory path.",
-    )
-    parser.add_argument(
-        "-p",
-        "--generate-page",
-        dest="project_name",
-        metavar="PROJECT_NAME",
-        help="Generate Potree page using the given project name.",
-    )
-    parser.add_argument(
-        "--projection",
-        metavar="PROJ4",
-        help="Projection in Proj4 format.",
-    )
-    parser.add_argument(
-        "--encoding",
-        choices=["BROTLI", "UNCOMPRESSED"],
-        help='Encoding type: "BROTLI" or "UNCOMPRESSED".',
-    )
-    parser.add_argument(
-        "-m",
-        "--method",
-        choices=["poisson", "poisson_average", "random"],
-        help='Point sampling method: "poisson", "poisson_average", or "random".',
-    )
-    parser.add_argument(
-        "--chunkMethod",
-        dest="chunk_method",
-        help="Chunking method.",
-    )
-    parser.add_argument(
-        "--keep-chunks",
-        action="store_true",
-        help="Skip deleting temporary chunks during conversion.",
-    )
-    parser.add_argument(
-        "--no-chunking",
-        action="store_true",
-        help="Disable chunking phase.",
-    )
-    parser.add_argument(
-        "--no-indexing",
-        action="store_true",
-        help="Disable indexing phase.",
-    )
-    parser.add_argument(
-        "--attributes",
-        help="Attributes in output file.",
-    )
-    parser.add_argument(
-        "--title",
-        help="Page title when generating a web page.",
-    )
-    parser.add_argument(
-        "--vector-data",
-        type=Path,
-        help="Path to folder containing vector data inputs.",
+        "--cesium-map-sea-level",
+        type=float,
+        default=0.0,
+        help="MAP_ELEVATION_OFFSET_M value for Cesium terrain baseline. Default: 0.",
     )
     return parser
 
@@ -116,48 +94,28 @@ def run_configure(config_path: Path) -> int:
     return 0
 
 
-def run_geojson_html_generation(
-    vector_data_path: Path, output_dir: Path, pointcloud_name: str
-) -> int:
-    if not GEOJSON_READER_SCRIPT.exists():
-        print(f"GeoJSON reader script not found: {GEOJSON_READER_SCRIPT}")
+def copy_custom_jslibs(output_dir: Path) -> int:
+    libs_target_dir = output_dir / "libs"
+    libs_target_dir.mkdir(parents=True, exist_ok=True)
+
+    cesium_source, three_source = resolve_custom_lib_sources()
+    if not cesium_source or not three_source:
+        print("Custom library sources not found.")
+        print("Expected one of:")
+        print(f"  - {JSLIBS_DIR}/Cesium183 and {JSLIBS_DIR}/three.js")
+        print("  - <repo>/poc_scripts/base_html_examples/Cesium183 and three.js")
         return 1
 
-    if not vector_data_path.exists() or not vector_data_path.is_dir():
-        print(f"Vector data folder is invalid: {vector_data_path}")
-        return 1
+    source_map = {"Cesium183": cesium_source, "three.js": three_source}
+    for lib_name, source_lib in source_map.items():
+        target_lib = libs_target_dir / lib_name
+        if target_lib.exists():
+            target_lib = libs_target_dir / f"{lib_name}_potreecraft"
 
-    print("Running vector HTML generator:")
-    print(f"  script: {GEOJSON_READER_SCRIPT}")
-    print(f"  input : {vector_data_path}")
-    print(f"  cloud : {pointcloud_name}")
-    print(f"  cwd   : {output_dir}")
+        shutil.copytree(source_lib, target_lib, dirs_exist_ok=True)
+        print(f"Copied/updated library: {target_lib}")
 
-    try:
-        process = subprocess.Popen(
-            [
-                "python3",
-                str(GEOJSON_READER_SCRIPT),
-                "--vector-folder",
-                str(vector_data_path),
-                "--project-name",
-                pointcloud_name,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            cwd=str(output_dir),
-            bufsize=1,
-        )
-    except OSError as exc:
-        print(f"Failed to start GeoJSON reader: {exc}")
-        return 1
-
-    if process.stdout is not None:
-        for line in process.stdout:
-            print(line, end="")
-
-    return process.wait()
+    return 0
 
 
 def prepare_vectors_folder(source_vector_dir: Path, output_dir: Path):
@@ -173,27 +131,6 @@ def prepare_vectors_folder(source_vector_dir: Path, output_dir: Path):
     return vectors_output_dir, copied_files
 
 
-def copy_custom_jslibs(output_dir: Path) -> int:
-    libs_target_dir = output_dir / "libs"
-    libs_target_dir.mkdir(parents=True, exist_ok=True)
-
-    required_libs = ["Cesium183", "three.js"]
-    for lib_name in required_libs:
-        source_lib = JSLIBS_DIR / lib_name
-        if not source_lib.exists() or not source_lib.is_dir():
-            print(f"Required library folder is missing: {source_lib}")
-            return 1
-
-        target_lib = libs_target_dir / lib_name
-        if target_lib.exists():
-            target_lib = libs_target_dir / f"{lib_name}_potreecraft"
-
-        shutil.copytree(source_lib, target_lib, dirs_exist_ok=True)
-        print(f"Copied/updated library: {target_lib}")
-
-    return 0
-
-
 def resolve_pointcloud_name(output_dir: Path, requested_name: str) -> str:
     if requested_name:
         return requested_name
@@ -205,8 +142,53 @@ def resolve_pointcloud_name(output_dir: Path, requested_name: str) -> str:
     pointcloud_dirs = [d for d in pointclouds_dir.iterdir() if d.is_dir()]
     if len(pointcloud_dirs) == 1:
         return pointcloud_dirs[0].name
-
     return ""
+
+
+def run_geojson_html_generation(
+    vector_data_path: Path,
+    output_dir: Path,
+    pointcloud_name: str,
+    fallback_projection: str,
+    cesium_map: bool,
+    cesium_map_sea_level: float,
+) -> int:
+    if not GEOJSON_READER_SCRIPT.exists():
+        print(f"GeoJSON reader script not found: {GEOJSON_READER_SCRIPT}")
+        return 1
+
+    command = [
+        "python3",
+        str(GEOJSON_READER_SCRIPT),
+        "--vector-folder",
+        str(vector_data_path),
+        "--project-name",
+        pointcloud_name,
+        "--fallback-projection",
+        fallback_projection or "",
+        "--cesium-map",
+        "true" if cesium_map else "false",
+        "--cesium-map-sea-level",
+        str(cesium_map_sea_level),
+    ]
+
+    print("Running vector HTML generator:")
+    print(" ".join(command))
+
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        cwd=str(output_dir),
+        bufsize=1,
+    )
+
+    if process.stdout is not None:
+        for line in process.stdout:
+            print(line, end="")
+
+    return process.wait()
 
 
 def main() -> int:
@@ -233,20 +215,24 @@ def main() -> int:
         print("Please run --configure.")
         return 1
 
+    # Always generate a Potree page so converter populates libs/ alongside pointclouds/.
+    resolved_project_name = args.project_name or Path(args.input).stem
+
+    projection_value = " ".join(args.projection) if isinstance(args.projection, list) else (args.projection or "")
+
     command = [
         str(converter_path),
         "-i",
         str(args.input),
         "-o",
         str(args.output),
+        "-p",
+        resolved_project_name,
     ]
-
-    if args.project_name:
-        command.extend(["-p", args.project_name])
     if args.title:
         command.extend(["--title", args.title])
-    if args.projection:
-        command.extend(["--projection", args.projection])
+    if projection_value:
+        command.extend(["--projection", projection_value])
     if args.encoding:
         command.extend(["--encoding", args.encoding])
     if args.method:
@@ -267,21 +253,14 @@ def main() -> int:
     print("Running PotreeConverter:")
     print(" ".join(command))
 
-    try:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-        )
-    except PermissionError:
-        print("PotreeConverter is not executable. Please fix permissions and retry.")
-        return 1
-    except OSError as exc:
-        print(f"Failed to start PotreeConverter: {exc}")
-        return 1
-
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        cwd=str(converter_path.parent),
+        bufsize=1,
+    )
     if process.stdout is not None:
         for line in process.stdout:
             print(line, end="")
@@ -294,6 +273,13 @@ def main() -> int:
     output_dir = Path(args.output).expanduser().resolve()
     if not output_dir.exists() or not output_dir.is_dir():
         print(f"Output directory does not exist after conversion: {output_dir}")
+        return 1
+
+    libs_dir = output_dir / "libs"
+    if not libs_dir.exists() or not any(libs_dir.iterdir()):
+        print("PotreeConverter finished, but output libs/ is empty.")
+        print("This wrapper expects converter-generated libs for HTML rendering.")
+        print("Check PotreeConverter installation integrity and run again.")
         return 1
 
     jslib_copy_result = copy_custom_jslibs(output_dir)
@@ -310,16 +296,19 @@ def main() -> int:
         print("No .geojson files found in --vector-data folder.")
         return 1
 
-    print(f"Copied {copied_count} GeoJSON file(s) to: {vectors_output_dir}")
-
-    pointcloud_name = resolve_pointcloud_name(output_dir, args.project_name)
+    pointcloud_name = resolve_pointcloud_name(output_dir, resolved_project_name)
     if not pointcloud_name:
         print("Could not resolve pointcloud project name for HTML generation.")
-        print("Please pass -p/--generate-page (for example: -p clitest).")
+        print("Please pass -p/--generate-page.")
         return 1
 
     geojson_return_code = run_geojson_html_generation(
-        vectors_output_dir, output_dir, pointcloud_name
+        vectors_output_dir,
+        output_dir,
+        pointcloud_name,
+        projection_value,
+        args.cesium_map,
+        args.cesium_map_sea_level,
     )
     if geojson_return_code != 0:
         print(f"GeoJSON HTML generation exited with code {geojson_return_code}")
