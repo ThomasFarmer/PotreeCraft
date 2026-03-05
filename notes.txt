@@ -1,0 +1,4 @@
+python3 potreecraft_cli.py -i /home/troll4hire/Documents/VM_SHARED/roadsection.las -o /home/troll4hire/Documents/_python_/PotreeCraft/__OUTPUT/clitest22 -p "clitest" --vector-data /home/troll4hire/Documents/_python_/PotreeCraft/_test_data_ --cesium-map true --cesium-map-sea-level 140 --projection +proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs
+
+python3 potreecraft_cli.py -i /home/troll4hire/Documents/VM_SHARED/roadsection.las -o /home/troll4hire/Documents/_python_/PotreeCraft/__OUTPUT/clitest24 -p "clitest" --vector-data /home/troll4hire/Documents/_python_/PotreeCraft/_test_data_ --cesium-map false
+
