@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "paks_single_exploded",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::23700" } },
-"features": [
-{ "type": "Feature", "properties": { "id": 1, "info": "big_triangle" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 628291.366727765067481, 134379.02025402081199, 0.0 ], [ 628290.435217278660275, 134308.076806245167973, 0.0 ], [ 628242.518573983106762, 134343.724653591372771, 0.0 ], [ 628291.366727765067481, 134379.02025402081199, 0.0 ] ] ] } }
-]
-}
