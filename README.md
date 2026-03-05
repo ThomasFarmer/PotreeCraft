@@ -54,10 +54,21 @@ We could start running a conversion command for example such as:
 ```
 python3 potreecraft_cli.py -i /home/user/Documents/test_data/las/roadsection.las -o /home/user/Documents/output_test -p "clitest" --vector-data /home/user/Documents/test_data/vector/
 ```
+
+There's an option to pull OpenStreetMap data with Cesium to project under the pointcloud. With *--cesium-map true*. We have the option to set the map layer's Z elevation with the *--cesium-map-sea-level* tag. 
+
+It is also advised to manually specify the projection when Cesium is used, since some pointcloud files might be missing the required metadata tags. This can be done by adding the *--projection* tag, and a proj4 string format of the projection. In this example we're using the Hungarian EOV (EPSG:23700) projection.
+
+```
+python3 potreecraft_cli.py -i /home/user/Documents/test_data/las/roadsection.las -o /home/user/Documents/output_test -p "clitest" --vector-data /home/user/Documents/test_data/vector/ --cesium-map true --cesium-map-sea-level 80 --projection +proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs
+```
+
+
+
 After the process is done, we should spin up a http server in the output folder and check the output. 
 This can be done in various ways, on Windows's for example python's integrated simple http server can do this job perfectly.
 
-```python -m http.server 8095```
+```python3 -m http.server 8095```
 
 This can also work on linux, however I've ran into some graphical issues while running it, so i recommend the one found in npm.
 
@@ -71,5 +82,9 @@ The vector layers all get a randomly generated color, and currently not implemen
 
 
 ## Screenshots
-**Landing / information page:**
+**Test output pointcloud with test vector data:**
 ![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/cli_test_output1.png)
+
+**Test output pointcloud with openstreetmap data pulled with cesium, map elevated to 150 meters above sea level:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/cesium_map_level.png)
+
