@@ -1,68 +1,75 @@
 # PotreeCraft
-###### version 0.3b.0128, Pre-alpha build
+###### version 2.0.0-cmdonly, Pre-alpha build
+
+*rework in progress*
 
 PotreeCraft is a QGIS plugin which provides a graphic UI for integrating vector-based data into Potree projects.
 This is an open source tool for beginner users of the potree project or colleagues with no javascript knowledge. The PotreeCraft tool builds on the well-known Potree project, and lets users create pointcloud publications with integrated shapefile-based vector data with little to no effort. The plugin reads the added vector layer information of a given QGIS project and passed over the layer metadata and coloring styles to Potree, thus allowing the user to manage the vector-based data through a familiar and user-friendly interface what QGIS 3 provides.
-The plugin itself relies on LAStools and PotreeConverter:
-- LAStools' blast2dem function allows this widget to import pointclouds as raster layers, so the users would be able to check if the vector layers align,
+The plugin itself relies on PotreeConverter:
 - PotreeConverter will create the blank Potree project itself, which later recieves the additional vector data files and a new homepage for the project with the necessary javascript code added.
 
-If you do not have these installed on your computer, you can download a copy of LAStools through [this link](https://mega.nz/#!GhFxVKqD!7fD5PeldRdDT6j9O4_zoIgSDc82KnOjP0B2bgHPlH-s). 
-and you can download PotreeConverter 1.6 stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/1.6).
+and you can download PotreeConverter 1.6 stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/2.1.1).
 
-This project was created and tested with the version 1.6, migration to 1.7 will follow soon.
+This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-- There seems to be an issue with the base Python threading in QGIS. While the window itself can be moved during process calls, the interface freezes. Migration to QThread class required. With this I think it is needless to say that the process bar in the bottom left corner absolutely lacks any functionality.
-- Interface and functions to set Page title, Opacity and other cloud paramters are not implemented yet.
-- Layer functionality interface (vector layer settings tab) is in a "rough-at-the-edges" state. Point layers later have the option to be marked as "Annotation" layers, which allows them to appear as such in Potree. The text appearing above these points are read from a selected record of the shape file itself. These layer markings are not represented yet in the QTreeView object itself.
-- The vector layer handling needs a rework, because with the implementation of the annotations there are a lot of redundant data, extra checks and design issues in the code. The plan is to create distinct memory tables / dictionaries which can store the required information for points and annotations (and other elements added later), and the QTreeView widget will get its information from that. In its current state the load vectors function reads and parses the data it finds directly from QGIS, which makes the editing methods a lot more complicated than they should be.
-- Due to the incomplete code in the javascript template, the WGS84 CRS is required for all vectors and pointclouds. 
+Currently with the reimplementation of the project, the plugin was reverted into a command line tool existence. This current release is exactly that, providing the absolute basic functionality which makes the project work. The graphical interface and QGIS integration will be implemented in the very near future.
 
 
 ## How to use the plugin
+Having python installed is absolutely neccessary for this project, but besides that, the codebase so far only uses the core python libraries, so no additional packages are required here.
 
-First, download the [.ZIP here](https://github.com/ThomasFarmer/PotreeCraft/tree/master/_build_), and install it in QGIS. *(plugins -> manage and install plugins -> install plugin from zip)*
+When we first interact with the script, it will tell us that it has no knowledge of the location of PotreeConverter.
 
-For testing purposes the same .las cloud and two shape files which can be seen on the screenshots can be downloaded from [this link here](https://mega.nz/#!m48E3SrC!GvYnKGQ_2k2lBCbRszaMi26UjHj7SSvO9VVOP-p0y9Q).
+``` 
+user@pc:~/Documents/PotreeCraft$ python3 potreecraft_cli.py 
+```
+The CLI will respond with the following line:
+```
+potreeconverter not found, please run --configure.
+```
+By running the command we'll be prompted to point to our PotreeConverter location.
+``` 
+user@pc:~/Documents/PotreeCraft$ python3 potreecraft_cli.py --configure
+PotreeConverter executable location: /home/user/Documents/PtCvt_211/PotreeConverter
+Saved PotreeConverter location to /home/user/Documents/PotreeCraft/cmd_tool/potreecraft_cli.ini
+```
+Upon interacting with the CLI tool after configuration, it will give us now an extended list on possible parameters we can pass over to the program. Mosto f these stem from the PotreeConverter CLI tool itself, and these will end up being passed over to it.
+```
+user@pc:~/Documents/PotreeCraft/cmd_tool$ python3 potreecraft_cli.py 
+usage: potreecraft_cli.py [-h] [--configure] [-i INPUT] [-o OUTPUT] [-p PROJECT_NAME]
+                          [--projection PROJ4] [--encoding {BROTLI,UNCOMPRESSED}]
+                          [-m {poisson,poisson_average,random}] [--chunkMethod CHUNK_METHOD]
+                          [--keep-chunks] [--no-chunking] [--no-indexing]
+                          [--attributes ATTRIBUTES] [--title TITLE] [--vector-data VECTOR_DATA]
+potreecraft_cli.py: error: the following arguments are required: -i/--input, -o/--output
 
-After the installation go to the settings tab, and show the plugin where can it find LAStools and PotreeConverter, and press "save". If the locations are correct and the plugin found the required files the plugin will enable the rest of the interface, and will prompt the user that it is ready for use.
+```
+- -i : input .las file location. (required)
+- -o : output folder location. (required)
+- -p : generated html page name (required)
+- --vector-data : location of folder with related vector data in geojson format.
 
-- [x] 1. Select the pointcloud, and load it into QGIS. The "blast2dem coloring for QGIS" radiobutton group selects the coloring theme for the raster layer. A console window will pop up, just wait patiently to finish the task it's been assigned to do. After that QGIS will prompt the user with a CRS selection screen (as part of the "add raster layer" task). *Note: With my test data RGB coloring ended up being a grayscale version of the RGB image.*
-- [x] 2. Add some vector data as well.
-- [x] 3. The window loads the layer data on opening, but in case of a change, there's a button on the Vector layer settings tab labeled "Reload layers from current project". That will refresh the data and pre-process the necessary information for the compilation procedure.
-- [x] 4. Then select an output folder for the potree project and press "Compile project", let it run like in the previous case.
-- [x] 5. Finally, check it in the browser. *Note: Potree requires a web server to operate, such as python's SimpleHTTPServer, or Apache. For more information on this topic check out the official Potree github page.*
+We could start running a conversion command for example such as:
+```
+python3 potreecraft_cli.py -i /home/user/Documents/test_data/las/roadsection.las -o /home/user/Documents/output_test -p "clitest" --vector-data /home/user/Documents/test_data/vector/
+```
+After the process is done, we should spin up a http server in the output folder and check the output. 
+This can be done in various ways, on Windows's for example python's integrated simple http server can do this job perfectly.
+
+```python -m http.server 8095```
+
+This can also work on linux, however I've ran into some graphical issues while running it, so i recommend the one found in npm.
+
+```
+npm install http-server -g
+
+http-server -p 8095
+```
+
+The vector layers all get a randomly generated color, and currently not implemented to appear in the potree scene selector.
+
 
 ## Screenshots
 **Landing / information page:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/about_window.jpg)
-
-**Configuring the plugin:**
-![settings](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/settings_window.jpg)
-
-**Loading the pointcloud into QGIS as a raster layer:**
-![pointcloud_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/pointcloud_window.jpg)
-![blast2dem](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/blast2dem_running.jpg)
-
-**The demo project in QGIS before passing it over to PotreeConverter - no annotations in this case:**
-![qgis](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/qgis_project.jpg)
-
-**The same demo project in QGIS with a point layer added as annotations:**
-![qgis_atbl](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/attribute_table.jpg)
-
-**A final check on the vector layer window:**
-![vector_window](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/vector_window.jpg)
-
-**Compiling the project:**
-![potreeconverter](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potreeconverter_running.jpg)
-
-**The final state of the demo project with no annotations:**
-![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_running_1130.jpg)
-
-**The final state of the demo project with the first verse of "The Rocky Road To Dublin" added as annotations:**
-![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_running_with_annots_1203.jpg)
-
-**A section of the generated source code of the page:**
-![potree_running](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/potree_page_source_code.jpg)
-
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/master/_doc_/cli_test_output.jpg)
