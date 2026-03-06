@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PotreeCraftDialogBase</class>
+ <widget class="QDialog" name="PotreeCraftDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1180</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PotreeCraft</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="layers_group">
+     <property name="title">
+      <string>Project Vector Layers</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_layers">
+      <item>
+       <layout class="QHBoxLayout" name="layers_toolbar_layout">
+        <item>
+         <widget class="QPushButton" name="refresh_layers_button">
+          <property name="text">
+           <string>Refresh Layers</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_layers">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="layers_table">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <column>
+         <property name="text">
+          <string>Use</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Layer</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Geometry</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Color</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Annotation</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Title Field</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Description Field</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="io_group">
+     <property name="title">
+      <string>Point Cloud + Output</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_io">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_las_input">
+        <property name="text">
+         <string>Input LAS/LAZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="las_input_edit"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="las_browse_button">
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_output_folder">
+        <property name="text">
+         <string>Output Folder</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="output_folder_edit"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="output_browse_button">
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_project_name">
+        <property name="text">
+         <string>Project Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QLineEdit" name="project_name_edit">
+        <property name="placeholderText">
+         <string>Optional. Defaults to LAS file stem.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_pointcloud_mode">
+        <property name="text">
+         <string>Default Pointcloud Display</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QComboBox" name="pointcloud_mode_combo"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="raster_group">
+     <property name="title">
+      <string>LAS to GeoTIFF Import</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_raster">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_raster_script">
+        <property name="text">
+         <string>Conversion Script</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QWidget" name="raster_script_widget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_raster_script">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLineEdit" name="raster_script_edit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="raster_script_browse_button">
+           <property name="text">
+            <string>Browse</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_raster_mode">
+        <property name="text">
+         <string>Raster Display Mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="raster_mode_combo"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="run_raster_conversion_button">
+        <property name="text">
+         <string>Run LAS-&gt;GeoTIFF and Add Raster Layer</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="actions_group">
+     <property name="title">
+      <string>Actions</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_actions">
+      <item>
+       <widget class="QPushButton" name="convert_vectors_button">
+        <property name="text">
+         <string>Convert Selected Vector Layers to Standard GeoJSON</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="compile_button">
+        <property name="text">
+         <string>Compile Potree Project</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPlainTextEdit" name="log_box">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Process output and logs will appear here.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="button_box">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="python_status_frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_python_status">
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>4</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>4</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="python_status_label">
+        <property name="text">
+         <string>Python runtime: detecting...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_python_status">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="copy_python_path_button">
+        <property name="toolTip">
+         <string>Copy Python executable path to clipboard</string>
+        </property>
+        <property name="text">
+         <string>Copy Path</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
