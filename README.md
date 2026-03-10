@@ -13,10 +13,18 @@ and you can download PotreeConverter 2.1.1 stable release from the project's [gi
 This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-Currently with the reimplementation of the project, the plugin was reverted into a command line tool existence. This current release is exactly that, providing the absolute basic functionality which makes the project work. The graphical interface and QGIS integration will be implemented in the very near future.
+Early build of v 2.x. 
+Missing features / present bugs: 
+- Annotation points not supported yet.
+- Duplicate vector folder generation, shape to geojson to project import is not streamlined yet.
+- Plugin icon nonexistent.
+- .laz not supported by default for tif generation. it might work in theory after we install the missing packages, but it was not tested yet.
+- for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux.
+- In fact the whole thing was not tested on windows at all.
+- Plugin window is huge, might be a problem on older laptops. I might have to implement tabs once again.
 
 
-## How to use the plugin
+## How to use the CLI tool
 Having python installed is absolutely neccessary for this project, but besides that, the codebase so far only uses the core python libraries, so no additional packages are required here.
 
 When we first interact with the script, it will tell us that it has no knowledge of the location of PotreeConverter.
@@ -65,6 +73,36 @@ python3 potreecraft_cli.py -i /home/user/Documents/test_data/las/roadsection.las
 
 
 
+## How to use the QGIS plugin
+
+After downloading the .zip file from releases (one marked as a plugin, not a cli tool), we can 
+``` Plugins -> Manage and install plugins -> Install from .zip. ```
+After that, we may have to activate the plugin by going over to the ```Installed``` section and puttin a checkbox next to it.
+
+The interface in the current build looks like the following:
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/v2x_plugin_interface.png)
+
+In the top section we have a list of our current vector layers in the project, with some information on their type and color assigned. Other options are grayed out due to missing backend implmenetation for now. 
+
+In the second section we have the core settings, such as:
+- Project folder (previously output folder), this is where our files will be generated.
+- PotreeConverter: We have to point to our potreeconverter binary, so the plugin could reference it. Note, the whole project was written and tested using version 2.1.1. Other versions most likely will break the whole system.
+- Input LAS/LAZ: the pointcloud we'll use for conversion - both geotiff and potree. 
+- Project name: this piece of information is used in the potree project generation. Normally mirrors the pointcloud file's name.
+- Default pointcloud display: when the potree project is created, this property will be the default coloring the pointcloud will take. So far intensity, rbg, and elevation is supported.
+- Cesium map settings: We have the option to pull in an openstreetmap layer under our cloud, and set a default elevation level for this map layer. 
+
+Third section is related to the geotiff import:
+- Built in converter / blast2dem: currently we have two options to import our pointcloud to qgis with this plugin. If neither works, a user might try to import it by hand through pdal.
+- Raster display mode: similar to pointcloud display, we have a few options on how to display our pointcloud as a raster layer: points should take intensity, rgb or elevation values. Currently rbg ends us being grayscale and not truly colorful, this is something i might have to look into later.
+- Run LAS->GeoTiff conversion and add as raster layer: quite self-explanatory, this will create a tif file, and import it as a raster to the project.
+
+Fourth section, actions: 
+- Convert selected vector layers into geojson: due to our implementation of potree's vector handling, we're relying on geojson format instead of shapefiles as we did in v. 1.0. This button exports our layers as geojson ones and puts them in our project folder. 
+- Compile Potree project: This is the button we want to push after we're done editing the settings. The project will convert and the files will be created in the project folder set in the first section.
+
+## How to view the potree project
+
 After the process is done, we should spin up a http server in the output folder and check the output. 
 This can be done in various ways, on Windows's for example python's integrated simple http server can do this job perfectly.
 
@@ -78,7 +116,7 @@ npm install http-server -g
 http-server -p 8095
 ```
 
-The vector layers all get a randomly generated color, and currently not implemented to appear in the potree scene selector.
+The vector layers all get a randomly generated color if we used the CLI, but with the GUI they mirror the color set for them in the QGIS project.
 
 
 ## Screenshots
