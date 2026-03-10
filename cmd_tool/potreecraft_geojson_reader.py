@@ -5,6 +5,7 @@ import argparse
 import json
 import logging
 import random
+import re
 from pathlib import Path
 from os import listdir
 from os.path import join
@@ -30,6 +31,16 @@ def parse_bool(value: str) -> bool:
     if normalized in {"0", "false", "no", "n", "off"}:
         return False
     raise argparse.ArgumentTypeError("expected true/false")
+
+
+def js_identifier(value: str) -> str:
+    normalized = re.sub(r"\W+", "_", (value or "").strip())
+    normalized = normalized.strip("_")
+    if not normalized:
+        return "vector_overlay"
+    if normalized[0].isdigit():
+        return f"vector_{normalized}"
+    return normalized
 
 
 class simple_geojson_reader:
@@ -80,7 +91,7 @@ class simple_geojson_reader:
                     {
                         "line_color": lcolor,
                         "coordinates": coordsmerged,
-                        "linename": f"{self.name}_{linectr}",
+                        "linename": js_identifier(f"{self.name}_{linectr}"),
                     }
                 )
 
@@ -94,7 +105,7 @@ class simple_geojson_reader:
                         {
                             "line_color": lcolor,
                             "coordinates": coordsmerged,
-                            "linename": f"{self.name}_{linectr}",
+                            "linename": js_identifier(f"{self.name}_{linectr}"),
                         }
                     )
 
@@ -104,7 +115,7 @@ class simple_geojson_reader:
                     {
                         "line_color": lcolor,
                         "coordinates": coorddata,
-                        "linename": f"{self.name}_{linectr}",
+                        "linename": js_identifier(f"{self.name}_{linectr}"),
                     }
                 )
 
@@ -115,7 +126,7 @@ class simple_geojson_reader:
                         {
                             "line_color": lcolor,
                             "coordinates": point,
-                            "linename": f"{self.name}_{linectr}",
+                            "linename": js_identifier(f"{self.name}_{linectr}"),
                         }
                     )
 
@@ -129,7 +140,7 @@ class simple_geojson_reader:
                     {
                         "line_color": lcolor,
                         "coordinates": exterior_3d,
-                        "linename": f"{self.name}_{linectr}",
+                        "linename": js_identifier(f"{self.name}_{linectr}"),
                     }
                 )
 
@@ -144,7 +155,7 @@ class simple_geojson_reader:
                         {
                             "line_color": lcolor,
                             "coordinates": exterior_3d,
-                            "linename": f"{self.name}_{linectr}",
+                            "linename": js_identifier(f"{self.name}_{linectr}"),
                         }
                     )
 
@@ -154,6 +165,7 @@ class potree_html_generator:
     def write_potree_html(
         cls,
         pointcloud_name: str,
+        pointcloud_display_mode: str = "rgb",
         fallback_projection: str = "",
         cesium_map: bool = False,
         cesium_map_sea_level: float = 0.0,
@@ -165,14 +177,31 @@ class potree_html_generator:
 
         with open("potree_main.html", "w", encoding="utf-8") as f:
             if effective_cesium_map:
-                f.write(_template_cesium(pointcloud_name, fallback_projection, cesium_map_sea_level))
+                f.write(
+                    _template_cesium(
+                        pointcloud_name,
+                        pointcloud_display_mode,
+                        fallback_projection,
+                        cesium_map_sea_level,
+                    )
+                )
             else:
-                f.write(_template_default(pointcloud_name))
+                f.write(_template_default(pointcloud_name, pointcloud_display_mode))
 
             f.write(_vector_classes_and_data())
 
 
-def _template_default(pointcloud_name: str) -> str:
+def _active_attribute_name(pointcloud_display_mode: str) -> str:
+    mode = (pointcloud_display_mode or "rgb").strip().lower()
+    if mode == "rgb":
+        return "rgba"
+    if mode in {"intensity", "elevation"}:
+        return mode
+    return "rgba"
+
+
+def _template_default(pointcloud_name: str, pointcloud_display_mode: str) -> str:
+    active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,6 +229,11 @@ def _template_default(pointcloud_name: str) -> str:
     <script src="./libs/potree/potree.js"></script>
     <script src="./libs/plasio/js/laslaz.js"></script>
     <script src="./libs/three.js_potreecraft/build/three.min.older.js"></script>
+    <script>
+        proj4.defs('EPSG:23700', '+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs');
+        proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+        proj4.defs('EPSG:2178', '+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+    </script>
 
     <div class="potree_container" style="position:absolute;width:100%;height:100%;left:0;top:0;">
         <div id="potree_render_area" style="background-image: url('./libs/potree/resources/images/background.jpg');"></div>
@@ -229,7 +263,7 @@ def _template_default(pointcloud_name: str) -> str:
             material.size = 1;
             material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
             material.shape = Potree.PointShape.SQUARE;
-            material.activeAttributeName = "rgba";
+            material.activeAttributeName = {active_attribute_name};
             scene.addPointCloud(pointcloud);
             viewer.fitToScreen();
         }});
@@ -237,7 +271,13 @@ def _template_default(pointcloud_name: str) -> str:
 '''
 
 
-def _template_cesium(pointcloud_name: str, fallback_projection: str, sea_level: float) -> str:
+def _template_cesium(
+    pointcloud_name: str,
+    pointcloud_display_mode: str,
+    fallback_projection: str,
+    sea_level: float,
+) -> str:
+    active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
     safe_fallback_projection = json.dumps(fallback_projection or "")
     return f'''<!DOCTYPE html>
 <html lang="en">
@@ -269,6 +309,11 @@ def _template_cesium(pointcloud_name: str, fallback_projection: str, sea_level: 
     <script>window.CESIUM_BASE_URL = './libs/Cesium183/Build/Cesium/';</script>
     <script src="./libs/Cesium183/Build/Cesium/Cesium.js"></script>
     <script src="./libs/three.js_potreecraft/build/three.min.older.js"></script>
+    <script>
+        proj4.defs('EPSG:23700', '+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs');
+        proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+        proj4.defs('EPSG:2178', '+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+    </script>
 
     <div class="potree_container" style="position:absolute;width:100%;height:100%;left:0;top:0;">
         <div id="potree_render_area" style="background-image: url('./libs/potree/resources/images/background.jpg');">
@@ -337,12 +382,8 @@ def _template_cesium(pointcloud_name: str, fallback_projection: str, sea_level: 
             material.size = 1;
             material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
             material.shape = Potree.PointShape.SQUARE;
-            material.activeAttributeName = "rgba";
+            material.activeAttributeName = {active_attribute_name};
             potreeViewer.fitToScreen();
-
-            proj4.defs('EPSG:23700','+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs');
-            proj4.defs('EPSG:2177','+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
-            proj4.defs('EPSG:2178','+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
 
             const normalizeProjectionCandidate = (candidate) => {{
                 if (!candidate) return "";
@@ -628,6 +669,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate Potree HTML with vector layers.")
     parser.add_argument("--vector-folder", required=True, help="Folder containing GeoJSON files.")
     parser.add_argument("--project-name", required=True, help="Pointcloud project name under pointclouds/.")
+    parser.add_argument("--pointcloud-display-mode", default="rgb", choices=["intensity", "elevation", "rgb"], help="Default Potree pointcloud attribute to display.")
     parser.add_argument("--fallback-projection", default="", help="Fallback source projection (Proj4/EPSG) for Cesium camera sync.")
     parser.add_argument("--cesium-map", type=parse_bool, default=False, help="Enable Cesium 1.83 baseline map integration.")
     parser.add_argument("--cesium-map-sea-level", type=float, default=0.0, help="MAP_ELEVATION_OFFSET_M value.")
@@ -651,6 +693,7 @@ def main() -> int:
 
     potree_html_generator.write_potree_html(
         args.project_name,
+        pointcloud_display_mode=args.pointcloud_display_mode,
         fallback_projection=args.fallback_projection,
         cesium_map=args.cesium_map,
         cesium_map_sea_level=args.cesium_map_sea_level,
