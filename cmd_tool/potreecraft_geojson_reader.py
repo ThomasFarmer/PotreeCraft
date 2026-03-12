@@ -43,6 +43,26 @@ def js_identifier(value: str) -> str:
     return normalized
 
 
+def random_hex_color() -> str:
+    r, g, b = [random.randint(0, 255) for _ in range(3)]
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def resolve_geojson_color(data: dict) -> str:
+    style_color = data.get("potreecraft_style", {}).get("color")
+    if isinstance(style_color, str) and style_color.strip():
+        return style_color.strip()
+
+    for feature in data.get("features", []):
+        properties = feature.get("properties", {})
+        for key in ("potreecraft_color", "stroke", "fill", "marker-color"):
+            value = properties.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+
+    return random_hex_color()
+
+
 class simple_geojson_reader:
     def __init__(self, filepath):
         self.filepath = filepath
@@ -74,8 +94,7 @@ class simple_geojson_reader:
             d = json.load(f)
 
         linectr = 0
-        r, g, b = [random.randint(0, 255) for _ in range(3)]
-        lcolor = f"#{r:02x}{g:02x}{b:02x}"
+        lcolor = resolve_geojson_color(d)
 
         for ft in d.get("features", []):
             geom = ft.get("geometry", {})
