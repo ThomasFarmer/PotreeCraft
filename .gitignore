@@ -1,3 +1,4 @@
 .idea/
 test_data/
 qgis_plugin/__pycache__/
+qgis_plugin/zip_build
