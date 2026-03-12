@@ -227,6 +227,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.copy_python_path_button.clicked.connect(self._copy_python_path)
         self.button_box.rejected.connect(self.reject)
         self.button_box.accepted.connect(self.accept)
+        QgsProject.instance().crsChanged.connect(self._update_project_crs_label)
 
         self.pointcloud_mode_combo.clear()
         self.pointcloud_mode_combo.addItems(POINTCLOUD_MODES)
@@ -260,6 +261,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
         self._update_python_status()
         self._load_potreeconverter_path()
+        self._update_project_crs_label()
 
         self.refresh_vector_layers()
 
@@ -615,6 +617,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
     def refresh_vector_layers(self) -> None:
         self.log("Refreshing vector layers from current project...")
+        self._update_project_crs_label()
         self.layers_table.setRowCount(0)
         self._annotation_checks.clear()
         self._annotation_title_boxes.clear()
@@ -630,6 +633,22 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self._add_vector_layer_row(layer)
 
         self.log(f"Loaded {len(vector_layers)} vector layer(s) from current project.")
+
+    def _update_project_crs_label(self) -> None:
+        project_crs = QgsProject.instance().crs()
+        authid = project_crs.authid().strip()
+        description = project_crs.description().strip()
+
+        if authid and description:
+            label_text = f"Project CRS: {authid} ({description})"
+        elif authid:
+            label_text = f"Project CRS: {authid}"
+        elif description:
+            label_text = f"Project CRS: {description}"
+        else:
+            label_text = "Project CRS: not set"
+
+        self.project_crs_label.setText(label_text)
 
     def _add_vector_layer_row(self, layer) -> None:
         row = self.layers_table.rowCount()

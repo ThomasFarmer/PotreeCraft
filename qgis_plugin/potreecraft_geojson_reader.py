@@ -249,6 +249,7 @@ def _template_default(pointcloud_name: str, pointcloud_display_mode: str) -> str
         viewer.setPointBudget(2_000_000);
         viewer.loadSettingsFromURL();
         viewer.setBackground("gradient");
+        viewer.setDescription('Created with <a href="https://github.com/ThomasFarmer/PotreeCraft" target="_blank">PotreeCraft</a>.');
 
         viewer.loadGUI(() => {{
             viewer.setLanguage('en');
@@ -366,6 +367,7 @@ def _template_cesium(
         potreeViewer.setMinNodeSize(0);
         potreeViewer.loadSettingsFromURL();
         potreeViewer.setBackground(null);
+        potreeViewer.setDescription('Created with <a href="https://github.com/ThomasFarmer/PotreeCraft" target="_blank">PotreeCraft</a>.');
 
         potreeViewer.loadGUI(() => {{
             potreeViewer.setLanguage('en');
