@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/plugins/potreecraft" >
-        <file>icon.png</file>
+        <file>pc_icon_24.png</file>
     </qresource>
 </RCC>

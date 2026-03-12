@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 2.0.0-cmdonly, Pre-alpha build
+###### version 2.1.2
 
 *rework in progress*
 
@@ -8,12 +8,12 @@ This is an open source tool for beginner users of the potree project or colleagu
 The plugin itself relies on PotreeConverter:
 - PotreeConverter will create the blank Potree project itself, which later recieves the additional vector data files and a new homepage for the project with the necessary javascript code added.
 
-and you can download PotreeConverter 2.1.1 stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/2.1.1).
+and you can download PotreeConverter 2.1.x stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/2.1.1).
 
-This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
+This project was created and tested with the version 2.1.x, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-Early build of v 2.x. 
+Early build of v 2.1.2. 
 Missing features / present bugs: 
 - Annotation points not supported yet.
 - Duplicate vector folder generation, shape to geojson to project import is not streamlined yet.

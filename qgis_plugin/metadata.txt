@@ -9,14 +9,15 @@ qgisMaximumVersion=3.99
 
 # Provide a brief description of the plugin
 description=Dialog plugin template
-version=0.1
+version=2.1.2
 author=Béres Tamás
-#email=orksmile@gmail.com
+email=berestamasbela@protonmail.com
 
-about=Enter more info about your plugin here
+about=PotreeCraft is a GUI wrapper for PotreeConverter, which allows the user to create Potree scenes enriched with vector data without having to know JavaScript, as all information on the vector layers that you wish to add will be imported from the current open QGIS project. PotreeConverter 2.1.1 is a requirement for it to work. For more info on how to use the plugin visit github.com/ThomasFarmer/PotreeCraft 
 
-tracker=Provide link to your bug tracker
-repository=Provide link to the code repository
+homepage=https://github.com/ThomasFarmer/PotreeCraft
+tracker=https://github.com/ThomasFarmer/PotreeCraft/issues
+repository=https://github.com/ThomasFarmer/PotreeCraft
 # End of mandatory metadata
 
 # Recommended items:
@@ -25,12 +26,12 @@ repository=Provide link to the code repository
 # changelog=
 
 # Tags are comma separated with spaces allowed
-# tags=pyqgis
+tags=potree, pointcloud 
 
 homepage=Provide the home page for the plugin
-icon=icon.png
+icon=pc_icon_24.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
@@ -38,10 +39,10 @@ deprecated=False
 # Since QGIS 3.8, a comma separated list of plugins to be installed
 # (or upgraded) can be specified.
 # Check the documentation for more information.
-# plugin_dependencies=
+plugin_dependencies=PotreeConverter 2.1.1
 
 Category of the plugin: Raster, Vector, Database or Web
-# category=
+category=Web
 
 # If the plugin can run on QGIS Server.
 server=False
