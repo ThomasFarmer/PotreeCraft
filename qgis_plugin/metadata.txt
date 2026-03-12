@@ -8,7 +8,7 @@ qgisMinimumVersion=2.99
 qgisMaximumVersion=3.99
 
 # Provide a brief description of the plugin
-description=Dialog plugin template
+description=A potree scene constructor GUI
 version=2.1.2
 license=GPL-2.0-or-later
 author=Béres Tamás
