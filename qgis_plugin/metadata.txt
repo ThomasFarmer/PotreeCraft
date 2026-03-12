@@ -13,8 +13,9 @@ version=2.1.2
 author=Béres Tamás
 email=berestamasbela@protonmail.com
 
-about=PotreeCraft is a GUI wrapper for PotreeConverter, which allows the user to create Potree scenes enriched with vector data without having to know JavaScript, as all information on the vector layers that you wish to add will be imported from the current open QGIS project. PotreeConverter 2.1.1 is a requirement for it to work. For more info on how to use the plugin visit https://github.com/ThomasFarmer/PotreeCraft 
+about=PotreeCraft is a GUI wrapper for PotreeConverter, which allows the user to create Potree scenes enriched with vector data without having to know JavaScript, as all information on the vector layers that you wish to add will be imported from the current open QGIS project. PotreeConverter 2.1.1 is a requirement for it to work. For more info on how to use the plugin visit github.com/ThomasFarmer/PotreeCraft 
 
+homepage=https://github.com/ThomasFarmer/PotreeCraft
 tracker=https://github.com/ThomasFarmer/PotreeCraft/issues
 repository=https://github.com/ThomasFarmer/PotreeCraft
 # End of mandatory metadata
@@ -38,7 +39,7 @@ deprecated=False
 # Since QGIS 3.8, a comma separated list of plugins to be installed
 # (or upgraded) can be specified.
 # Check the documentation for more information.
-# plugin_dependencies=
+plugin_dependencies=PotreeConverter 2.1.1
 
 Category of the plugin: Raster, Vector, Database or Web
 category=Web
