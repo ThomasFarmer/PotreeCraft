@@ -738,6 +738,16 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                     selected.append((row, layer))
         return selected
 
+    def _embed_layer_style_metadata(self, geojson_path: Path, color_hex: str) -> None:
+        payload = json.loads(geojson_path.read_text(encoding="utf-8"))
+        payload["potreecraft_style"] = {"color": color_hex}
+
+        for feature in payload.get("features", []):
+            properties = feature.setdefault("properties", {})
+            properties["potreecraft_color"] = color_hex
+
+        geojson_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
     def _validate_common_paths(self) -> Optional[Path]:
         output_dir = self.output_folder_edit.text().strip()
         if not output_dir:
@@ -805,6 +815,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         for _, layer in selected:
             sanitized = layer.name().replace(" ", "_")
             out_file = vector_out_dir / f"{sanitized}.geojson"
+            layer_color = self._layer_color_hex(layer)
             options = QgsVectorFileWriter.SaveVectorOptions()
             options.driverName = "GeoJSON"
             options.fileEncoding = "UTF-8"
@@ -824,6 +835,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             if code != QgsVectorFileWriter.NoError:
                 errors.append(f"{layer.name()}: {message or code}")
             else:
+                self._embed_layer_style_metadata(out_file, layer_color)
                 self.log(f"Exported {layer.name()} -> {out_file}")
 
         manifest_path = output_dir / "potreecraft_project_manifest.json"
