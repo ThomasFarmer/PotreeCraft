@@ -877,13 +877,11 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             if output_dir is None:
                 return
 
-            blast2dem_path = script_path_raw or "blast2dem"
             if script_path_raw:
                 blast2dem_executable = Path(script_path_raw).expanduser()
                 if not blast2dem_executable.exists():
                     self._show_warning(f"blast2dem executable not found:\n{blast2dem_executable}")
                     return
-                blast2dem_path = str(blast2dem_executable)
 
             legacy_flag = LEGACY_RASTER_MODE_FLAGS.get(mode)
             if not legacy_flag:

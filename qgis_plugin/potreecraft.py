@@ -22,7 +22,7 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
 # Initialize Qt resources from file resources.py
-from .resources import *
+from .resources import *  # noqa: F403
 # Import the code for the dialog
 from .potreecraft_dialog import PotreeCraftDialog
 import os.path
