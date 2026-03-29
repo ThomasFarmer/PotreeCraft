@@ -1,0 +1,63 @@
+exec(Path('/home/troll4hire/Untitled-1.py').read_text())
+Global forward vector: (0.9465634704286676, 0.3225175909156536)
+Processed 20 / 28 features
+GeoPackage write result: (0, '')
+CSV written to: /home/troll4hire/vm_share/swamp_test_vectors/front_side_overlap_report.csv
+
+Summary:
+Features: 28
+Mean front_best: 60.67
+Median front_best: 59.17
+Min front_best: 54.20
+Mean side_best: 60.08
+Median side_best: 59.50
+Min side_best: 44.78
+Risk classes: {'poor': 19, 'weak': 8, 'usable': 1}
+-----------------------------------------------------------------
+How to read the output
+Main fields
+
+front_best
+Best overlap percent with a likely forward/back neighbor.
+
+side_best
+Best overlap percent with a likely left/right neighbor.
+
+risk_class
+Simple classification:
+
+good → front ≥ 80 and side ≥ 65
+usable → front ≥ 70 and side ≥ 55
+weak → front ≥ 60 and side ≥ 40
+poor → below that
+
+These are not universal standards, but they are reasonable screening thresholds.
+
+Important caveats
+
+This script is still an estimate, because it infers flight direction from the geometry and neighbor layout rather than using a full mission plan or exact image corner projection.
+
+It works best when:
+
+- the footprints are reasonably oriented
+- the dataset has some flight-line structure
+- duplicates are removed
+
+It is much more meaningful than the earlier “overlap with all neighbors” metric when your goal is to compare with frontlap / sidelap expectations.
+
+What result would indicate a weak survey
+
+Roughly:
+
+front_best < 75% often → weak front overlap
+side_best < 60% often → weak side overlap
+many weak or poor rows → manual / irregular acquisition likely not ideal for measurement
+One thing I’d strongly suggest
+
+Run this and then look at:
+
+mean front_best
+mean side_best
+minimums
+count of risk_class = poor
+

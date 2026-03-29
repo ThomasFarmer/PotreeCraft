@@ -22,10 +22,36 @@
      <layout class="QVBoxLayout" name="verticalLayout_layers">
       <item>
        <layout class="QHBoxLayout" name="layers_toolbar_layout">
-        <item>
+       <item>
          <widget class="QPushButton" name="refresh_layers_button">
           <property name="text">
            <string>Refresh Layers</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="point_radius_label">
+          <property name="text">
+           <string>Point Radius</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="point_radius_spinbox">
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="minimum">
+           <double>0.001000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1000000.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.500000000000000</double>
+          </property>
+          <property name="value">
+           <double>5.000000000000000</double>
           </property>
          </widget>
         </item>

@@ -1,0 +1,243 @@
+user@linuxmintpc:~/vm_share$ pdal info  Hatri-dl-3-1-2026-georeferenced_model_23700.las 
+{
+  "file_size": 129697598,
+  "filename": "Hatri-dl-3-1-2026-georeferenced_model_23700.las",
+  "now": "2026-03-28T19:51:45+0100",
+  "pdal_version": "2.6.2 (git-version: Release)",
+  "reader": "readers.las",
+  "stats":
+  {
+    "bbox":
+    {
+      "EPSG:4326":
+      {
+        "bbox":
+        {
+          "maxx": 19.04883962,
+          "maxy": 47.6585311,
+          "maxz": 21.76,
+          "minx": 19.04486169,
+          "miny": 47.65637365,
+          "minz": 8.08
+        },
+        "boundary": { "type": "Polygon", "coordinates": [ [ [ 19.044861845952894, 47.656373652707401, 8.08 ], [ 19.044861693993429, 47.65853103906759, 8.08 ], [ 19.048839619576491, 47.658531099150409, 21.76 ], [ 19.048839609013722, 47.656373712786426, 21.76 ], [ 19.044861845952894, 47.656373652707401, 8.08 ] ] ] }
+      },
+      "native":
+      {
+        "bbox":
+        {
+          "maxx": 650105.03,
+          "maxy": 257188.03,
+          "maxz": 21.76,
+          "minx": 649806.23,
+          "miny": 256948.17,
+          "minz": 8.08
+        },
+        "boundary": { "type": "Polygon", "coordinates": [ [ [ 649806.229999999981374, 256948.170000000012806, 8.08 ], [ 649806.229999999981374, 257188.03, 8.08 ], [ 650105.03000000002794, 257188.03, 21.76 ], [ 650105.03000000002794, 256948.170000000012806, 21.76 ], [ 649806.229999999981374, 256948.170000000012806, 8.08 ] ] ] }
+      }
+    },
+    "statistic":
+    [
+      {
+        "average": 649961.7991,
+        "count": 3814623,
+        "maximum": 650105.03,
+        "minimum": 649806.23,
+        "name": "X",
+        "position": 0,
+        "stddev": 66.6771229,
+        "variance": 4445.838718
+      },
+      {
+        "average": 257061.1273,
+        "count": 3814623,
+        "maximum": 257188.03,
+        "minimum": 256948.17,
+        "name": "Y",
+        "position": 1,
+        "stddev": 52.13378836,
+        "variance": 2717.931889
+      },
+      {
+        "average": 11.22493213,
+        "count": 3814623,
+        "maximum": 21.76,
+        "minimum": 8.08,
+        "name": "Z",
+        "position": 2,
+        "stddev": 1.645541044,
+        "variance": 2.707805329
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Intensity",
+        "position": 3,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 1,
+        "count": 3814623,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "ReturnNumber",
+        "position": 4,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 1,
+        "count": 3814623,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "NumberOfReturns",
+        "position": 5,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "ScanDirectionFlag",
+        "position": 6,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "EdgeOfFlightLine",
+        "position": 7,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Classification",
+        "position": 8,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "ScanAngleRank",
+        "position": 9,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 3.434428514,
+        "count": 3814623,
+        "maximum": 8,
+        "minimum": 2,
+        "name": "UserData",
+        "position": 10,
+        "stddev": 1.419794006,
+        "variance": 2.01581502
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "PointSourceId",
+        "position": 11,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 137.1194747,
+        "count": 3814623,
+        "maximum": 255,
+        "minimum": 5,
+        "name": "Red",
+        "position": 12,
+        "stddev": 33.58456102,
+        "variance": 1127.922739
+      },
+      {
+        "average": 132.5746901,
+        "count": 3814623,
+        "maximum": 255,
+        "minimum": 9,
+        "name": "Green",
+        "position": 13,
+        "stddev": 30.21384437,
+        "variance": 912.8763918
+      },
+      {
+        "average": 120.2272835,
+        "count": 3814623,
+        "maximum": 255,
+        "minimum": 5,
+        "name": "Blue",
+        "position": 14,
+        "stddev": 26.2516476,
+        "variance": 689.1490019
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "GpsTime",
+        "position": 15,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Synthetic",
+        "position": 16,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "KeyPoint",
+        "position": 17,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Withheld",
+        "position": 18,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 3814623,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Overlap",
+        "position": 19,
+        "stddev": 0,
+        "variance": 0
+      }
+    ]
+  }
+}

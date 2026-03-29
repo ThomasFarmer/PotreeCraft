@@ -1,0 +1,832 @@
+user@linuxmintpc:~/vm_share$ pdal info --metadata roadsection.las 
+{
+  "file_size": 406124845,
+  "filename": "roadsection.las",
+  "metadata":
+  {
+    "comp_spatialreference": "",
+    "compressed": false,
+    "copc": false,
+    "count": 11932887,
+    "creation_doy": 282,
+    "creation_year": 2018,
+    "dataformat_id": 3,
+    "dataoffset": 406687,
+    "filesource_id": 0,
+    "global_encoding": 0,
+    "global_encoding_base64": "AAA=",
+    "header_size": 227,
+    "major_version": 1,
+    "maxx": 628443.0806,
+    "maxy": 134481.6944,
+    "maxz": 179.5549198,
+    "minor_version": 2,
+    "minx": 628155.7068,
+    "miny": 134384.4401,
+    "minz": 124.5952966,
+    "offset_x": 628440,
+    "offset_y": 134464,
+    "offset_z": 125,
+    "point_length": 34,
+    "project_id": "00000000-0000-0000-3030-303030303030",
+    "scale_x": 0.00025,
+    "scale_y": 0.00025,
+    "scale_z": 0.0001,
+    "software_id": "RiPROCESS 1.8.5",
+    "spatialreference": "",
+    "srs":
+    {
+      "compoundwkt": "",
+      "horizontal": "",
+      "isgeocentric": false,
+      "isgeographic": false,
+      "json":
+      {
+      },
+      "prettycompoundwkt": "",
+      "prettywkt": "",
+      "proj4": "",
+      "units":
+      {
+        "horizontal": "unknown",
+        "vertical": ""
+      },
+      "vertical": "",
+      "wkt": ""
+    },
+    "system_id": "EXTRACTION",
+    "vlr_0":
+    {
+      "data": "pHjg76/tp0A=",
+      "description": "Digicart Area",
+      "record_id": 1,
+      "user_id": "Digicart"
+    },
+    "vlr_1":
+    {
+      "data": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "description": "Digicart min-max values",
+      "record_id": 2,
+      "user_id": "Digicart"
+    },
+    "vlr_10":
+    {
+      "data": "j1wMAL7XAQACK4eGhysjQYXrUXh+KyNB+n5q/OVoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_100":
+    {
+      "data": "UpijAOnFAQApXI8y9CsjQawcWiTrKyNBMzMzc3RqAEE/NV46UGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_101":
+    {
+      "data": "O16lABa5AgApXI8y9CsjQZMYBBbiKyNBpHA9io1qAEGiRbZzdGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_102":
+    {
+      "data": "UReoAKCvAQBCYOVA/SsjQcUgsDL0KyNB0SLbOVBqAEHdJAYBLGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_103":
+    {
+      "data": "8capAGEcAgBCYOVA/SsjQcUgsDL0KyNBMzMzc3RqAEE/NV46UGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_104":
+    {
+      "data": "UuOrABoUAgBaZDtPBiwjQd0kBkH9KyNB0SLbOVBqAEHdJAYBLGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_105":
+    {
+      "data": "bPetAKfRAQBaZDtPBiwjQd0kBkH9KyNBMzMzc3RqAEE/NV46UGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_106":
+    {
+      "data": "E8mvAEfEAgBaZDtPBiwjQcUgsDL0KyNBI9v5Po1qAEGiRbZzdGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_107":
+    {
+      "data": "Wo2yAGWHAwAMAiv3UiwjQfYoXE8GLCNBd76fGo1qAEEbL91kIGkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_108":
+    {
+      "data": "vxS2ABgAAADHSzcpti0jQZqZmemYLSNBwcqhRXxqAEGkcD2Kn2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_109":
+    {
+      "data": "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",
+      "description": "Digicart Thinned Points",
+      "record_id": 303,
+      "user_id": "Digicart"
+    },
+    "vlr_11":
+    {
+      "data": "TTQOAEfvAAACK4eGhysjQYXrUXh+KyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_12":
+    {
+      "data": "lCMPANqVAQAbL92UkCsjQZ7vp4aHKyNBNV66iZ1oAEEfhetReWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_13":
+    {
+      "data": "brkQAFI5AgAbL92UkCsjQZ7vp4aHKyNBmG4Sw8FoAEGkcD2KnWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_14":
+    {
+      "data": "wPISAPaoAAAzMzOjmSsjQbbz/ZSQKyNBNV66iZ1oAEFCYOVQeWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_15":
+    {
+      "data": "tpsTAKqVAgAzMzOjmSsjQbbz/ZSQKyNBmG4Sw8FoAEGkcD2KnWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_16":
+    {
+      "data": "YDEWADELAgAbL92UkCsjQZ7vp4aHKyNB+n5q/OVoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_17":
+    {
+      "data": "kTwYAIlaAQAbL92UkCsjQZ7vp4aHKyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_18":
+    {
+      "data": "GpcZAN8aAgAzMzOjmSsjQbbz/ZSQKyNB+n5q/OVoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_19":
+    {
+      "data": "+bEbAOMAAgAzMzOjmSsjQbbz/ZSQKyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_2":
+    {
+      "data": "AAAAAGEAAACcxCDwoCsjQVYOLXJ3KyNBWDm0SOhnAEHByqGFg2cAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_20":
+    {
+      "data": "3LIdAHsKAADNzMysvSsjQRBYOaSZKyNBhxbZTnloAEHl0CJb72cAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_21":
+    {
+      "data": "V70dAC5DAwBkO9+/qysjQc/3U6OZKyNBmG4Sw8FoAEHZzvdTeWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_22":
+    {
+      "data": "hQAhADw9AQBMN4mxoisjQc/3U6OZKyNB+n5q/OVoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_23":
+    {
+      "data": "wT0iAMkcAgBMN4mxoisjQc/3U6OZKyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_24":
+    {
+      "data": "ilokAGXrAABkO9+/qysjQef7qbGiKyNBi2zn++VoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_25":
+    {
+      "data": "70UlALtpAQBkO9+/qysjQef7qbGiKyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_26":
+    {
+      "data": "qq8mALltAAB3vp/avSsjQZzEIMCrKyNBmG4Sw8FoAEFI4XpUeWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_27":
+    {
+      "data": "Yx0nADWQAQB9PzXOtCsjQQAAAMCrKyNB+n5q/OVoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_28":
+    {
+      "data": "mK0oABugAAB9PzXOtCsjQQAAAMCrKyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_29":
+    {
+      "data": "s00pAHPQAAD6fmrcvSsjQRkEVs60KyNB+n5q/OVoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_3":
+    {
+      "data": "YQAAAJUMAgCHFtmemSsjQW3n+2l3KyNB001iUHloAEGYbhKD6GcAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_30":
+    {
+      "data": "Jh4qALjlAQCWQ4vcvSsjQRkEVs60KyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_31":
+    {
+      "data": "3gMsAEHMAAC4HoW7BSwjQTEIrNy9KyNBXI/CNQppAEGyne/nI2gAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_32":
+    {
+      "data": "H9AsAAEAAAD////////v/yGwckgLLCNB////////7/8j2/m+BWkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_33":
+    {
+      "data": "INAsAI09AgACK4eGhysjQVK4HpV3KyNBhetReFJpAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_34":
+    {
+      "data": "rQ0vAA8AAAC8dJN4hysjQXWTGGR6KyNBwcqhxWJpAEExCKzcUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_35":
+    {
+      "data": "vA0vAAc6AgAbL92UkCsjQZ7vp4aHKyNBvp8aby5pAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_36":
+    {
+      "data": "w0cxAH+xAAAbL92UkCsjQZ7vp4aHKyNBZmZmplJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_37":
+    {
+      "data": "QvkxAATzAAAzMzOjmSsjQbbz/ZSQKyNBvp8aby5pAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_38":
+    {
+      "data": "RuwyAFEGAgAzMzOjmSsjQbbz/ZSQKyNBIbByqFJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_39":
+    {
+      "data": "l/I0AD4gAAAzMzOjmSsjQQwCK4eHKyNB8tJN4odpAEH+1HipUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_4":
+    {
+      "data": "9gwCAGEcAgDpJjF4fisjQTVeunl3KyNBNV66iZ1oAEFCYOVQeWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_40":
+    {
+      "data": "1RI1AEMAAABCYOUAmCsjQWZmZrZ3KyNBqMZLtwNqAEGuR+H6nWkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_41":
+    {
+      "data": "GBM1AHjDAQBMN4mxoisjQc/3U6OZKyNBvp8aby5pAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_42":
+    {
+      "data": "kNY2AB3eAQBMN4mxoisjQc/3U6OZKyNBIbByqFJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_43":
+    {
+      "data": "rbQ4AOwUAgBkO9+/qysjQef7qbGiKyNBvp8aby5pAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_44":
+    {
+      "data": "mck6AERYAQBkO9+/qysjQef7qbGiKyNBIbByqFJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_45":
+    {
+      "data": "3SE8AHmiAwBkO9+/qysjQc/3U6OZKyNB5dAiG5tpAEGPwvWoUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_46":
+    {
+      "data": "VsQ/AEPtAQB9PzXOtCsjQQAAAMCrKyNBvp8aby5pAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_47":
+    {
+      "data": "mbFBAOsPAgB9PzXOtCsjQQAAAMCrKyNBIbByqFJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_48":
+    {
+      "data": "hMFDALCUAQCWQ4vcvSsjQRkEVs60KyNBvp8aby5pAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_49":
+    {
+      "data": "NFZFAIArAgCWQ4vcvSsjQRkEVs60KyNBIbByqFJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_5":
+    {
+      "data": "VykEAE6GAQDpJjF4fisjQcl2vn93KyNBmG4Sw8FoAEGkcD2KnWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_50":
+    {
+      "data": "tIFHAAJZAQB9PzXOtCsjQQAAAMCrKyNBg8DK4XZpAEGPwvWoUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_51":
+    {
+      "data": "ttpIAEtJAQB9PzXOtCsjQQAAAMCrKyNB5dAiG5tpAEHy0k3idmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_52":
+    {
+      "data": "ASRKAMHBAQCWQ4vcvSsjQRkEVs60KyNBg8DK4XZpAEGPwvWoUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_53":
+    {
+      "data": "wuVLAIykAQCWQ4vcvSsjQRkEVs60KyNB5dAiG5tpAEHy0k3idmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_54":
+    {
+      "data": "TopNAE1hAQCWQ4vcvSsjQVyPwjWiKyNBPQrXYydqAEFU46Ubm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_55":
+    {
+      "data": "m+tOAAkAAABmZma2tCsjQSlcj+KKKyNB46WbxHBqAEF1kxhEVWoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_56":
+    {
+      "data": "pOtOALaIAgCuR+HqxisjQTEIrNy9KyNBvp8aby5pAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_57":
+    {
+      "data": "WnRRAMIxAgCuR+HqxisjQTEIrNy9KyNBIbByqFJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_58":
+    {
+      "data": "HKZTAPqzAADHSzf5zysjQUoMAuvGKyNBvp8aby5pAEE5tMg2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_59":
+    {
+      "data": "FlpUAEKnAgDHSzf5zysjQUoMAuvGKyNBIbByqFJpAEEtsp1vLmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_6":
+    {
+      "data": "pa8FAGvOAgACK4eGhysjQYXrUXh+KyNBNV66iZ1oAEFCYOVQeWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_60":
+    {
+      "data": "WAFXAB45AgCuR+HqxisjQTEIrNy9KyNBg8DK4XZpAEGPwvWoUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_61":
+    {
+      "data": "djpZAI28AQCuR+HqxisjQTEIrNy9KyNB5dAiG5tpAEHy0k3idmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_62":
+    {
+      "data": "A/daAH4CAgDHSzf5zysjQUoMAuvGKyNBg8DK4XZpAEGPwvWoUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_63":
+    {
+      "data": "gflcANk5AgDHSzf5zysjQUoMAuvGKyNB5dAiG5tpAEHy0k3idmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_64":
+    {
+      "data": "WjNfAENYAQDByqEV4isjQWIQWPnPKyNBIbByqFJpAEHLoUU2CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_65":
+    {
+      "data": "nYtgAECZAgDfT40H2SsjQWIQWPnPKyNBg8DK4XZpAEGPwvWoUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_66":
+    {
+      "data": "3SRjAIf9AQDfT40H2SsjQWIQWPnPKyNB5dAiG5tpAEHy0k3idmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_67":
+    {
+      "data": "ZCJlAO2RAQD4U+MV4isjQXsUrgfZKyNBg8DK4XZpAEGPwvWoUmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_68":
+    {
+      "data": "UbRmAC/1AQD4U+MV4isjQXsUrgfZKyNB5dAiG5tpAEHy0k3idmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_69":
+    {
+      "data": "gKloAIfJAQCuR+HqxisjQTEIrNy9KyNBSOF6VL9pAEFU46Ubm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_7":
+    {
+      "data": "EH4IALTuAQACK4eGhysjQYXrUXh+KyNBmG4Sw8FoAEGkcD2KnWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_70":
+    {
+      "data": "B3NqAB37AACuR+HqxisjQc3MzNy9KyNBqvHSjeNpAEG28/1Uv2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_71":
+    {
+      "data": "JG5rABN6AQDHSzf5zysjQUoMAuvGKyNBSOF6VL9pAEFU46Ubm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_72":
+    {
+      "data": "N+hsANsLAgDHSzf5zysjQUoMAuvGKyNBqvHSjeNpAEG28/1Uv2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_73":
+    {
+      "data": "EvRuAKpYAQDHSzf5zysjQfT91Gi+KyNB8tJN4itqAEEZBFaO42kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_74":
+    {
+      "data": "vExwAAY1AgDfT40H2SsjQWIQWPnPKyNBSOF6VL9pAEFU46Ubm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_75":
+    {
+      "data": "woFyAMeHAQDfT40H2SsjQWIQWPnPKyNBqvHSjeNpAEG28/1Uv2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_76":
+    {
+      "data": "iQl0AOQfAgD4U+MV4isjQXsUrgfZKyNBSOF6VL9pAEFU46Ubm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_77":
+    {
+      "data": "bSl2AEM6AgD4U+MV4isjQXsUrgfZKyNBqvHSjeNpAEG28/1Uv2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_78":
+    {
+      "data": "sGN4AGDHAQDfT40H2SsjQWIQWPnPKyNBDAIrxwdqAEEZBFaO42kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_79":
+    {
+      "data": "ECt6AElcAQDfT40H2SsjQWIQWPnPKyNBbxKDACxqAEF7FK7HB2oAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_8":
+    {
+      "data": "xGwKAN7kAADpJjF4fisjQWZmZoZ3KyNB+n5q/OVoAEEGgZXDwWgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_80":
+    {
+      "data": "WYd7AEKqAQD4U+MV4isjQXsUrgfZKyNBDAIrxwdqAEEZBFaO42kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_81":
+    {
+      "data": "mzF9AFmzAQD4U+MV4isjQXsUrgfZKyNBbxKDACxqAEF7FK7HB2oAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_82":
+    {
+      "data": "9OR+AHAxAgAnMQhMBiwjQZMYBBbiKyNB5dAiG5tpAEH6fmo8CmkAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_83":
+    {
+      "data": "ZBaBAL3eAQAQWDkk6ysjQZMYBBbiKyNBSOF6VL9pAEFU46Ubm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_84":
+    {
+      "data": "IfWCAKHRAQAQWDkk6ysjQZMYBBbiKyNBqvHSjeNpAEG28/1Uv2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_85":
+    {
+      "data": "wsaEAMBxAQDy0k0y9CsjQawcWiTrKyNBSOF6VL9pAEFU46Ubm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_86":
+    {
+      "data": "gjiGAJ7WAQApXI8y9CsjQawcWiTrKyNBqvHSjeNpAEG28/1Uv2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_87":
+    {
+      "data": "IA+IAM03AgAQWDkk6ysjQZMYBBbiKyNBDAIrxwdqAEEZBFaO42kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_88":
+    {
+      "data": "7UaKANL8AQAQWDkk6ysjQZMYBBbiKyNBbxKDACxqAEF7FK7HB2oAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_89":
+    {
+      "data": "v0OMAMWGAQApXI8y9CsjQawcWiTrKyNBDAIrxwdqAEEZBFaO42kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_9":
+    {
+      "data": "olELAO0KAQDpJjF4fisjQZZDi4x3KyNBXI/CNQppAEFoke385WgAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_90":
+    {
+      "data": "hMqNAAMaAgApXI8y9CsjQawcWiTrKyNBbxKDACxqAEF7FK7HB2oAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_91":
+    {
+      "data": "h+SPAI5ZAQBaZDtPBiwjQcUgsDL0KyNBqvHSjeNpAEExCKwcm2kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_92":
+    {
+      "data": "FT6RAP0nAgBCYOVA/SsjQcUgsDL0KyNBDAIrxwdqAEEZBFaO42kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_93":
+    {
+      "data": "EmaTALjxAQBCYOVA/SsjQcUgsDL0KyNBbxKDACxqAEF7FK7HB2oAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_94":
+    {
+      "data": "yleVABJdAAAZBFZOBiwjQd0kBkH9KyNBDAIrxwdqAEEZBFaO42kAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_95":
+    {
+      "data": "3LSVABBHAQBaZDtPBiwjQd0kBkH9KyNBbxKDACxqAEF7FK7HB2oAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_96":
+    {
+      "data": "7PuWAIsvAwD4U+MV4isjQUa2893CKyNBqvHSjY1qAEHdJAYBLGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_97":
+    {
+      "data": "dyuaANeRAwAQWDkk6ysjQZMYBBbiKyNB0SLbOVBqAEHdJAYBLGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_98":
+    {
+      "data": "Tr2dAH2uAwAQWDkk6ysjQZMYBBbiKyNBMzMzc3RqAEE/NV46UGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    },
+    "vlr_99":
+    {
+      "data": "y2uhAIcsAgApXI8y9CsjQawcWiTrKyNB0SLbOVBqAEHdJAYBLGoAQQ==",
+      "description": "Digicart Index",
+      "record_id": 402,
+      "user_id": "Digicart"
+    }
+  },
+  "now": "2026-03-28T19:46:35+0100",
+  "pdal_version": "2.6.2 (git-version: Release)",
+  "reader": "readers.las"
+}

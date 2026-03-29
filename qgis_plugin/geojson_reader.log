@@ -1,0 +1,456 @@
+2026-03-27 16:38:39,154 PyQt5.uic.uiparser DEBUG uiname is PotreeCraftDialogBase
+2026-03-27 16:38:39,154 PyQt5.uic.uiparser DEBUG toplevel widget is QDialog
+2026-03-27 16:38:39,154 PyQt5.uic.properties DEBUG setting property geometry
+2026-03-27 16:38:39,154 PyQt5.uic.properties DEBUG setting property windowTitle
+2026-03-27 16:38:39,154 PyQt5.uic.uiparser DEBUG push QDialog PotreeCraftDialogBase
+2026-03-27 16:38:39,154 PyQt5.uic.uiparser DEBUG push QVBoxLayout verticalLayout
+2026-03-27 16:38:39,154 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG push QGroupBox layers_group
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG push QVBoxLayout verticalLayout_layers
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG push QHBoxLayout layers_toolbar_layout
+2026-03-27 16:38:39,155 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG push QPushButton refresh_layers_button
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG pop widget QPushButton refresh_layers_button
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG new topwidget self.layers_group
+2026-03-27 16:38:39,155 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,155 PyQt5.uic.properties DEBUG setting property alignment
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG push QLabel project_crs_label
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG pop widget QLabel project_crs_label
+2026-03-27 16:38:39,155 PyQt5.uic.uiparser DEBUG new topwidget self.layers_group
+2026-03-27 16:38:39,156 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout layers_toolbar_layout
+2026-03-27 16:38:39,156 PyQt5.uic.properties DEBUG setting property alternatingRowColors
+2026-03-27 16:38:39,156 PyQt5.uic.uiparser DEBUG push QTableWidget layers_table
+2026-03-27 16:38:39,157 PyQt5.uic.uiparser DEBUG pop widget QTableWidget layers_table
+2026-03-27 16:38:39,157 PyQt5.uic.uiparser DEBUG new topwidget self.layers_group
+2026-03-27 16:38:39,157 PyQt5.uic.uiparser DEBUG pop layout QVBoxLayout verticalLayout_layers
+2026-03-27 16:38:39,157 PyQt5.uic.uiparser DEBUG pop widget QGroupBox layers_group
+2026-03-27 16:38:39,157 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:39,157 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:39,157 PyQt5.uic.uiparser DEBUG push QGroupBox io_group
+2026-03-27 16:38:39,157 PyQt5.uic.uiparser DEBUG push QGridLayout gridLayout_io
+2026-03-27 16:38:39,157 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG push QLabel label_output_folder
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG pop widget QLabel label_output_folder
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG push QLineEdit output_folder_edit
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG pop widget QLineEdit output_folder_edit
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,158 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG push QPushButton output_browse_button
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG pop widget QPushButton output_browse_button
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,158 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG push QLabel label_potreeconverter_path
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG pop widget QLabel label_potreeconverter_path
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG push QLineEdit potreeconverter_path_edit
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG pop widget QLineEdit potreeconverter_path_edit
+2026-03-27 16:38:39,158 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,159 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG push QPushButton potreeconverter_browse_button
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG pop widget QPushButton potreeconverter_browse_button
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,159 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG push QLabel label_las_input
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG pop widget QLabel label_las_input
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG push QLineEdit las_input_edit
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG pop widget QLineEdit las_input_edit
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,159 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG push QPushButton las_browse_button
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG pop widget QPushButton las_browse_button
+2026-03-27 16:38:39,159 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,160 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG push QLabel label_project_name
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG pop widget QLabel label_project_name
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,160 PyQt5.uic.properties DEBUG setting property placeholderText
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG push QLineEdit project_name_edit
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG pop widget QLineEdit project_name_edit
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,160 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG push QLabel label_pointcloud_mode
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG pop widget QLabel label_pointcloud_mode
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG push QComboBox pointcloud_mode_combo
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG pop widget QComboBox pointcloud_mode_combo
+2026-03-27 16:38:39,160 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,160 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG push QLabel label_cesium_map
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG pop widget QLabel label_cesium_map
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG push QWidget cesium_elevation_widget
+2026-03-27 16:38:39,161 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:39,161 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:39,161 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:39,161 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:39,161 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_cesium_elevation
+2026-03-27 16:38:39,161 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG push QCheckBox cesium_map_checkbox
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG pop widget QCheckBox cesium_map_checkbox
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:39,161 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG push QLabel label_cesium_elevation
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG pop widget QLabel label_cesium_elevation
+2026-03-27 16:38:39,161 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property enabled
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property minimum
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property maximum
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property orientation
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG push QSlider cesium_elevation_slider
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG pop widget QSlider cesium_elevation_slider
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property enabled
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property decimals
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property minimum
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property maximum
+2026-03-27 16:38:39,162 PyQt5.uic.properties DEBUG setting property singleStep
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG push QDoubleSpinBox cesium_elevation_spinbox
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG pop widget QDoubleSpinBox cesium_elevation_spinbox
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_cesium_elevation
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG pop widget QWidget cesium_elevation_widget
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:39,162 PyQt5.uic.uiparser DEBUG pop layout QGridLayout gridLayout_io
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG pop widget QGroupBox io_group
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:39,163 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG push QGroupBox raster_group
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG push QFormLayout formLayout_raster
+2026-03-27 16:38:39,163 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG push QLabel label_raster_script
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG pop widget QLabel label_raster_script
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:39,163 PyQt5.uic.uiparser DEBUG push QWidget raster_script_widget
+2026-03-27 16:38:39,163 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:39,163 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:39,163 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:39,163 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:39,163 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_raster_script
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG push QLineEdit raster_script_edit
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG pop widget QLineEdit raster_script_edit
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG new topwidget self.raster_script_widget
+2026-03-27 16:38:39,164 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG push QPushButton raster_script_browse_button
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG pop widget QPushButton raster_script_browse_button
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG new topwidget self.raster_script_widget
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_raster_script
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG pop widget QWidget raster_script_widget
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:39,164 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG push QLabel label_raster_mode
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG pop widget QLabel label_raster_mode
+2026-03-27 16:38:39,164 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG push QComboBox raster_mode_combo
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG pop widget QComboBox raster_mode_combo
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG push QWidget raster_conversion_action_widget
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_raster_conversion_action
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG push QPushButton run_raster_conversion_button
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG pop widget QPushButton run_raster_conversion_button
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG new topwidget self.raster_conversion_action_widget
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property readOnly
+2026-03-27 16:38:39,165 PyQt5.uic.properties DEBUG setting property focusPolicy
+2026-03-27 16:38:39,165 PyQt5.uic.uiparser DEBUG push QLineEdit raster_backend_status_edit
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG pop widget QLineEdit raster_backend_status_edit
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG new topwidget self.raster_conversion_action_widget
+2026-03-27 16:38:39,166 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,166 PyQt5.uic.properties DEBUG setting property popupMode
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG push QToolButton raster_backend_button
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG pop widget QToolButton raster_backend_button
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG new topwidget self.raster_conversion_action_widget
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_raster_conversion_action
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG pop widget QWidget raster_conversion_action_widget
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:39,166 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG push QLabel label_raster_backend
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG pop widget QLabel label_raster_backend
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG pop layout QFormLayout formLayout_raster
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG pop widget QGroupBox raster_group
+2026-03-27 16:38:39,166 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:39,167 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG push QGroupBox actions_group
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_actions
+2026-03-27 16:38:39,167 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG push QPushButton convert_vectors_button
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG pop widget QPushButton convert_vectors_button
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG new topwidget self.actions_group
+2026-03-27 16:38:39,167 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG push QPushButton compile_button
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG pop widget QPushButton compile_button
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG new topwidget self.actions_group
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_actions
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG pop widget QGroupBox actions_group
+2026-03-27 16:38:39,167 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:39,167 PyQt5.uic.properties DEBUG setting property readOnly
+2026-03-27 16:38:39,167 PyQt5.uic.properties DEBUG setting property placeholderText
+2026-03-27 16:38:39,168 PyQt5.uic.uiparser DEBUG push QPlainTextEdit log_box
+2026-03-27 16:38:39,168 PyQt5.uic.uiparser DEBUG pop widget QPlainTextEdit log_box
+2026-03-27 16:38:39,168 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property orientation
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property standardButtons
+2026-03-27 16:38:39,168 PyQt5.uic.uiparser DEBUG push QDialogButtonBox button_box
+2026-03-27 16:38:39,168 PyQt5.uic.uiparser DEBUG pop widget QDialogButtonBox button_box
+2026-03-27 16:38:39,168 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property frameShape
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property frameShadow
+2026-03-27 16:38:39,168 PyQt5.uic.uiparser DEBUG push QFrame python_status_frame
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:39,168 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_python_status
+2026-03-27 16:38:39,169 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG push QLabel python_status_label
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG pop widget QLabel python_status_label
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG new topwidget self.python_status_frame
+2026-03-27 16:38:39,169 PyQt5.uic.properties DEBUG setting property toolTip
+2026-03-27 16:38:39,169 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG push QPushButton copy_python_path_button
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG pop widget QPushButton copy_python_path_button
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG new topwidget self.python_status_frame
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_python_status
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG pop widget QFrame python_status_frame
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG pop layout QVBoxLayout verticalLayout
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG pop widget QDialog PotreeCraftDialogBase
+2026-03-27 16:38:39,169 PyQt5.uic.uiparser DEBUG new topwidget None
+2026-03-27 16:38:48,549 PyQt5.uic.uiparser DEBUG uiname is PotreeCraftDialogBase
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG toplevel widget is QDialog
+2026-03-27 16:38:48,550 PyQt5.uic.properties DEBUG setting property geometry
+2026-03-27 16:38:48,550 PyQt5.uic.properties DEBUG setting property windowTitle
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG push QDialog PotreeCraftDialogBase
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG push QVBoxLayout verticalLayout
+2026-03-27 16:38:48,550 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG push QGroupBox layers_group
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG push QVBoxLayout verticalLayout_layers
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG push QHBoxLayout layers_toolbar_layout
+2026-03-27 16:38:48,550 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG push QPushButton refresh_layers_button
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG pop widget QPushButton refresh_layers_button
+2026-03-27 16:38:48,550 PyQt5.uic.uiparser DEBUG new topwidget self.layers_group
+2026-03-27 16:38:48,551 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,551 PyQt5.uic.properties DEBUG setting property alignment
+2026-03-27 16:38:48,551 PyQt5.uic.uiparser DEBUG push QLabel project_crs_label
+2026-03-27 16:38:48,551 PyQt5.uic.uiparser DEBUG pop widget QLabel project_crs_label
+2026-03-27 16:38:48,551 PyQt5.uic.uiparser DEBUG new topwidget self.layers_group
+2026-03-27 16:38:48,551 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout layers_toolbar_layout
+2026-03-27 16:38:48,551 PyQt5.uic.properties DEBUG setting property alternatingRowColors
+2026-03-27 16:38:48,551 PyQt5.uic.uiparser DEBUG push QTableWidget layers_table
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG pop widget QTableWidget layers_table
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG new topwidget self.layers_group
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG pop layout QVBoxLayout verticalLayout_layers
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG pop widget QGroupBox layers_group
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:48,552 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG push QGroupBox io_group
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG push QGridLayout gridLayout_io
+2026-03-27 16:38:48,552 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG push QLabel label_output_folder
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG pop widget QLabel label_output_folder
+2026-03-27 16:38:48,552 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG push QLineEdit output_folder_edit
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG pop widget QLineEdit output_folder_edit
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,553 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG push QPushButton output_browse_button
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG pop widget QPushButton output_browse_button
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,553 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG push QLabel label_potreeconverter_path
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG pop widget QLabel label_potreeconverter_path
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG push QLineEdit potreeconverter_path_edit
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG pop widget QLineEdit potreeconverter_path_edit
+2026-03-27 16:38:48,553 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,553 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,554 PyQt5.uic.uiparser DEBUG push QPushButton potreeconverter_browse_button
+2026-03-27 16:38:48,554 PyQt5.uic.uiparser DEBUG pop widget QPushButton potreeconverter_browse_button
+2026-03-27 16:38:48,554 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,554 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,554 PyQt5.uic.uiparser DEBUG push QLabel label_las_input
+2026-03-27 16:38:48,554 PyQt5.uic.uiparser DEBUG pop widget QLabel label_las_input
+2026-03-27 16:38:48,554 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG push QLineEdit las_input_edit
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG pop widget QLineEdit las_input_edit
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,555 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG push QPushButton las_browse_button
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG pop widget QPushButton las_browse_button
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,555 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG push QLabel label_project_name
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG pop widget QLabel label_project_name
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,555 PyQt5.uic.properties DEBUG setting property placeholderText
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG push QLineEdit project_name_edit
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG pop widget QLineEdit project_name_edit
+2026-03-27 16:38:48,555 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,555 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG push QLabel label_pointcloud_mode
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG pop widget QLabel label_pointcloud_mode
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG push QComboBox pointcloud_mode_combo
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG pop widget QComboBox pointcloud_mode_combo
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,556 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG push QLabel label_cesium_map
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG pop widget QLabel label_cesium_map
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG push QWidget cesium_elevation_widget
+2026-03-27 16:38:48,556 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:48,556 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:48,556 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:48,556 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:48,556 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:48,556 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_cesium_elevation
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG push QCheckBox cesium_map_checkbox
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG pop widget QCheckBox cesium_map_checkbox
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG push QLabel label_cesium_elevation
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG pop widget QLabel label_cesium_elevation
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property enabled
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property minimum
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property maximum
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property orientation
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG push QSlider cesium_elevation_slider
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG pop widget QSlider cesium_elevation_slider
+2026-03-27 16:38:48,557 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property enabled
+2026-03-27 16:38:48,557 PyQt5.uic.properties DEBUG setting property decimals
+2026-03-27 16:38:48,558 PyQt5.uic.properties DEBUG setting property minimum
+2026-03-27 16:38:48,558 PyQt5.uic.properties DEBUG setting property maximum
+2026-03-27 16:38:48,558 PyQt5.uic.properties DEBUG setting property singleStep
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG push QDoubleSpinBox cesium_elevation_spinbox
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG pop widget QDoubleSpinBox cesium_elevation_spinbox
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG new topwidget self.cesium_elevation_widget
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_cesium_elevation
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG pop widget QWidget cesium_elevation_widget
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG new topwidget self.io_group
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG pop layout QGridLayout gridLayout_io
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG pop widget QGroupBox io_group
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:48,558 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG push QGroupBox raster_group
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG push QFormLayout formLayout_raster
+2026-03-27 16:38:48,558 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG push QLabel label_raster_script
+2026-03-27 16:38:48,558 PyQt5.uic.uiparser DEBUG pop widget QLabel label_raster_script
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG push QWidget raster_script_widget
+2026-03-27 16:38:48,559 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:48,559 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:48,559 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:48,559 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:48,559 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_raster_script
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG push QLineEdit raster_script_edit
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG pop widget QLineEdit raster_script_edit
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG new topwidget self.raster_script_widget
+2026-03-27 16:38:48,559 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG push QPushButton raster_script_browse_button
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG pop widget QPushButton raster_script_browse_button
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG new topwidget self.raster_script_widget
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_raster_script
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG pop widget QWidget raster_script_widget
+2026-03-27 16:38:48,559 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:48,560 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG push QLabel label_raster_mode
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG pop widget QLabel label_raster_mode
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG push QComboBox raster_mode_combo
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG pop widget QComboBox raster_mode_combo
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG push QWidget raster_conversion_action_widget
+2026-03-27 16:38:48,560 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:48,560 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:48,560 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:48,560 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:48,560 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:48,560 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_raster_conversion_action
+2026-03-27 16:38:48,560 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG push QPushButton run_raster_conversion_button
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG pop widget QPushButton run_raster_conversion_button
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG new topwidget self.raster_conversion_action_widget
+2026-03-27 16:38:48,561 PyQt5.uic.properties DEBUG setting property readOnly
+2026-03-27 16:38:48,561 PyQt5.uic.properties DEBUG setting property focusPolicy
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG push QLineEdit raster_backend_status_edit
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG pop widget QLineEdit raster_backend_status_edit
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG new topwidget self.raster_conversion_action_widget
+2026-03-27 16:38:48,561 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,561 PyQt5.uic.properties DEBUG setting property popupMode
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG push QToolButton raster_backend_button
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG pop widget QToolButton raster_backend_button
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG new topwidget self.raster_conversion_action_widget
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_raster_conversion_action
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG pop widget QWidget raster_conversion_action_widget
+2026-03-27 16:38:48,561 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:48,561 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG push QLabel label_raster_backend
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG pop widget QLabel label_raster_backend
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG new topwidget self.raster_group
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG pop layout QFormLayout formLayout_raster
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG pop widget QGroupBox raster_group
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:48,562 PyQt5.uic.properties DEBUG setting property title
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG push QGroupBox actions_group
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_actions
+2026-03-27 16:38:48,562 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG push QPushButton convert_vectors_button
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG pop widget QPushButton convert_vectors_button
+2026-03-27 16:38:48,562 PyQt5.uic.uiparser DEBUG new topwidget self.actions_group
+2026-03-27 16:38:48,562 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG push QPushButton compile_button
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG pop widget QPushButton compile_button
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG new topwidget self.actions_group
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_actions
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG pop widget QGroupBox actions_group
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:48,563 PyQt5.uic.properties DEBUG setting property readOnly
+2026-03-27 16:38:48,563 PyQt5.uic.properties DEBUG setting property placeholderText
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG push QPlainTextEdit log_box
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG pop widget QPlainTextEdit log_box
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:48,563 PyQt5.uic.properties DEBUG setting property orientation
+2026-03-27 16:38:48,563 PyQt5.uic.properties DEBUG setting property standardButtons
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG push QDialogButtonBox button_box
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG pop widget QDialogButtonBox button_box
+2026-03-27 16:38:48,563 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:48,563 PyQt5.uic.properties DEBUG setting property frameShape
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property frameShadow
+2026-03-27 16:38:48,564 PyQt5.uic.uiparser DEBUG push QFrame python_status_frame
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property leftMargin
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property topMargin
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property rightMargin
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property bottomMargin
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property pyuicMargins
+2026-03-27 16:38:48,564 PyQt5.uic.uiparser DEBUG push QHBoxLayout horizontalLayout_python_status
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,564 PyQt5.uic.uiparser DEBUG push QLabel python_status_label
+2026-03-27 16:38:48,564 PyQt5.uic.uiparser DEBUG pop widget QLabel python_status_label
+2026-03-27 16:38:48,564 PyQt5.uic.uiparser DEBUG new topwidget self.python_status_frame
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property toolTip
+2026-03-27 16:38:48,564 PyQt5.uic.properties DEBUG setting property text
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG push QPushButton copy_python_path_button
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG pop widget QPushButton copy_python_path_button
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG new topwidget self.python_status_frame
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG pop layout QHBoxLayout horizontalLayout_python_status
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG pop widget QFrame python_status_frame
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG new topwidget PotreeCraftDialogBase
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG pop layout QVBoxLayout verticalLayout
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG pop widget QDialog PotreeCraftDialogBase
+2026-03-27 16:38:48,565 PyQt5.uic.uiparser DEBUG new topwidget None

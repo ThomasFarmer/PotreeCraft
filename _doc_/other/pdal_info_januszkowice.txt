@@ -1,0 +1,233 @@
+roll4hire@troll4hire-ASUS-TUF-Gaming-A15:~/vm_share$ pdal info januszkowice_zips/11_geoida.las 
+{
+  "file_size": 7414741208,
+  "filename": "januszkowice_zips/11_geoida.las",
+  "now": "2026-03-28T18:40:53+0100",
+  "pdal_version": "2.6.2 (git-version: Release)",
+  "reader": "readers.las",
+  "stats":
+  {
+    "bbox":
+    {
+      "EPSG:4326":
+      {
+        "bbox":
+        {
+          "maxx": 18.15944464,
+          "maxy": 50.40378791,
+          "maxz": 214.8098,
+          "minx": 18.14631417,
+          "miny": 50.39492703,
+          "minz": 170.9343
+        },
+        "boundary": { "type": "Polygon", "coordinates": [ [ [ 18.146314174977139, 50.394944244653061, 170.9343 ], [ 18.146341401481735, 50.403787913854913, 170.9343 ], [ 18.159444642368936, 50.40377069398783, 214.8098 ], [ 18.159414978058539, 50.394927030161675, 214.8098 ], [ 18.146314174977139, 50.394944244653061, 170.9343 ] ] ] }
+      },
+      "native":
+      {
+        "bbox":
+        {
+          "maxx": 6511334.602,
+          "maxy": 5585341.697,
+          "maxz": 214.8098,
+          "minx": 6510403.116,
+          "miny": 5584358.028,
+          "minz": 170.9343
+        },
+        "boundary": { "type": "Polygon", "coordinates": [ [ [ 6510403.1157, 5584358.028300000354648, 170.9343 ], [ 6510403.1157, 5585341.6968, 170.9343 ], [ 6511334.602400000207126, 5585341.6968, 214.8098 ], [ 6511334.602400000207126, 5584358.028300000354648, 214.8098 ], [ 6510403.1157, 5584358.028300000354648, 170.9343 ] ] ] }
+      }
+    },
+    "statistic":
+    [
+      {
+        "average": 6510879.013,
+        "count": 255680675,
+        "maximum": 6511334.602,
+        "minimum": 6510403.116,
+        "name": "X",
+        "position": 0,
+        "stddev": 209.6025858,
+        "variance": 43933.24396
+      },
+      {
+        "average": 5584839.115,
+        "count": 255680675,
+        "maximum": 5585341.697,
+        "minimum": 5584358.028,
+        "name": "Y",
+        "position": 1,
+        "stddev": 209.154881,
+        "variance": 43745.76425
+      },
+      {
+        "average": 184.5166699,
+        "count": 255680675,
+        "maximum": 214.8098,
+        "minimum": 170.9343,
+        "name": "Z",
+        "position": 2,
+        "stddev": 3.510211831,
+        "variance": 12.3215871
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Intensity",
+        "position": 3,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 1,
+        "count": 255680675,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "ReturnNumber",
+        "position": 4,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 1,
+        "count": 255680675,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "NumberOfReturns",
+        "position": 5,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 1,
+        "count": 255680675,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "ScanDirectionFlag",
+        "position": 6,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "EdgeOfFlightLine",
+        "position": 7,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Classification",
+        "position": 8,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "ScanAngleRank",
+        "position": 9,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "UserData",
+        "position": 10,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 1,
+        "count": 255680675,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "PointSourceId",
+        "position": 11,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 28707.40902,
+        "count": 255680675,
+        "maximum": 65535,
+        "minimum": 0,
+        "name": "Red",
+        "position": 12,
+        "stddev": 9499.128368,
+        "variance": 90233439.75
+      },
+      {
+        "average": 28737.47029,
+        "count": 255680675,
+        "maximum": 65535,
+        "minimum": 257,
+        "name": "Green",
+        "position": 13,
+        "stddev": 9084.889646,
+        "variance": 82535219.88
+      },
+      {
+        "average": 22118.41572,
+        "count": 255680675,
+        "maximum": 65535,
+        "minimum": 0,
+        "name": "Blue",
+        "position": 14,
+        "stddev": 8316.331502,
+        "variance": 69161369.65
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Synthetic",
+        "position": 15,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "KeyPoint",
+        "position": 16,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Withheld",
+        "position": 17,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 255680675,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Overlap",
+        "position": 18,
+        "stddev": 0,
+        "variance": 0
+      }
+    ]
+  }
+}

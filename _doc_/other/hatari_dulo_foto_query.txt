@@ -1,0 +1,25 @@
+degrees( azimuth( start_point($geometry), end_point($geometry) ) )
+
+--------------
+
+with_variable(
+  'w', 120,
+  with_variable(
+    'h', 67.5,
+    rotate(
+      make_polygon(
+        make_line(
+          array(
+            make_point(x($geometry) - @w/2, y($geometry) - @h/2),
+            make_point(x($geometry) + @w/2, y($geometry) - @h/2),
+            make_point(x($geometry) + @w/2, y($geometry) + @h/2),
+            make_point(x($geometry) - @w/2, y($geometry) + @h/2),
+            make_point(x($geometry) - @w/2, y($geometry) - @h/2)
+          )
+        )
+      ),
+      "heading",
+      $geometry
+    )
+  )
+)

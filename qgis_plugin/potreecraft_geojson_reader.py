@@ -185,6 +185,7 @@ class potree_html_generator:
         cls,
         pointcloud_name: str,
         pointcloud_display_mode: str = "rgb",
+        point_radius: float = 5.0,
         fallback_projection: str = "",
         cesium_map: bool = False,
         cesium_map_sea_level: float = 0.0,
@@ -204,12 +205,13 @@ class potree_html_generator:
                         pointcloud_display_mode,
                         fallback_projection,
                         cesium_map_sea_level,
+                        point_radius,
                     )
                 )
             else:
                 f.write(_template_default(pointcloud_name, pointcloud_display_mode))
 
-            f.write(_vector_classes_and_data())
+            f.write(_vector_classes_and_data(point_radius))
 
 
 def _active_attribute_name(pointcloud_display_mode: str) -> str:
@@ -298,6 +300,7 @@ def _template_cesium(
     pointcloud_display_mode: str,
     fallback_projection: str,
     sea_level: float,
+    point_radius: float,
 ) -> str:
     active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
     safe_fallback_projection = json.dumps(fallback_projection or "")
@@ -509,7 +512,7 @@ def _template_cesium(
 '''
 
 
-def _vector_classes_and_data() -> str:
+def _vector_classes_and_data(point_radius: float = 5.0) -> str:
     rows = []
     rows.append('''
     <script>
@@ -656,13 +659,18 @@ def _vector_classes_and_data() -> str:
             """
         const {name} = new CircleOnScreen(
             {coords},
-            5,
+            {point_radius},
             32,
             "{color}",
             0.75,
             "vectorclass");
         {name}.displaycircle();
-""".format(name=ft.get("linename"), coords=ft.get("coordinates"), color=ft.get("line_color"))
+""".format(
+                name=ft.get("linename"),
+                coords=ft.get("coordinates"),
+                point_radius=json.dumps(float(point_radius)),
+                color=ft.get("line_color"),
+            )
         )
 
     for ft in ply_gjs_feature_list:
@@ -692,6 +700,7 @@ def generate_potree_html(
     vector_folder: str | Path,
     project_name: str,
     pointcloud_display_mode: str = "rgb",
+    point_radius: float = 5.0,
     fallback_projection: str = "",
     cesium_map: bool = False,
     cesium_map_sea_level: float = 0.0,
@@ -723,6 +732,7 @@ def generate_potree_html(
     potree_html_generator.write_potree_html(
         project_name,
         pointcloud_display_mode=pointcloud_display_mode,
+        point_radius=point_radius,
         fallback_projection=fallback_projection,
         cesium_map=cesium_map,
         cesium_map_sea_level=cesium_map_sea_level,
@@ -737,6 +747,7 @@ def main() -> int:
     parser.add_argument("--vector-folder", required=True, help="Folder containing GeoJSON files.")
     parser.add_argument("--project-name", required=True, help="Pointcloud project name under pointclouds/.")
     parser.add_argument("--pointcloud-display-mode", default="rgb", choices=["intensity", "elevation", "rgb"], help="Default Potree pointcloud attribute to display.")
+    parser.add_argument("--point-radius", type=float, default=5.0, help="Radius used for point vector overlays.")
     parser.add_argument("--fallback-projection", default="", help="Fallback source projection (Proj4/EPSG) for Cesium camera sync.")
     parser.add_argument("--cesium-map", type=parse_bool, default=False, help="Enable Cesium 1.83 baseline map integration.")
     parser.add_argument("--cesium-map-sea-level", type=float, default=0.0, help="MAP_ELEVATION_OFFSET_M value.")
@@ -746,6 +757,7 @@ def main() -> int:
         vector_folder=args.vector_folder,
         project_name=args.project_name,
         pointcloud_display_mode=args.pointcloud_display_mode,
+        point_radius=args.point_radius,
         fallback_projection=args.fallback_projection,
         cesium_map=args.cesium_map,
         cesium_map_sea_level=args.cesium_map_sea_level,

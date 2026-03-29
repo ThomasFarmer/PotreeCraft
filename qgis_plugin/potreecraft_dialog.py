@@ -161,6 +161,7 @@ class CompileProjectWorker(QObject):
         project_name: str,
         vector_data_dir: Path,
         pointcloud_display_mode: str,
+        point_radius: float,
         projection: str,
         cesium_map: bool,
         cesium_map_sea_level: float,
@@ -172,6 +173,7 @@ class CompileProjectWorker(QObject):
         self.project_name = project_name
         self.vector_data_dir = vector_data_dir
         self.pointcloud_display_mode = pointcloud_display_mode
+        self.point_radius = point_radius
         self.projection = projection
         self.cesium_map = cesium_map
         self.cesium_map_sea_level = cesium_map_sea_level
@@ -185,6 +187,7 @@ class CompileProjectWorker(QObject):
                 project_name=self.project_name,
                 vector_data_dir=self.vector_data_dir,
                 pointcloud_display_mode=self.pointcloud_display_mode,
+                point_radius=self.point_radius,
                 projection=self.projection,
                 cesium_map=self.cesium_map,
                 cesium_map_sea_level=self.cesium_map_sea_level,
@@ -231,6 +234,14 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
         self.pointcloud_mode_combo.clear()
         self.pointcloud_mode_combo.addItems(POINTCLOUD_MODES)
+        self.point_radius_spinbox.setDecimals(3)
+        self.point_radius_spinbox.setMinimum(0.001)
+        self.point_radius_spinbox.setMaximum(1_000_000.0)
+        self.point_radius_spinbox.setSingleStep(0.5)
+        self.point_radius_spinbox.setValue(5.0)
+        self.point_radius_spinbox.setToolTip(
+            "Radius used for point vector overlays in the generated Potree HTML."
+        )
         self.cesium_elevation_slider.setValue(0)
         self.cesium_elevation_spinbox.setValue(0.0)
         self.cesium_map_checkbox.toggled.connect(self._on_cesium_map_toggled)
@@ -367,6 +378,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.compile_button.setEnabled(not busy)
         self.convert_vectors_button.setEnabled(not busy)
         self.refresh_layers_button.setEnabled(not busy)
+        self.point_radius_spinbox.setEnabled(not busy)
         self.las_browse_button.setEnabled(not busy)
         self.output_browse_button.setEnabled(not busy)
         self.potreeconverter_browse_button.setEnabled(not busy)
@@ -787,6 +799,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
         payload = {
             "pointcloud_default_display": self.pointcloud_mode_combo.currentText(),
+            "point_vector_radius": self.point_radius_spinbox.value(),
             "raster_default_display": self.raster_mode_combo.currentText(),
             "vector_export_dir": str(vector_export_dir),
             "layers": layers_data,
@@ -963,6 +976,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.log("Running Potree project compilation:")
         self.log(f"Using PotreeConverter executable: {potreeconverter_path}")
         self.log(f"Selected default pointcloud display: {self.pointcloud_mode_combo.currentText()}")
+        self.log(f"Selected point overlay radius: {self.point_radius_spinbox.value():.3f}")
         self.log(
             f"Cesium base map: {'enabled' if self.cesium_map_checkbox.isChecked() else 'disabled'}"
         )
@@ -978,6 +992,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 project_name=project_name,
                 vector_data_dir=vector_dir,
                 pointcloud_display_mode=self.pointcloud_mode_combo.currentText(),
+                point_radius=self.point_radius_spinbox.value(),
                 projection=projection_value,
                 cesium_map=self.cesium_map_checkbox.isChecked(),
                 cesium_map_sea_level=self.cesium_elevation_spinbox.value(),

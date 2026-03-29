@@ -1,0 +1,230 @@
+user@linuxmintpc:~/vm_share$ pdal info roadsection.las 
+{
+  "file_size": 406124845,
+  "filename": "roadsection.las",
+  "now": "2026-03-28T18:21:59+0100",
+  "pdal_version": "2.6.2 (git-version: Release)",
+  "reader": "readers.las",
+  "stats":
+  {
+    "bbox":
+    {
+      "native":
+      {
+        "bbox":
+        {
+          "maxx": 628443.0805,
+          "maxy": 134481.6943,
+          "maxz": 179.5549,
+          "minx": 628155.707,
+          "miny": 134384.4403,
+          "minz": 124.5953
+        },
+        "boundary": { "type": "Polygon", "coordinates": [ [ [ 628155.707000000053085, 134384.440250000014203, 124.5953 ], [ 628155.707000000053085, 134481.69425, 124.5953 ], [ 628443.080500000040047, 134481.69425, 179.5549 ], [ 628443.080500000040047, 134384.440250000014203, 179.5549 ], [ 628155.707000000053085, 134384.440250000014203, 124.5953 ] ] ] }
+      }
+    },
+    "statistic":
+    [
+      {
+        "average": 628193.6352,
+        "count": 11932887,
+        "maximum": 628443.0805,
+        "minimum": 628155.707,
+        "name": "X",
+        "position": 0,
+        "stddev": 20.21111359,
+        "variance": 408.4891124
+      },
+      {
+        "average": 134447.8544,
+        "count": 11932887,
+        "maximum": 134481.6943,
+        "minimum": 134384.4403,
+        "name": "Y",
+        "position": 1,
+        "stddev": 18.34135517,
+        "variance": 336.4053096
+      },
+      {
+        "average": 152.4288495,
+        "count": 11932887,
+        "maximum": 179.5549,
+        "minimum": 124.5953,
+        "name": "Z",
+        "position": 2,
+        "stddev": 2.935598044,
+        "variance": 8.617735875
+      },
+      {
+        "average": 34049.85339,
+        "count": 11932887,
+        "maximum": 65535,
+        "minimum": 0,
+        "name": "Intensity",
+        "position": 3,
+        "stddev": 5938.454031,
+        "variance": 35265236.28
+      },
+      {
+        "average": 1,
+        "count": 11932887,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "ReturnNumber",
+        "position": 4,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 1.091487416,
+        "count": 11932887,
+        "maximum": 4,
+        "minimum": 1,
+        "name": "NumberOfReturns",
+        "position": 5,
+        "stddev": 0.3122044032,
+        "variance": 0.09747158938
+      },
+      {
+        "average": 0.5075526987,
+        "count": 11932887,
+        "maximum": 1,
+        "minimum": 0,
+        "name": "ScanDirectionFlag",
+        "position": 6,
+        "stddev": 0.4999429744,
+        "variance": 0.2499429777
+      },
+      {
+        "average": 0.0008339976738,
+        "count": 11932887,
+        "maximum": 1,
+        "minimum": 0,
+        "name": "EdgeOfFlightLine",
+        "position": 7,
+        "stddev": 0.02886697406,
+        "variance": 0.0008333021915
+      },
+      {
+        "average": 2.769318942,
+        "count": 11932887,
+        "maximum": 4,
+        "minimum": 2,
+        "name": "Classification",
+        "position": 8,
+        "stddev": 0.9730294593,
+        "variance": 0.9467863288
+      },
+      {
+        "average": 3.082521522,
+        "count": 11932887,
+        "maximum": 127,
+        "minimum": -128,
+        "name": "ScanAngleRank",
+        "position": 9,
+        "stddev": 68.12841899,
+        "variance": 4641.481475
+      },
+      {
+        "average": 0,
+        "count": 11932887,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "UserData",
+        "position": 10,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 11932887,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "PointSourceId",
+        "position": 11,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 29269.90313,
+        "count": 11932887,
+        "maximum": 65280,
+        "minimum": 0,
+        "name": "Red",
+        "position": 12,
+        "stddev": 16165.61168,
+        "variance": 261327000.9
+      },
+      {
+        "average": 28478.25165,
+        "count": 11932887,
+        "maximum": 65280,
+        "minimum": 0,
+        "name": "Green",
+        "position": 13,
+        "stddev": 14130.05715,
+        "variance": 199658514.9
+      },
+      {
+        "average": 22557.19048,
+        "count": 11932887,
+        "maximum": 65280,
+        "minimum": 0,
+        "name": "Blue",
+        "position": 14,
+        "stddev": 14466.34673,
+        "variance": 209275187.7
+      },
+      {
+        "average": 306404.4369,
+        "count": 11932887,
+        "maximum": 306533.035,
+        "minimum": 306267.2775,
+        "name": "GpsTime",
+        "position": 15,
+        "stddev": 68.39042739,
+        "variance": 4677.250558
+      },
+      {
+        "average": 0,
+        "count": 11932887,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Synthetic",
+        "position": 16,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 11932887,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "KeyPoint",
+        "position": 17,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 11932887,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Withheld",
+        "position": 18,
+        "stddev": 0,
+        "variance": 0
+      },
+      {
+        "average": 0,
+        "count": 11932887,
+        "maximum": 0,
+        "minimum": 0,
+        "name": "Overlap",
+        "position": 19,
+        "stddev": 0,
+        "variance": 0
+      }
+    ]
+  }
+}
