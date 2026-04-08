@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/25.0.2 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36" version="25.0.2">
   <diagram name="Page-1" id="qLlJ5akEgfOCV4Ymi76i">
-    <mxGraphModel dx="837" dy="2082" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="598" dy="1953" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -249,7 +249,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="YahJ-7pBxUzkvYLmYztE-36" value="plugin icon" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#000000;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.container_registry_image;" vertex="1" parent="1">
-          <mxGeometry x="1688" y="915" width="48" height="48" as="geometry" />
+          <mxGeometry x="1688" y="905" width="48" height="48" as="geometry" />
         </mxCell>
         <mxCell id="YahJ-7pBxUzkvYLmYztE-37" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="YahJ-7pBxUzkvYLmYztE-8" target="YahJ-7pBxUzkvYLmYztE-36">
           <mxGeometry width="50" height="50" relative="1" as="geometry">

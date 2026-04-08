@@ -1,0 +1,27 @@
+classDiagram
+    class PotreeCraft {
+        +iface
+        +plugin_dir
+        +dlg
+        +actions
+        +menu
+        +toolbar
+        +tr(message)
+        +add_action(icon_path, text, callback, ...)
+        +initGui()
+        +unload()
+        +run()
+    }
+
+    class PotreeCraftDialog {
+        +refresh_vector_layers()
+        +show()
+        +exec_()
+    }
+
+    class QgsInterface
+    class QAction
+
+    PotreeCraft --> QgsInterface : uses
+    PotreeCraft --> QAction : creates
+    PotreeCraft --> PotreeCraftDialog : creates and shows

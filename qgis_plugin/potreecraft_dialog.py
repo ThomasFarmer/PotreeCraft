@@ -750,6 +750,27 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                     selected.append((row, layer))
         return selected
 
+    @staticmethod
+    def _sanitized_layer_filename(layer_name: str) -> str:
+        return layer_name.replace(" ", "_")
+
+    def _clear_previous_vector_exports(self, vector_out_dir: Path, selected_layers: List) -> None:
+        expected_names = {
+            f"{self._sanitized_layer_filename(layer.name())}.geojson"
+            for _, layer in selected_layers
+        }
+
+        removed = 0
+        for existing_file in vector_out_dir.glob("*.geojson"):
+            if existing_file.name not in expected_names:
+                existing_file.unlink()
+                removed += 1
+
+        if removed:
+            self.log(
+                f"Removed {removed} stale GeoJSON export(s) from previous layer selections."
+            )
+
     def _embed_layer_style_metadata(self, geojson_path: Path, color_hex: str) -> None:
         payload = json.loads(geojson_path.read_text(encoding="utf-8"))
         payload["potreecraft_style"] = {"color": color_hex}
@@ -819,14 +840,15 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
         self.log(f"Exporting {len(selected)} selected vector layer(s) to GeoJSON...")
 
-        vector_out_dir = output_dir / "vectors_geojson"
+        vector_out_dir = output_dir / "vectors" / "cache"
         vector_out_dir.mkdir(parents=True, exist_ok=True)
+        self._clear_previous_vector_exports(vector_out_dir, selected)
 
         transform_context = QgsProject.instance().transformContext()
         errors = []
 
         for _, layer in selected:
-            sanitized = layer.name().replace(" ", "_")
+            sanitized = self._sanitized_layer_filename(layer.name())
             out_file = vector_out_dir / f"{sanitized}.geojson"
             layer_color = self._layer_color_hex(layer)
             options = QgsVectorFileWriter.SaveVectorOptions()
