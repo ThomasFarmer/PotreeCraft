@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor User
+    participant Dialog as PotreeCraftDialog
+    participant Thread as QThread
+    participant Worker as RasterConversionWorker
+    participant LAS as potreecraft_lasreader.py
+    participant Blast as blast2dem
+    participant QGIS as QGIS iface
+    participant FS as Project Folder
+
+    User->>Dialog: Click "Run Raster Conversion"
+    Dialog->>Dialog: run_las_to_tif_conversion()
+    Dialog->>Dialog: validate LAS path + output folder + mode
+
+    alt PotreeCraft backend
+        Dialog->>Dialog: read project CRS EPSG code
+        Dialog->>Thread: _start_raster_worker(worker)
+        Thread->>Worker: run()
+        Worker->>LAS: convert_las_to_geotiff(input_las, raster_dir, epsg, mode)
+        LAS->>LAS: read LAS/LAZ with laspy
+        LAS->>LAS: aggregate values into raster grid
+        LAS->>FS: write GeoTIFF with rasterio
+        LAS-->>Worker: tif_out
+    else blast2dem backend
+        Dialog->>Thread: _start_raster_worker(worker)
+        Thread->>Worker: run()
+        Worker->>Blast: subprocess.run(blast2dem ...)
+        Blast-->>Worker: returncode/stdout/stderr/tif_out
+    end
+
+    Worker-->>Dialog: finished(result)
+    alt Conversion succeeded and output exists
+        Dialog->>QGIS: addRasterLayer(tif_out, layer_name)
+        QGIS-->>Dialog: raster layer
+        Dialog-->>User: success message
+    else Conversion failed
+        Dialog-->>User: warning message
+    end
+
+    Dialog->>Dialog: cleanup worker + re-enable UI

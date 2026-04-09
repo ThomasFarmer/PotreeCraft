@@ -1,0 +1,41 @@
+sequenceDiagram
+    actor User
+    participant Dialog as PotreeCraftDialog
+    participant Thread as QThread
+    participant CompileWorker as CompileProjectWorker
+    participant Core as potreecraft_core.py
+    participant Converter as PotreeConverter
+    participant FS as Output Folder
+    participant HTML as potreecraft_geojson_reader.py
+
+    User->>Dialog: Click "Compile"
+    Dialog->>Dialog: compile_project()
+    Dialog->>Dialog: validate output folder, PotreeConverter path, LAS/LAZ path
+    Dialog->>Dialog: _export_selected_vectors(show_messages=False)
+    Dialog->>Dialog: resolve project name + CRS projection
+    Dialog->>Thread: _start_compile_worker(worker)
+
+    Thread->>CompileWorker: run()
+    CompileWorker->>Core: compile_potree_project(...)
+    Core->>FS: create output directory
+    Core->>Converter: run `PotreeConverter -i input -o output -p project`
+    Converter-->>Core: stdout stream + exit code
+
+    alt PotreeConverter failed
+        Core-->>CompileWorker: raise RuntimeError
+        CompileWorker-->>Dialog: failed(error)
+        Dialog-->>User: warning message
+    else PotreeConverter succeeded
+        Core->>Core: verify output `libs/`
+        Core->>FS: copy plugin runtime libs into `output/libs/`
+        Core->>FS: copy exported GeoJSON files into `output/vectors/`
+        Core->>Core: resolve pointcloud name
+        Core->>HTML: generate_potree_html(vector_folder, project_name, ...)
+        HTML->>FS: write `potree_main.html`
+        HTML-->>Core: return code 0
+        Core-->>CompileWorker: success
+        CompileWorker-->>Dialog: finished(output_dir)
+        Dialog-->>User: compilation completed
+    end
+
+    Dialog->>Dialog: cleanup worker + re-enable UI
