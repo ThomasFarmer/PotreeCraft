@@ -64,7 +64,10 @@ def resolve_geojson_color(data: dict) -> str:
 
 
 class simple_geojson_reader:
+    """Read GeoJSON metadata and normalize features for Potree overlay generation."""
+
     def __init__(self, filepath):
+        """Load GeoJSON metadata and cache basic dataset properties."""
         self.filepath = filepath
         self.name = None
         self.crs = None
@@ -84,12 +87,14 @@ class simple_geojson_reader:
             self.feature_count = len(features)
 
     def print_metadata(self):
+        """Log a compact summary of the loaded GeoJSON dataset."""
         logging.info("Name: %s", self.name)
         logging.info("CRS info: %s", self.crs)
         logging.info("geometry info: %s", self.geomtype)
         logging.info("feature count: %s", self.feature_count)
 
     def extract_coordinates(self):
+        """Flatten supported geometries into Potree-ready feature collections."""
         with open(self.filepath, encoding="utf-8") as f:
             d = json.load(f)
 
@@ -180,6 +185,8 @@ class simple_geojson_reader:
 
 
 class potree_html_generator:
+    """Generate the main Potree HTML file together with vector overlay payloads."""
+
     @classmethod
     def write_potree_html(
         cls,
@@ -191,6 +198,7 @@ class potree_html_generator:
         cesium_map_sea_level: float = 0.0,
         output_dir: Path | None = None,
     ):
+        """Write the appropriate Potree HTML template into the output directory."""
         output_dir = Path(output_dir) if output_dir else Path(".")
         cesium_runtime_exists = (output_dir / "libs/Cesium183/Build/Cesium/Cesium.js").exists()
         effective_cesium_map = cesium_map and cesium_runtime_exists

@@ -159,7 +159,7 @@ class PotreeCraft:
         return action
 
     def initGui(self):
-        """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        """Register the plugin action in the QGIS toolbar and menu."""
 
         icon_path = ':/plugins/potreecraft/pc_icon_24.png'
         self.add_action(
@@ -170,7 +170,7 @@ class PotreeCraft:
 
 
     def unload(self):
-        """Removes the plugin menu item and icon from QGIS GUI."""
+        """Remove plugin actions and dispose of the dedicated toolbar."""
         for action in self.actions:
             self.iface.removePluginMenu(
                 self.tr(u'&PotreeCraft'),
@@ -181,7 +181,7 @@ class PotreeCraft:
 
 
     def run(self):
-        """Run method that performs all the real work"""
+        """Open the main dialog and refresh project-aware layer state."""
         if self.dlg is None:
             self.dlg = PotreeCraftDialog(self.iface)
         else:

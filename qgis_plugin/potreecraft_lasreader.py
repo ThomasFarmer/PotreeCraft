@@ -27,13 +27,17 @@ def _expand_degenerate_bounds(min_value: float, max_value: float, reference_span
 
 
 class FlatLas:
+    """Read a flat LAS/LAZ cloud, rasterize it, and save the result as GeoTIFF."""
+
     def __init__(self, input_path: Path, output_dir: Path, output_epsg: int, raster_mode: str):
+        """Store source, destination, CRS, and rasterization mode settings."""
         self.input_path = Path(input_path)
         self.output_dir = Path(output_dir)
         self.output_epsg = int(output_epsg)
         self.raster_mode = raster_mode.upper()
 
     def read_las(self) -> None:
+        """Load LAS/LAZ coordinates and per-point attributes into memory."""
         suffix = self.input_path.suffix.lower()
         if suffix == ".las":
             las = laspy.read(self.input_path)
@@ -56,6 +60,7 @@ class FlatLas:
         self.intensity = las.intensity
 
     def interpolate_las(self):
+        """Aggregate point values onto a fixed grid and build its georeferencing."""
         raw_min_x = float(self.x.min())
         raw_max_x = float(self.x.max())
         raw_min_y = float(self.y.min())
@@ -97,11 +102,13 @@ class FlatLas:
         return transform, zi
 
     def output_path(self) -> Path:
+        """Return the target GeoTIFF path derived from the current settings."""
         return self.output_dir / (
             f"{self.input_path.stem}_{self.output_epsg}_{self.raster_mode.lower()}.tif"
         )
 
     def save_tif(self, transform, zi) -> Path:
+        """Write the rasterized grid to disk as a single-band GeoTIFF."""
         output_path = self.output_path()
         with rasterio.open(
             output_path,
