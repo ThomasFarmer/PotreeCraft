@@ -9,7 +9,7 @@ qgisMaximumVersion=3.99
 
 # Provide a brief description of the plugin
 description=A potree scene constructor GUI
-version=2.1.2
+version=2.1.3
 license=GPL-2.0-or-later
 author=Béres Tamás
 email=berestamasbela@protonmail.com
