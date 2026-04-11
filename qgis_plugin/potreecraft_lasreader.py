@@ -11,14 +11,33 @@ from rasterio.transform import from_origin
 GRID_SIZE = 1000
 
 
+def _expand_degenerate_bounds(min_value: float, max_value: float, reference_span: float) -> tuple[float, float]:
+    span = max_value - min_value
+    if span > 0:
+        return min_value, max_value
+
+    if reference_span <= 0:
+        raise ValueError("LAS/LAZ extent is degenerate in both X and Y; cannot build raster grid.")
+
+    # Profile-like clouds can be valid while still having a zero-width axis.
+    padding = max(reference_span / GRID_SIZE, 1e-9)
+    half_padding = padding / 2.0
+    center = min_value
+    return center - half_padding, center + half_padding
+
+
 class FlatLas:
+    """Read a flat LAS/LAZ cloud, rasterize it, and save the result as GeoTIFF."""
+
     def __init__(self, input_path: Path, output_dir: Path, output_epsg: int, raster_mode: str):
+        """Store source, destination, CRS, and rasterization mode settings."""
         self.input_path = Path(input_path)
         self.output_dir = Path(output_dir)
         self.output_epsg = int(output_epsg)
         self.raster_mode = raster_mode.upper()
 
     def read_las(self) -> None:
+        """Load LAS/LAZ coordinates and per-point attributes into memory."""
         suffix = self.input_path.suffix.lower()
         if suffix == ".las":
             las = laspy.read(self.input_path)
@@ -41,18 +60,22 @@ class FlatLas:
         self.intensity = las.intensity
 
     def interpolate_las(self):
-        min_x = float(self.x.min())
-        max_x = float(self.x.max())
-        min_y = float(self.y.min())
-        max_y = float(self.y.max())
+        """Aggregate point values onto a fixed grid and build its georeferencing."""
+        raw_min_x = float(self.x.min())
+        raw_max_x = float(self.x.max())
+        raw_min_y = float(self.y.min())
+        raw_max_y = float(self.y.max())
 
         if self.raster_mode == "INTENSITY":
             values = np.asarray(self.intensity, dtype=np.float32)
         else:
             values = np.asarray(self.z, dtype=np.float32)
 
-        if max_x == min_x or max_y == min_y:
-            raise ValueError("LAS/LAZ extent is degenerate; cannot build raster grid.")
+        x_span = raw_max_x - raw_min_x
+        y_span = raw_max_y - raw_min_y
+
+        min_x, max_x = _expand_degenerate_bounds(raw_min_x, raw_max_x, y_span)
+        min_y, max_y = _expand_degenerate_bounds(raw_min_y, raw_max_y, x_span)
 
         x_scale = (GRID_SIZE - 1) / (max_x - min_x)
         y_scale = (GRID_SIZE - 1) / (max_y - min_y)
@@ -79,11 +102,13 @@ class FlatLas:
         return transform, zi
 
     def output_path(self) -> Path:
+        """Return the target GeoTIFF path derived from the current settings."""
         return self.output_dir / (
             f"{self.input_path.stem}_{self.output_epsg}_{self.raster_mode.lower()}.tif"
         )
 
     def save_tif(self, transform, zi) -> Path:
+        """Write the rasterized grid to disk as a single-band GeoTIFF."""
         output_path = self.output_path()
         with rasterio.open(
             output_path,

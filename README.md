@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 2.1.2
+###### version 2.1.3
 
 *rework in progress*
 
@@ -13,10 +13,9 @@ and you can download PotreeConverter 2.1.1 stable release from the project's [gi
 This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-Early build of v 2.1.2. 
+Early build of v 2.1.3. 
 Missing features / present bugs: 
 - Annotation points not supported yet.
-- Duplicate vector folder generation, shape to geojson to project import is not streamlined yet.
 - .laz not supported by default for tif generation. it might work in theory after we install the missing packages, but it was not tested yet.
 - for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux.
 - Plugin window is huge, might be a problem on older laptops. I might have to implement tabs once again.
@@ -79,7 +78,7 @@ After downloading the .zip file from releases (one marked as a plugin, not a cli
 After that, we may have to activate the plugin by going over to the ```Installed``` section and puttin a checkbox next to it.
 
 The interface in the current build looks like the following:
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/v2x_plugin_interface.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/v213_plugin_interface.png)
 
 In the top section we have a list of our current vector layers in the project, with some information on their type and color assigned. Other options are grayed out due to missing backend implmenetation for now. 
 
@@ -119,9 +118,12 @@ The vector layers all get a randomly generated color if we used the CLI, but wit
 
 
 ## Screenshots
-**Test output pointcloud with test vector data:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/cli_test_output1.png)
 
-**Test output pointcloud with openstreetmap data pulled with cesium, map elevated to 150 meters above sea level:**
+**Test output of the roadsection pointcloud with vector data showing some test linestring and polygon vectors imported:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/roadsection_with_lines.png)
+
+**Test output of the roadsection pointcloud with openstreetmap data pulled with cesium, map elevated to 150 meters above sea level:**
 ![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/cesium_map_level.png)
 
+**Test output of the field pointcloud with drone flight path vector data:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/hatari_flight_path.png)

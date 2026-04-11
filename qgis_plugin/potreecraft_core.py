@@ -21,10 +21,23 @@ def prepare_vectors_folder(source_vector_dir: Path, output_dir: Path):
     vectors_output_dir = output_dir / "vectors"
     vectors_output_dir.mkdir(parents=True, exist_ok=True)
 
+    expected_names = {
+        source_file.name
+        for source_file in source_vector_dir.iterdir()
+        if source_file.is_file() and source_file.suffix.lower() == ".geojson"
+    }
+
+    for existing_file in vectors_output_dir.glob("*.geojson"):
+        if existing_file.name not in expected_names:
+            existing_file.unlink()
+
     copied_files = 0
     for source_file in source_vector_dir.iterdir():
         if source_file.is_file() and source_file.suffix.lower() == ".geojson":
             target = vectors_output_dir / source_file.name
+            if source_file.resolve() == target.resolve():
+                copied_files += 1
+                continue
             target.write_bytes(source_file.read_bytes())
             copied_files += 1
 
@@ -73,6 +86,7 @@ def compile_potree_project(
     project_name: str,
     vector_data_dir: Path,
     pointcloud_display_mode: str = "rgb",
+    point_radius: float = 5.0,
     projection: str = "",
     cesium_map: bool = False,
     cesium_map_sea_level: float = 0.0,
@@ -144,6 +158,7 @@ def compile_potree_project(
         vector_folder=vectors_output_dir,
         project_name=pointcloud_name,
         pointcloud_display_mode=pointcloud_display_mode,
+        point_radius=point_radius,
         fallback_projection=projection,
         cesium_map=cesium_map,
         cesium_map_sea_level=cesium_map_sea_level,

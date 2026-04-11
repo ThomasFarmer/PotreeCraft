@@ -50,6 +50,8 @@ POTREECONVERTER_SETTINGS_KEY = "PotreeCraft/potreeconverter_path"
 
 
 class RasterConversionWorker(QObject):
+    """Background worker that converts LAS/LAZ input into a GeoTIFF raster."""
+
     finished = pyqtSignal(dict)
     failed = pyqtSignal(str)
 
@@ -62,6 +64,7 @@ class RasterConversionWorker(QObject):
         output_dir: Optional[Path] = None,
         output_epsg: Optional[int] = None,
     ):
+        """Store raster conversion settings for threaded execution."""
         super().__init__()
         self.backend = backend
         self.input_las = input_las
@@ -71,6 +74,7 @@ class RasterConversionWorker(QObject):
         self.output_epsg = output_epsg
 
     def run(self) -> None:
+        """Run the selected backend and emit either a result payload or an error."""
         try:
             if self.backend == RASTER_BACKEND_BLAST2DEM:
                 self.finished.emit(self._run_blast2dem())
@@ -81,6 +85,7 @@ class RasterConversionWorker(QObject):
             self.failed.emit(str(exc))
 
     def _run_blast2dem(self) -> dict:
+        """Execute the legacy `blast2dem` backend and capture its outputs."""
         if self.output_dir is None:
             raise ValueError("Output directory is required for blast2dem conversion.")
 
@@ -122,6 +127,7 @@ class RasterConversionWorker(QObject):
         }
 
     def _run_potreecraft(self) -> dict:
+        """Execute the built-in PotreeCraft raster conversion backend."""
         if self.output_epsg is None:
             raise ValueError("Output EPSG is required for PotreeCraft conversion.")
 
@@ -149,6 +155,8 @@ class RasterConversionWorker(QObject):
 
 
 class CompileProjectWorker(QObject):
+    """Background worker that compiles the Potree project off the UI thread."""
+
     finished = pyqtSignal(dict)
     failed = pyqtSignal(str)
     log_message = pyqtSignal(str)
@@ -161,10 +169,12 @@ class CompileProjectWorker(QObject):
         project_name: str,
         vector_data_dir: Path,
         pointcloud_display_mode: str,
+        point_radius: float,
         projection: str,
         cesium_map: bool,
         cesium_map_sea_level: float,
     ):
+        """Store project compilation options for later threaded execution."""
         super().__init__()
         self.potreeconverter_path = potreeconverter_path
         self.input_path = input_path
@@ -172,11 +182,13 @@ class CompileProjectWorker(QObject):
         self.project_name = project_name
         self.vector_data_dir = vector_data_dir
         self.pointcloud_display_mode = pointcloud_display_mode
+        self.point_radius = point_radius
         self.projection = projection
         self.cesium_map = cesium_map
         self.cesium_map_sea_level = cesium_map_sea_level
 
     def run(self) -> None:
+        """Compile the Potree project and forward progress messages to the UI."""
         try:
             compile_potree_project(
                 potreeconverter_path=self.potreeconverter_path,
@@ -185,6 +197,7 @@ class CompileProjectWorker(QObject):
                 project_name=self.project_name,
                 vector_data_dir=self.vector_data_dir,
                 pointcloud_display_mode=self.pointcloud_display_mode,
+                point_radius=self.point_radius,
                 projection=self.projection,
                 cesium_map=self.cesium_map,
                 cesium_map_sea_level=self.cesium_map_sea_level,
@@ -199,6 +212,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
     """PotreeCraft UI for vector export and project compilation."""
 
     def __init__(self, iface, parent=None):
+        """Build the dialog, wire signals, and load initial project state."""
         super().__init__(parent)
         self.setupUi(self)
         self.iface = iface
@@ -231,6 +245,14 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
         self.pointcloud_mode_combo.clear()
         self.pointcloud_mode_combo.addItems(POINTCLOUD_MODES)
+        self.point_radius_spinbox.setDecimals(3)
+        self.point_radius_spinbox.setMinimum(0.001)
+        self.point_radius_spinbox.setMaximum(1_000_000.0)
+        self.point_radius_spinbox.setSingleStep(0.5)
+        self.point_radius_spinbox.setValue(5.0)
+        self.point_radius_spinbox.setToolTip(
+            "Radius used for point vector overlays in the generated Potree HTML."
+        )
         self.cesium_elevation_slider.setValue(0)
         self.cesium_elevation_spinbox.setValue(0.0)
         self.cesium_map_checkbox.toggled.connect(self._on_cesium_map_toggled)
@@ -266,18 +288,22 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.refresh_vector_layers()
 
     def log(self, message: str) -> None:
+        """Append a message to the dialog log and mirror it into QGIS logs."""
         self.log_box.appendPlainText(message)
         self._log_qgis_message(message, Qgis.Info)
 
     def _log_qgis_message(self, message: str, level=Qgis.Info) -> None:
+        """Send a message to the QGIS message log under the plugin channel."""
         QgsMessageLog.logMessage(message, "PotreeCraft", level)
 
     def _show_warning(self, message: str) -> None:
+        """Log a warning and display it to the user in a modal dialog."""
         self.log(message)
         self._log_qgis_message(message, Qgis.Warning)
         QMessageBox.warning(self, "PotreeCraft", message)
 
     def _show_conversion_progress_dialog(self) -> QProgressDialog:
+        """Create the modal progress dialog shown during raster conversion."""
         progress = QProgressDialog(
             "Converting pointcloud, this may take a few moments...",
             "",
@@ -297,6 +323,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         return progress
 
     def _on_cesium_map_toggled(self, checked: bool) -> None:
+        """Enable or disable Cesium-related controls and log the new state."""
         self.cesium_elevation_slider.setEnabled(checked)
         self.cesium_elevation_spinbox.setEnabled(checked)
         state = "enabled" if checked else "disabled"
@@ -307,6 +334,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             )
 
     def _on_cesium_slider_changed(self, value: int) -> None:
+        """Keep the Cesium elevation spin box synchronized with the slider."""
         spinbox_value = value / 10.0
         if self.cesium_elevation_spinbox.value() != spinbox_value:
             self.cesium_elevation_spinbox.blockSignals(True)
@@ -314,6 +342,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.cesium_elevation_spinbox.blockSignals(False)
 
     def _on_cesium_spinbox_changed(self, value: float) -> None:
+        """Keep the Cesium elevation slider synchronized with the spin box."""
         slider_value = int(round(value * 10))
         if self.cesium_elevation_slider.value() != slider_value:
             self.cesium_elevation_slider.blockSignals(True)
@@ -321,6 +350,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.cesium_elevation_slider.blockSignals(False)
 
     def _show_compile_progress_dialog(self) -> QProgressDialog:
+        """Create the modal progress dialog shown during project compilation."""
         progress = QProgressDialog(
             "Compiling Potree project, this may take a few moments...",
             "",
@@ -340,6 +370,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         return progress
 
     def _set_raster_conversion_ui_busy(self, busy: bool) -> None:
+        """Toggle raster conversion widgets based on worker activity."""
         self.run_raster_conversion_button.setEnabled(not busy)
         self.raster_backend_button.setEnabled(not busy)
         self.raster_mode_combo.setEnabled(not busy)
@@ -348,6 +379,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.raster_script_browse_button.setEnabled(not busy and self._raster_backend == RASTER_BACKEND_BLAST2DEM)
 
     def _cleanup_raster_worker(self) -> None:
+        """Tear down raster worker state after success, failure, or cancellation."""
         if self._raster_progress_dialog is not None:
             self._raster_progress_dialog.close()
             self._raster_progress_dialog.deleteLater()
@@ -364,9 +396,11 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self._raster_worker = None
 
     def _set_compile_ui_busy(self, busy: bool) -> None:
+        """Toggle compilation-related widgets while the compile worker runs."""
         self.compile_button.setEnabled(not busy)
         self.convert_vectors_button.setEnabled(not busy)
         self.refresh_layers_button.setEnabled(not busy)
+        self.point_radius_spinbox.setEnabled(not busy)
         self.las_browse_button.setEnabled(not busy)
         self.output_browse_button.setEnabled(not busy)
         self.potreeconverter_browse_button.setEnabled(not busy)
@@ -379,6 +413,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.cesium_elevation_spinbox.setEnabled(cesium_controls_enabled)
 
     def _cleanup_compile_worker(self) -> None:
+        """Tear down compile worker state after the background task ends."""
         if self._compile_progress_dialog is not None:
             self._compile_progress_dialog.close()
             self._compile_progress_dialog.deleteLater()
@@ -395,6 +430,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self._compile_worker = None
 
     def _start_compile_worker(self, worker: CompileProjectWorker) -> None:
+        """Move a compile worker into a thread and connect its lifecycle hooks."""
         self._cleanup_compile_worker()
         self._set_compile_ui_busy(True)
         self._compile_progress_dialog = self._show_compile_progress_dialog()
@@ -414,6 +450,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         thread.start()
 
     def _start_raster_worker(self, worker: RasterConversionWorker) -> None:
+        """Move a raster worker into a thread and connect its lifecycle hooks."""
         self._cleanup_raster_worker()
         self._set_raster_conversion_ui_busy(True)
         self._raster_progress_dialog = self._show_conversion_progress_dialog()
@@ -432,6 +469,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         thread.start()
 
     def _on_raster_conversion_finished(self, result: dict) -> None:
+        """Handle successful raster conversion and load the output into QGIS."""
         try:
             backend = result["backend"]
             tif_out = Path(result["tif_out"])
@@ -472,6 +510,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self._cleanup_raster_worker()
 
     def _on_raster_conversion_failed(self, error_message: str) -> None:
+        """Handle raster conversion failures and restore the dialog state."""
         try:
             if self._raster_backend == RASTER_BACKEND_POTREECRAFT:
                 error_message = f"PotreeCraft (rasterio + numpy) failed: {error_message}"
@@ -480,6 +519,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self._cleanup_raster_worker()
 
     def _on_compile_finished(self, result: dict) -> None:
+        """Handle successful project compilation and notify the user."""
         try:
             output_dir = result.get("output_dir")
             if output_dir:
@@ -489,12 +529,14 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self._cleanup_compile_worker()
 
     def _on_compile_failed(self, error_message: str) -> None:
+        """Handle compilation failures and restore the dialog state."""
         try:
             self._show_warning(f"Compilation failed. Check the log for details.\n{error_message}")
         finally:
             self._cleanup_compile_worker()
 
     def _update_python_status(self) -> None:
+        """Show the active QGIS Python version and executable details."""
         version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
         install_root = Path(sys.executable).resolve().parent.parent
         self.python_status_label.setText(
@@ -503,10 +545,12 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.python_status_label.setToolTip(sys.executable)
 
     def _copy_python_path(self) -> None:
+        """Copy the current QGIS Python executable path to the clipboard."""
         QApplication.clipboard().setText(self._python_executable_path)
         self.log(f"Copied Python executable path: {self._python_executable_path}")
 
     def _browse_las_input(self) -> None:
+        """Prompt for a LAS/LAZ input file and infer a default project name."""
         path, _ = QFileDialog.getOpenFileName(
             self, "Select LAS/LAZ File", "", "LAS/LAZ (*.las *.laz);;All files (*.*)"
         )
@@ -516,27 +560,32 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 self.project_name_edit.setText(Path(path).stem)
 
     def _browse_output_folder(self) -> None:
+        """Prompt for the output folder used by exports and compilation."""
         path = QFileDialog.getExistingDirectory(self, "Select Project Folder", "")
         if path:
             self.output_folder_edit.setText(path)
             self.log(f"Selected project folder: {path}")
 
     def _load_potreeconverter_path(self) -> None:
+        """Load the saved PotreeConverter executable path from QGIS settings."""
         settings = QSettings()
         saved_path = settings.value(POTREECONVERTER_SETTINGS_KEY, "", type=str)
         if saved_path:
             self.potreeconverter_path_edit.setText(saved_path)
 
     def _save_potreeconverter_path(self, path: str) -> None:
+        """Persist the PotreeConverter executable path into QGIS settings."""
         QSettings().setValue(POTREECONVERTER_SETTINGS_KEY, path)
 
     def _persist_potreeconverter_path(self) -> None:
+        """Save the currently entered PotreeConverter path after editing."""
         path = self.potreeconverter_path_edit.text().strip()
         self._save_potreeconverter_path(path)
         if path:
             self.log(f"PotreeConverter executable path set: {path}")
 
     def _browse_potreeconverter_path(self) -> None:
+        """Prompt for the PotreeConverter executable and save the selection."""
         if sys.platform.startswith("win"):
             file_filter = "Executables (*.exe);;All files (*.*)"
         else:
@@ -554,6 +603,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.log(f"Selected PotreeConverter executable: {path}")
 
     def _browse_raster_script(self) -> None:
+        """Prompt for the optional external raster backend executable."""
         if self._raster_backend == RASTER_BACKEND_BLAST2DEM:
             title = "Select blast2dem Executable"
             file_filter = "Executables (*.exe *.bat *.cmd);;All files (*.*)"
@@ -566,6 +616,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.raster_script_edit.setText(path)
 
     def _init_raster_backend_menu(self) -> None:
+        """Build the raster backend selection menu and connect its actions."""
         menu = QMenu(self)
         action_group = QActionGroup(self)
         action_group.setExclusive(True)
@@ -584,6 +635,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self._update_raster_backend_ui()
 
     def _on_raster_backend_action_triggered(self, action) -> None:
+        """Switch the active raster backend when the user picks a menu item."""
         backend_key = action.data()
         if backend_key:
             self._raster_backend = backend_key
@@ -591,6 +643,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.log(f"Selected raster backend: {RASTER_BACKEND_LABELS[self._raster_backend]}")
 
     def _update_raster_backend_ui(self) -> None:
+        """Refresh labels, placeholders, and control states for the active backend."""
         self.raster_backend_status_edit.setText(RASTER_BACKEND_LABELS[self._raster_backend])
 
         if self._raster_backend == RASTER_BACKEND_BLAST2DEM:
@@ -616,6 +669,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             )
 
     def refresh_vector_layers(self) -> None:
+        """Reload vector layers from the current QGIS project into the table."""
         self.log("Refreshing vector layers from current project...")
         self._update_project_crs_label()
         self.layers_table.setRowCount(0)
@@ -635,6 +689,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.log(f"Loaded {len(vector_layers)} vector layer(s) from current project.")
 
     def _update_project_crs_label(self) -> None:
+        """Display the current project CRS in a readable status label."""
         project_crs = QgsProject.instance().crs()
         authid = project_crs.authid().strip()
         description = project_crs.description().strip()
@@ -651,6 +706,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.project_crs_label.setText(label_text)
 
     def _add_vector_layer_row(self, layer) -> None:
+        """Insert one vector layer row with export and annotation controls."""
         row = self.layers_table.rowCount()
         self.layers_table.insertRow(row)
 
@@ -699,6 +755,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self._annotation_desc_boxes[row] = desc_combo
 
     def _layer_from_row(self, row: int):
+        """Resolve the QGIS layer instance represented by a table row."""
         item = self.layers_table.item(row, 1)
         if item is None:
             return None
@@ -709,6 +766,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
     @staticmethod
     def _geometry_label(layer) -> str:
+        """Return a human-readable geometry label for a QGIS vector layer."""
         geom_type = QgsWkbTypes.geometryType(layer.wkbType())
         if geom_type == QgsWkbTypes.PointGeometry:
             return "Point"
@@ -720,6 +778,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
     @staticmethod
     def _layer_color_hex(layer) -> str:
+        """Extract the layer's renderer color or fall back to neutral gray."""
         try:
             symbol = layer.renderer().symbol()
             if symbol and symbol.color().isValid():
@@ -729,6 +788,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         return "#808080"
 
     def _selected_vector_layers(self) -> List:
+        """Collect all vector layers currently marked for export."""
         selected = []
         for row in range(self.layers_table.rowCount()):
             use_item = self.layers_table.item(row, 0)
@@ -738,7 +798,31 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                     selected.append((row, layer))
         return selected
 
+    @staticmethod
+    def _sanitized_layer_filename(layer_name: str) -> str:
+        """Convert a layer name into a filesystem-friendly GeoJSON basename."""
+        return layer_name.replace(" ", "_")
+
+    def _clear_previous_vector_exports(self, vector_out_dir: Path, selected_layers: List) -> None:
+        """Remove stale GeoJSON exports for layers that are no longer selected."""
+        expected_names = {
+            f"{self._sanitized_layer_filename(layer.name())}.geojson"
+            for _, layer in selected_layers
+        }
+
+        removed = 0
+        for existing_file in vector_out_dir.glob("*.geojson"):
+            if existing_file.name not in expected_names:
+                existing_file.unlink()
+                removed += 1
+
+        if removed:
+            self.log(
+                f"Removed {removed} stale GeoJSON export(s) from previous layer selections."
+            )
+
     def _embed_layer_style_metadata(self, geojson_path: Path, color_hex: str) -> None:
+        """Write PotreeCraft color metadata into an exported GeoJSON file."""
         payload = json.loads(geojson_path.read_text(encoding="utf-8"))
         payload["potreecraft_style"] = {"color": color_hex}
 
@@ -749,6 +833,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         geojson_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     def _validate_common_paths(self) -> Optional[Path]:
+        """Validate and create the common project output folder when needed."""
         output_dir = self.output_folder_edit.text().strip()
         if not output_dir:
             self._show_warning("Please set a project folder.")
@@ -758,6 +843,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         return out_path
 
     def _write_manifest(self, manifest_path: Path, vector_export_dir: Path) -> None:
+        """Write the project manifest describing exported layers and defaults."""
         layers_data = []
         for row in range(self.layers_table.rowCount()):
             layer = self._layer_from_row(row)
@@ -787,6 +873,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
         payload = {
             "pointcloud_default_display": self.pointcloud_mode_combo.currentText(),
+            "point_vector_radius": self.point_radius_spinbox.value(),
             "raster_default_display": self.raster_mode_combo.currentText(),
             "vector_export_dir": str(vector_export_dir),
             "layers": layers_data,
@@ -794,6 +881,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         manifest_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     def _export_selected_vectors(self, show_messages: bool = True) -> Optional[Path]:
+        """Export checked vector layers to GeoJSON and update the project manifest."""
         output_dir = self._validate_common_paths()
         if output_dir is None:
             return None
@@ -806,14 +894,15 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
         self.log(f"Exporting {len(selected)} selected vector layer(s) to GeoJSON...")
 
-        vector_out_dir = output_dir / "vectors_geojson"
+        vector_out_dir = output_dir / "vectors" / "cache"
         vector_out_dir.mkdir(parents=True, exist_ok=True)
+        self._clear_previous_vector_exports(vector_out_dir, selected)
 
         transform_context = QgsProject.instance().transformContext()
         errors = []
 
         for _, layer in selected:
-            sanitized = layer.name().replace(" ", "_")
+            sanitized = self._sanitized_layer_filename(layer.name())
             out_file = vector_out_dir / f"{sanitized}.geojson"
             layer_color = self._layer_color_hex(layer)
             options = QgsVectorFileWriter.SaveVectorOptions()
@@ -853,10 +942,12 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         return vector_out_dir
 
     def convert_selected_vectors(self) -> None:
+        """Run a manual export of the currently selected vector layers."""
         self.log("Convert Selected Vector Layers to Standard GeoJSON clicked.")
         self._export_selected_vectors(show_messages=True)
 
     def run_las_to_tif_conversion(self) -> None:
+        """Validate inputs and start LAS-to-GeoTIFF conversion in the background."""
         script_path_raw = self.raster_script_edit.text().strip()
         input_las_raw = self.las_input_edit.text().strip()
 
@@ -877,13 +968,11 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             if output_dir is None:
                 return
 
-            blast2dem_path = script_path_raw or "blast2dem"
             if script_path_raw:
                 blast2dem_executable = Path(script_path_raw).expanduser()
                 if not blast2dem_executable.exists():
                     self._show_warning(f"blast2dem executable not found:\n{blast2dem_executable}")
                     return
-                blast2dem_path = str(blast2dem_executable)
 
             legacy_flag = LEGACY_RASTER_MODE_FLAGS.get(mode)
             if not legacy_flag:
@@ -930,6 +1019,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         )
 
     def compile_project(self) -> None:
+        """Validate inputs, export vectors, and start Potree project compilation."""
         las_input_raw = self.las_input_edit.text().strip()
         output_dir = self._validate_common_paths()
         if output_dir is None:
@@ -965,6 +1055,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.log("Running Potree project compilation:")
         self.log(f"Using PotreeConverter executable: {potreeconverter_path}")
         self.log(f"Selected default pointcloud display: {self.pointcloud_mode_combo.currentText()}")
+        self.log(f"Selected point overlay radius: {self.point_radius_spinbox.value():.3f}")
         self.log(
             f"Cesium base map: {'enabled' if self.cesium_map_checkbox.isChecked() else 'disabled'}"
         )
@@ -980,6 +1071,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 project_name=project_name,
                 vector_data_dir=vector_dir,
                 pointcloud_display_mode=self.pointcloud_mode_combo.currentText(),
+                point_radius=self.point_radius_spinbox.value(),
                 projection=projection_value,
                 cesium_map=self.cesium_map_checkbox.isChecked(),
                 cesium_map_sea_level=self.cesium_elevation_spinbox.value(),

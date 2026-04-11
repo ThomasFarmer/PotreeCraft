@@ -1,4 +1,7 @@
 .idea/
 test_data/
+cmd_tool/__pycache__/
 qgis_plugin/__pycache__/
 qgis_plugin/zip_build
+__pycache__/
+*.pyc
