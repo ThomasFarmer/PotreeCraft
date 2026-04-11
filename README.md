@@ -78,7 +78,7 @@ After downloading the .zip file from releases (one marked as a plugin, not a cli
 After that, we may have to activate the plugin by going over to the ```Installed``` section and puttin a checkbox next to it.
 
 The interface in the current build looks like the following:
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/v213_plugin_interface.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/v213_plugin_interface.png)
 
 In the top section we have a list of our current vector layers in the project, with some information on their type and color assigned. Other options are grayed out due to missing backend implmenetation for now. 
 
@@ -120,10 +120,10 @@ The vector layers all get a randomly generated color if we used the CLI, but wit
 ## Screenshots
 
 **Test output of the roadsection pointcloud with vector data showing some test linestring and polygon vectors imported:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/roadsection_with_lines.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/roadsection_with_lines.png)
 
 **Test output of the roadsection pointcloud with openstreetmap data pulled with cesium, map elevated to 150 meters above sea level:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/cesium_map_level.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/cesium_map_level.png)
 
 **Test output of the field pointcloud with drone flight path vector data:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/hatari_flight_path.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/hatari_flight_path.png)
