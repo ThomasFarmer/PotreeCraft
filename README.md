@@ -8,9 +8,9 @@ This is an open source tool for beginner users of the potree project or colleagu
 The plugin itself relies on PotreeConverter:
 - PotreeConverter will create the blank Potree project itself, which later recieves the additional vector data files and a new homepage for the project with the necessary javascript code added.
 
-and you can download PotreeConverter 2.1.x stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/2.1.1).
+and you can download PotreeConverter 2.1.1 stable release from the project's [github page](https://github.com/potree/PotreeConverter/releases/tag/2.1.1).
 
-This project was created and tested with the version 2.1.x, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
+This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
 Early build of v 2.1.3. 
@@ -19,6 +19,7 @@ Missing features / present bugs:
 - .laz not supported by default for tif generation. it might work in theory after we install the missing packages, but it was not tested yet.
 - for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux.
 - Plugin window is huge, might be a problem on older laptops. I might have to implement tabs once again.
+- Windows tests were minimal, but not extensive for now. blast2dem seems operational, but the popup command line window remains empty. User has to wait patiently with no information on how the process is progressing, but in the end when the process closes, the raster layer will be imported. There is no way to customize blast2dem functionality yet, so pointclouds imported with that method look way worse compared to core backend.
 
 
 ## How to use the CLI tool
