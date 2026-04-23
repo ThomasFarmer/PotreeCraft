@@ -20,6 +20,7 @@ Missing features / present bugs:
 - for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux.
 - Plugin window is huge, might be a problem on older laptops. I might have to implement tabs once again.
 - Windows tests were minimal, but not extensive for now. blast2dem seems operational, but the popup command line window remains empty. User has to wait patiently with no information on how the process is progressing, but in the end when the process closes, the raster layer will be imported. There is no way to customize blast2dem functionality yet, so pointclouds imported with that method look way worse compared to core backend.
+- If we try to work with rasters on an empty project, the raster import gives an error for vector layers present in the project yet (user has to add one random vector layer for the import to function).
 
 
 ## How to use the CLI tool
