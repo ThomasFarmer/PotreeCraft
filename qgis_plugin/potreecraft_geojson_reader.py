@@ -4,8 +4,10 @@
 import argparse
 import json
 import logging
+import os
 import random
 import re
+import tempfile
 from pathlib import Path
 from os import listdir
 from os.path import join
@@ -15,8 +17,40 @@ lns_gjs_feature_list = []
 pts_gjs_feature_list = []
 ply_gjs_feature_list = []
 
+
+def _writable_log_path(filename: str) -> Path:
+    """Return a user-writable log path without depending on the current cwd."""
+    candidate_dirs = []
+
+    for env_var in ("APPDATA", "LOCALAPPDATA"):
+        base = os.environ.get(env_var)
+        if base:
+            candidate_dirs.append(Path(base) / "PotreeCraft" / "logs")
+
+    home = Path.home()
+    candidate_dirs.extend(
+        [
+            home / ".potreecraft" / "logs",
+            home / "PotreeCraft" / "logs",
+            Path(tempfile.gettempdir()) / "PotreeCraft" / "logs",
+        ]
+    )
+
+    for log_dir in candidate_dirs:
+        try:
+            log_dir.mkdir(parents=True, exist_ok=True)
+            log_path = log_dir / filename
+            with log_path.open("a", encoding="utf-8"):
+                pass
+            return log_path
+        except OSError:
+            continue
+
+    return Path(tempfile.gettempdir()) / filename
+
+
 logging.basicConfig(
-    filename="geojson_reader.log",
+    filename=str(_writable_log_path("geojson_reader.log")),
     filemode="a",
     format="%(asctime)s,%(msecs)03d %(name)s %(levelname)s %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",

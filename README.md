@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 2.1.3
+###### version 2.1.4
 
 *rework in progress*
 
@@ -13,7 +13,7 @@ and you can download PotreeConverter 2.1.1 stable release from the project's [gi
 This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-Early build of v 2.1.3. 
+Early build of v 2.1.4. 
 Missing features / present bugs: 
 - Annotation points not supported yet.
 - .laz not supported by default for tif generation. it might work in theory after we install the missing packages, but it was not tested yet.
