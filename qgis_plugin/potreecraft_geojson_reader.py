@@ -16,6 +16,7 @@ geojsonlist = []
 lns_gjs_feature_list = []
 pts_gjs_feature_list = []
 ply_gjs_feature_list = []
+annotation_gjs_feature_list = []
 
 
 def _writable_log_path(filename: str) -> Path:
@@ -97,12 +98,67 @@ def resolve_geojson_color(data: dict) -> str:
     return random_hex_color()
 
 
+def sanitized_layer_filename(layer_name: str) -> str:
+    """Match the GUI export naming used for GeoJSON layer files."""
+    return (layer_name or "").replace(" ", "_")
+
+
+def ensure_3d_coordinates(coorddata):
+    """Normalize a coordinate tuple/list into a three-value XYZ list."""
+    if not isinstance(coorddata, (list, tuple)) or len(coorddata) < 2:
+        return [0, 0, 0]
+    x = coorddata[0]
+    y = coorddata[1]
+    z = coorddata[2] if len(coorddata) >= 3 else 0
+    return [x, y, z]
+
+
+def point_mesh_height_scale(function_name: str) -> float:
+    """Return the vertical scale factor for mesh point rendering."""
+    if function_name == "point (mesh disc)":
+        return 1.0 / 6.0
+    return 1.0
+
+
+def stringify_feature_property(properties: dict, field_name: str) -> str:
+    """Extract a readable string value from feature properties for annotation text."""
+    if not field_name:
+        return ""
+    value = properties.get(field_name)
+    if value is None:
+        return ""
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, ensure_ascii=False)
+    return str(value)
+
+
+def load_manifest_layer_map(manifest_path: Path | None) -> dict:
+    """Load layer configuration metadata keyed by exported GeoJSON filename."""
+    if manifest_path is None or not manifest_path.exists():
+        return {}
+
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        logging.exception("Failed to read manifest: %s", manifest_path)
+        return {}
+
+    layer_map = {}
+    for layer in payload.get("layers", []):
+        layer_name = layer.get("name", "")
+        if not layer_name:
+            continue
+        layer_map[f"{sanitized_layer_filename(layer_name)}.geojson"] = layer
+    return layer_map
+
+
 class simple_geojson_reader:
     """Read GeoJSON metadata and normalize features for Potree overlay generation."""
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, layer_config=None):
         """Load GeoJSON metadata and cache basic dataset properties."""
         self.filepath = filepath
+        self.layer_config = layer_config or {}
         self.name = None
         self.crs = None
         self.geomtype = None
@@ -169,24 +225,12 @@ class simple_geojson_reader:
 
             elif gtype == "Point":
                 linectr += 1
-                pts_gjs_feature_list.append(
-                    {
-                        "line_color": lcolor,
-                        "coordinates": coorddata,
-                        "linename": js_identifier(f"{self.name}_{linectr}"),
-                    }
-                )
+                self._store_point_feature(coorddata, ft.get("properties", {}), lcolor, linectr)
 
             elif gtype == "MultiPoint":
                 for point in coorddata:
                     linectr += 1
-                    pts_gjs_feature_list.append(
-                        {
-                            "line_color": lcolor,
-                            "coordinates": point,
-                            "linename": js_identifier(f"{self.name}_{linectr}"),
-                        }
-                    )
+                    self._store_point_feature(point, ft.get("properties", {}), lcolor, linectr)
 
             elif gtype == "Polygon":
                 exterior = coorddata[0]
@@ -216,6 +260,32 @@ class simple_geojson_reader:
                             "linename": js_identifier(f"{self.name}_{linectr}"),
                         }
                     )
+
+    def _store_point_feature(self, coorddata, properties, layer_color: str, linectr: int) -> None:
+        """Store a point feature either as a vector point or a Potree annotation."""
+        function_name = self.layer_config.get("function", "point (circle)")
+        if function_name == "annotation":
+            annotation_cfg = self.layer_config.get("annotation", {})
+            title_field = annotation_cfg.get("title_field", "")
+            description_field = annotation_cfg.get("description_field", "")
+            annotation_gjs_feature_list.append(
+                {
+                    "coordinates": ensure_3d_coordinates(coorddata),
+                    "title": stringify_feature_property(properties, title_field),
+                    "description": stringify_feature_property(properties, description_field),
+                    "linename": js_identifier(f"{self.name}_{linectr}"),
+                }
+            )
+            return
+
+        pts_gjs_feature_list.append(
+            {
+                "line_color": layer_color,
+                "coordinates": ensure_3d_coordinates(coorddata),
+                "linename": js_identifier(f"{self.name}_{linectr}"),
+                "function": function_name,
+            }
+        )
 
 
 class potree_html_generator:
@@ -601,6 +671,39 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
             }
         }
 
+        class MeshPointOnScreen {
+            constructor(center, radius, heightScale, color, opacity, groupname) {
+                this.center = center;
+                this.radius = radius;
+                this.heightScale = heightScale;
+                this.color = color;
+                this.opacity = opacity;
+                this.groupname = groupname;
+            }
+
+            displaymesh() {
+                if (!THREE_CTX) return;
+
+                const geometry = new THREE_CTX.SphereGeometry(1, 18, 18);
+                const meshRadius = Math.max(this.radius, 0.001) * 0.3;
+                const material = new THREE_CTX.MeshNormalMaterial({
+                    transparent: true,
+                    opacity: this.opacity
+                });
+
+                const mesh = new THREE_CTX.Mesh(geometry, material);
+                mesh.position.set(this.center[0], this.center[1], this.center[2]);
+                mesh.scale.set(meshRadius, meshRadius, meshRadius * this.heightScale);
+                mesh.renderOrder = 999;
+
+                const meshGroup = new THREE_CTX.Group();
+                meshGroup.name = this.groupname;
+                meshGroup.renderOrder = 999;
+                meshGroup.add(mesh);
+                activeViewer.scene.scene.add(meshGroup);
+            }
+        }
+
         class LineOnScreen {
             constructor(coords, lcolor, lwidth, lopacity, groupname) {
                 this.coords = coords;
@@ -697,8 +800,29 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
         )
 
     for ft in pts_gjs_feature_list:
-        rows.append(
-            """
+        function_name = ft.get("function", "point (circle)")
+        if function_name in {"point (mesh sphere)", "point (mesh disc)"}:
+            rows.append(
+                """
+        const {name} = new MeshPointOnScreen(
+            {coords},
+            {point_radius},
+            {height_scale},
+            "{color}",
+            0.75,
+            "vectorclass");
+        {name}.displaymesh();
+""".format(
+                    name=ft.get("linename"),
+                    coords=json.dumps(ft.get("coordinates")),
+                    point_radius=json.dumps(float(point_radius)),
+                    height_scale=json.dumps(point_mesh_height_scale(function_name)),
+                    color=ft.get("line_color"),
+                )
+            )
+        else:
+            rows.append(
+                """
         const {name} = new CircleOnScreen(
             {coords},
             {point_radius},
@@ -708,10 +832,25 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
             "vectorclass");
         {name}.displaycircle();
 """.format(
-                name=ft.get("linename"),
-                coords=ft.get("coordinates"),
-                point_radius=json.dumps(float(point_radius)),
-                color=ft.get("line_color"),
+                    name=ft.get("linename"),
+                    coords=json.dumps(ft.get("coordinates")),
+                    point_radius=json.dumps(float(point_radius)),
+                    color=ft.get("line_color"),
+                )
+            )
+
+    for ft in annotation_gjs_feature_list:
+        rows.append(
+            """
+        activeViewer.scene.annotations.add(new Potree.Annotation({{
+            title: {title},
+            position: {coords},
+            description: {description}
+        }}));
+""".format(
+                title=json.dumps(ft.get("title", "")),
+                coords=json.dumps(ft.get("coordinates")),
+                description=json.dumps(ft.get("description", "")),
             )
         )
 
@@ -747,15 +886,18 @@ def generate_potree_html(
     cesium_map: bool = False,
     cesium_map_sea_level: float = 0.0,
     output_dir: str | Path | None = None,
+    manifest_path: str | Path | None = None,
 ) -> int:
-    global geojsonlist, lns_gjs_feature_list, pts_gjs_feature_list, ply_gjs_feature_list
+    global geojsonlist, lns_gjs_feature_list, pts_gjs_feature_list, ply_gjs_feature_list, annotation_gjs_feature_list
 
     geojsonlist = []
     lns_gjs_feature_list = []
     pts_gjs_feature_list = []
     ply_gjs_feature_list = []
+    annotation_gjs_feature_list = []
 
     folderpath = str(vector_folder)
+    layer_manifest_map = load_manifest_layer_map(Path(manifest_path) if manifest_path else None)
     geojsonlist = listdir(folderpath)
     if len(geojsonlist) == 0:
         print("This folder contains no data.")
@@ -765,7 +907,9 @@ def generate_potree_html(
         if not gjs.lower().endswith(".geojson"):
             continue
         try:
-            current_gjs = simple_geojson_reader(join(folderpath, gjs))
+            current_gjs = simple_geojson_reader(
+                join(folderpath, gjs), layer_config=layer_manifest_map.get(gjs, {})
+            )
             current_gjs.print_metadata()
             current_gjs.extract_coordinates()
         except Exception:
@@ -793,6 +937,7 @@ def main() -> int:
     parser.add_argument("--fallback-projection", default="", help="Fallback source projection (Proj4/EPSG) for Cesium camera sync.")
     parser.add_argument("--cesium-map", type=parse_bool, default=False, help="Enable Cesium 1.83 baseline map integration.")
     parser.add_argument("--cesium-map-sea-level", type=float, default=0.0, help="MAP_ELEVATION_OFFSET_M value.")
+    parser.add_argument("--manifest-path", default="", help="Optional PotreeCraft manifest path with per-layer function settings.")
     args = parser.parse_args()
 
     return generate_potree_html(
@@ -803,6 +948,7 @@ def main() -> int:
         fallback_projection=args.fallback_projection,
         cesium_map=args.cesium_map,
         cesium_map_sea_level=args.cesium_map_sea_level,
+        manifest_path=args.manifest_path or None,
     )
 
 

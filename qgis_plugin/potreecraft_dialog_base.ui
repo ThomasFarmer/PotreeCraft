@@ -15,411 +15,432 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="layers_group">
-     <property name="title">
-      <string>Project Vector Layers</string>
+    <widget class="QTabWidget" name="main_tab_widget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_layers">
-      <item>
-       <layout class="QHBoxLayout" name="layers_toolbar_layout">
+     <widget class="QWidget" name="pointcloud_tab">
+      <attribute name="title">
+       <string>Point Cloud Options</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_pointcloud_tab">
        <item>
-         <widget class="QPushButton" name="refresh_layers_button">
-          <property name="text">
-           <string>Refresh Layers</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="point_radius_label">
-          <property name="text">
-           <string>Point Radius</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDoubleSpinBox" name="point_radius_spinbox">
-          <property name="decimals">
-           <number>3</number>
-          </property>
-          <property name="minimum">
-           <double>0.001000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>1000000.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.500000000000000</double>
-          </property>
-          <property name="value">
-           <double>5.000000000000000</double>
-          </property>
-         </widget>
-        </item>
+        <widget class="QGroupBox" name="io_group">
+         <property name="title">
+          <string>Point Cloud + Output</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_io">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_output_folder">
+            <property name="text">
+             <string>Project Folder</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="output_folder_edit"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="output_browse_button">
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_potreeconverter_path">
+            <property name="text">
+             <string>PotreeConverter</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="potreeconverter_path_edit"/>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="potreeconverter_browse_button">
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_las_input">
+            <property name="text">
+             <string>Input LAS/LAZ</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="las_input_edit"/>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="las_browse_button">
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_project_name">
+            <property name="text">
+             <string>Project Name</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+           <widget class="QLineEdit" name="project_name_edit">
+            <property name="placeholderText">
+             <string>Optional. Defaults to LAS file stem.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_pointcloud_mode">
+            <property name="text">
+             <string>Default Pointcloud Display</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QComboBox" name="pointcloud_mode_combo"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_cesium_map">
+            <property name="text">
+             <string>Cesium Map</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="2">
+           <widget class="QWidget" name="cesium_elevation_widget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_cesium_elevation">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="cesium_map_checkbox">
+               <property name="text">
+                <string>Add Cesium Map Layer</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_cesium_elevation">
+               <property name="text">
+                <string>Elevation</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="cesium_elevation_slider">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>-1000</number>
+               </property>
+               <property name="maximum">
+                <number>30000</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="cesium_elevation_spinbox">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="minimum">
+                <double>-1000.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>3000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item>
-        <spacer name="horizontalSpacer_layers">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="project_crs_label">
-          <property name="text">
-           <string>Project CRS: not set</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QTableWidget" name="layers_table">
-        <property name="alternatingRowColors">
-         <bool>true</bool>
-        </property>
-        <column>
-         <property name="text">
-          <string>Use</string>
+        <widget class="QGroupBox" name="raster_group">
+         <property name="title">
+          <string>LAS to GeoTIFF Import</string>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Layer</string>
+         <layout class="QFormLayout" name="formLayout_raster">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_raster_script">
+            <property name="text">
+             <string>Conversion Script</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QWidget" name="raster_script_widget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_raster_script">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="raster_script_edit"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="raster_script_browse_button">
+               <property name="text">
+                <string>Browse</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_raster_mode">
+            <property name="text">
+             <string>Raster Display Mode</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="raster_mode_combo"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QWidget" name="raster_conversion_action_widget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_raster_conversion_action">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="run_raster_conversion_button">
+               <property name="text">
+                <string>   Run LAS-&gt;GeoTIFF and Add Raster Layer   </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="raster_backend_status_edit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="raster_backend_button">
+               <property name="text">
+                <string>Backend</string>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_raster_backend">
+            <property name="text">
+             <string>Conversion Backend</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="actions_group">
+         <property name="title">
+          <string>Actions</string>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Geometry</string>
+         <layout class="QHBoxLayout" name="horizontalLayout_actions">
+          <item>
+           <widget class="QPushButton" name="convert_vectors_button">
+            <property name="text">
+             <string>Convert Selected Vector Layers to Standard GeoJSON</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="compile_button">
+            <property name="text">
+             <string>Compile Potree Project</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="log_box">
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Color</string>
+         <property name="placeholderText">
+          <string>Process output and logs will appear here.</string>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Annotation</string>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="vectors_tab">
+      <attribute name="title">
+       <string>Project Vector Layers</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_vectors_tab">
+       <item>
+        <widget class="QGroupBox" name="layers_group">
+         <property name="title">
+          <string>Project Vector Layers</string>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Title Field</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Description Field</string>
-         </property>
-        </column>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="io_group">
-     <property name="title">
-      <string>Point Cloud + Output</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_io">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_output_folder">
-        <property name="text">
-         <string>Project Folder</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="output_folder_edit"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="output_browse_button">
-        <property name="text">
-         <string>Browse</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_potreeconverter_path">
-        <property name="text">
-         <string>PotreeConverter</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="potreeconverter_path_edit"/>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="potreeconverter_browse_button">
-        <property name="text">
-         <string>Browse</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_las_input">
-        <property name="text">
-         <string>Input LAS/LAZ</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="las_input_edit"/>
-      </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="las_browse_button">
-        <property name="text">
-         <string>Browse</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_project_name">
-        <property name="text">
-         <string>Project Name</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QLineEdit" name="project_name_edit">
-        <property name="placeholderText">
-         <string>Optional. Defaults to LAS file stem.</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_pointcloud_mode">
-        <property name="text">
-         <string>Default Pointcloud Display</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1" colspan="2">
-       <widget class="QComboBox" name="pointcloud_mode_combo"/>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_cesium_map">
-        <property name="text">
-         <string>Cesium Map</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1" colspan="2">
-       <widget class="QWidget" name="cesium_elevation_widget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_cesium_elevation">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QCheckBox" name="cesium_map_checkbox">
-           <property name="text">
-            <string>Add Cesium Map Layer</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_cesium_elevation">
-           <property name="text">
-            <string>Elevation</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="cesium_elevation_slider">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="minimum">
-            <number>-1000</number>
-           </property>
-           <property name="maximum">
-            <number>30000</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="cesium_elevation_spinbox">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="decimals">
-            <number>1</number>
-           </property>
-           <property name="minimum">
-            <double>-1000.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3000.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="raster_group">
-     <property name="title">
-      <string>LAS to GeoTIFF Import</string>
-     </property>
-     <layout class="QFormLayout" name="formLayout_raster">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_raster_script">
-        <property name="text">
-         <string>Conversion Script</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QWidget" name="raster_script_widget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_raster_script">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLineEdit" name="raster_script_edit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="raster_script_browse_button">
-           <property name="text">
-            <string>Browse</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_raster_mode">
-        <property name="text">
-         <string>Raster Display Mode</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="raster_mode_combo"/>
-      </item>
-      <item row="2" column="1">
-       <widget class="QWidget" name="raster_conversion_action_widget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_raster_conversion_action">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="run_raster_conversion_button">
-           <property name="text">
-            <string>   Run LAS-&gt;GeoTIFF and Add Raster Layer   </string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="raster_backend_status_edit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="raster_backend_button">
-           <property name="text">
-            <string>Backend</string>
-           </property>
-           <property name="popupMode">
-            <enum>QToolButton::InstantPopup</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_raster_backend">
-        <property name="text">
-         <string>Conversion Backend</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="actions_group">
-     <property name="title">
-      <string>Actions</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_actions">
-      <item>
-       <widget class="QPushButton" name="convert_vectors_button">
-        <property name="text">
-         <string>Convert Selected Vector Layers to Standard GeoJSON</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="compile_button">
-        <property name="text">
-         <string>Compile Potree Project</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPlainTextEdit" name="log_box">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-     <property name="placeholderText">
-      <string>Process output and logs will appear here.</string>
-     </property>
+         <layout class="QVBoxLayout" name="verticalLayout_layers">
+          <item>
+           <layout class="QHBoxLayout" name="layers_toolbar_layout">
+            <item>
+             <widget class="QPushButton" name="refresh_layers_button">
+              <property name="text">
+               <string>Refresh Layers</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="point_radius_label">
+              <property name="text">
+               <string>Point Radius</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="point_radius_spinbox">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>0.001000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000000.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.500000000000000</double>
+              </property>
+              <property name="value">
+               <double>5.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_layers">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="project_crs_label">
+              <property name="text">
+               <string>Project CRS: not set</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="layers_table">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <column>
+             <property name="text">
+              <string>Use</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Layer</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Geometry</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Color</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Function</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Title Field</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Description Field</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
