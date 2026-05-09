@@ -154,6 +154,8 @@ def compile_potree_project(
     if not pointcloud_name:
         raise RuntimeError("Could not resolve pointcloud project name for HTML generation.")
 
+    manifest_path = output_dir / "potreecraft_project_manifest.json"
+
     geojson_return_code = generate_potree_html(
         vector_folder=vectors_output_dir,
         project_name=pointcloud_name,
@@ -163,6 +165,7 @@ def compile_potree_project(
         cesium_map=cesium_map,
         cesium_map_sea_level=cesium_map_sea_level,
         output_dir=output_dir,
+        manifest_path=manifest_path if manifest_path.exists() else None,
     )
     if geojson_return_code != 0:
         raise RuntimeError(f"GeoJSON HTML generation exited with code {geojson_return_code}")

@@ -7,8 +7,9 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence
 
+import laspy
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QObject, QSettings, Qt, QThread, pyqtSignal
 from qgis.PyQt.QtGui import QColor
@@ -16,10 +17,10 @@ from qgis.PyQt.QtWidgets import (
     QAbstractItemView,
     QActionGroup,
     QApplication,
-    QCheckBox,
     QComboBox,
     QDialog,
     QFileDialog,
+    QHeaderView,
     QMenu,
     QMessageBox,
     QProgressDialog,
@@ -47,6 +48,25 @@ LEGACY_RASTER_MODE_FLAGS = {
     "elevation": "-elevation",
 }
 POTREECONVERTER_SETTINGS_KEY = "PotreeCraft/potreeconverter_path"
+VECTOR_FUNCTIONS = {
+    "Point": [
+        "point (circle)",
+        "point (mesh sphere)",
+        "point (mesh disc)",
+        "annotation",
+        "coordinates (measurement)",
+    ],
+    "LineString": [
+        "linestring",
+        "distance (measurement)",
+        "height (measurement)",
+        "height (profile)",
+    ],
+    "Polygon": [
+        "polygon",
+        "area (measurement)",
+    ],
+}
 
 
 class RasterConversionWorker(QObject):
@@ -219,7 +239,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self._python_executable_path = sys.executable
         self._raster_backend = RASTER_BACKEND_POTREECRAFT
 
-        self._annotation_checks: Dict[int, QCheckBox] = {}
+        self._function_boxes: Dict[int, QComboBox] = {}
         self._annotation_title_boxes: Dict[int, QComboBox] = {}
         self._annotation_desc_boxes: Dict[int, QComboBox] = {}
         self._raster_worker_thread: Optional[QThread] = None
@@ -270,13 +290,20 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 "Layer",
                 "Geometry",
                 "Color",
-                "Annotation",
+                "Function",
                 "Title Field",
                 "Description Field",
             ]
         )
         self.layers_table.verticalHeader().setVisible(False)
         self.layers_table.horizontalHeader().setStretchLastSection(True)
+        self.layers_table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.layers_table.setColumnWidth(0, 55)
+        self.layers_table.setColumnWidth(1, 180)
+        self.layers_table.setColumnWidth(2, 95)
+        self.layers_table.setColumnWidth(3, 95)
+        self.layers_table.setColumnWidth(4, 210)
+        self.layers_table.setColumnWidth(5, 160)
         self.layers_table.setSelectionMode(QAbstractItemView.NoSelection)
         self.layers_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.copy_python_path_button.setMaximumWidth(90)
@@ -673,7 +700,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.log("Refreshing vector layers from current project...")
         self._update_project_crs_label()
         self.layers_table.setRowCount(0)
-        self._annotation_checks.clear()
+        self._function_boxes.clear()
         self._annotation_title_boxes.clear()
         self._annotation_desc_boxes.clear()
 
@@ -706,7 +733,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.project_crs_label.setText(label_text)
 
     def _add_vector_layer_row(self, layer) -> None:
-        """Insert one vector layer row with export and annotation controls."""
+        """Insert one vector layer row with export and function controls."""
         row = self.layers_table.rowCount()
         self.layers_table.insertRow(row)
 
@@ -727,32 +754,79 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         color_item.setBackground(QColor(color_hex))
         self.layers_table.setItem(row, 3, color_item)
 
-        fields = [field.name() for field in layer.fields()]
-        point_layer = QgsWkbTypes.geometryType(layer.wkbType()) == QgsWkbTypes.PointGeometry
-
-        ann_check = QCheckBox()
-        ann_check.setEnabled(point_layer)
-        ann_check.setChecked(False)
-        self.layers_table.setCellWidget(row, 4, ann_check)
+        function_combo = QComboBox()
+        function_options = self._function_options_for_geometry(geom_label)
+        function_combo.addItems(function_options)
+        self.layers_table.setCellWidget(row, 4, function_combo)
 
         title_combo = QComboBox()
-        title_combo.addItem("(none)")
-        title_combo.addItems(fields)
         title_combo.setEnabled(False)
         self.layers_table.setCellWidget(row, 5, title_combo)
 
         desc_combo = QComboBox()
-        desc_combo.addItem("(none)")
-        desc_combo.addItems(fields)
         desc_combo.setEnabled(False)
         self.layers_table.setCellWidget(row, 6, desc_combo)
 
-        ann_check.toggled.connect(title_combo.setEnabled)
-        ann_check.toggled.connect(desc_combo.setEnabled)
+        function_combo.currentTextChanged.connect(
+            lambda value, current_row=row, title=title_combo, desc=desc_combo: self._apply_annotation_field_state(
+                current_row, value, title, desc
+            )
+        )
+        self._populate_annotation_field_boxes(row, title_combo, desc_combo)
+        self._apply_annotation_field_state(row, function_combo.currentText(), title_combo, desc_combo)
 
-        self._annotation_checks[row] = ann_check
+        self._function_boxes[row] = function_combo
         self._annotation_title_boxes[row] = title_combo
         self._annotation_desc_boxes[row] = desc_combo
+
+    @staticmethod
+    def _function_options_for_geometry(geometry_label: str) -> Sequence[str]:
+        """Return the allowed function choices for a geometry label."""
+        return VECTOR_FUNCTIONS.get(geometry_label, [geometry_label.lower()])
+
+    @staticmethod
+    def _is_annotation_function(function_name: str) -> bool:
+        """Return whether the selected function should enable annotation fields."""
+        return function_name == "annotation"
+
+    def _point_layer_field_names(self, row: int) -> List[str]:
+        """Return current attribute field names for the point layer in a table row."""
+        layer = self._layer_from_row(row)
+        if layer is None:
+            return []
+        if self._geometry_label(layer) != "Point":
+            return []
+        return [field.name() for field in layer.fields()]
+
+    def _populate_annotation_field_boxes(
+        self, row: int, title_combo: QComboBox, desc_combo: QComboBox
+    ) -> None:
+        """Refresh title/description field choices from the current point layer schema."""
+        title_current = title_combo.currentText() if title_combo.count() else "(none)"
+        desc_current = desc_combo.currentText() if desc_combo.count() else "(none)"
+        field_names = self._point_layer_field_names(row)
+
+        for combo, current_value in ((title_combo, title_current), (desc_combo, desc_current)):
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItem("(none)")
+            combo.addItems(field_names)
+            index = combo.findText(current_value)
+            combo.setCurrentIndex(index if index >= 0 else 0)
+            combo.blockSignals(False)
+
+    def _apply_annotation_field_state(
+        self, row: int, function_name: str, title_combo: QComboBox, desc_combo: QComboBox
+    ) -> None:
+        """Enable title/description controls only for point annotations."""
+        enabled = self._is_annotation_function(function_name)
+        if enabled:
+            self._populate_annotation_field_boxes(row, title_combo, desc_combo)
+        title_combo.setEnabled(enabled)
+        desc_combo.setEnabled(enabled)
+        if not enabled:
+            title_combo.setCurrentIndex(0)
+            desc_combo.setCurrentIndex(0)
 
     def _layer_from_row(self, row: int):
         """Resolve the QGIS layer instance represented by a table row."""
@@ -786,6 +860,65 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         except Exception:
             pass
         return "#808080"
+
+    @staticmethod
+    def _epsg_from_project_crs() -> Optional[int]:
+        """Return the current QGIS project EPSG code when it is explicitly set."""
+        project_authid = QgsProject.instance().crs().authid().strip()
+        if not project_authid.startswith("EPSG:"):
+            return None
+
+        try:
+            return int(project_authid.split(":", 1)[1])
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _epsg_from_las_header(input_las: Path) -> Optional[int]:
+        """Return the EPSG code declared in the LAS/LAZ header, if present."""
+        suffix = input_las.suffix.lower()
+
+        if suffix == ".laz":
+            available_backends = laspy.LazBackend.detect_available()
+            if not available_backends:
+                return None
+            las_handle = laspy.open(input_las, laz_backend=available_backends)
+        else:
+            las_handle = laspy.open(input_las)
+
+        with las_handle as las_file:
+            header = las_file.header
+            crs = header.parse_crs()
+            if crs is None:
+                return None
+            return crs.to_epsg()
+
+    def _resolve_raster_output_epsg(self, input_las: Path) -> Optional[int]:
+        """Resolve raster output EPSG from project CRS or fall back to the LAS header."""
+        project_epsg = self._epsg_from_project_crs()
+        if project_epsg is not None:
+            project_authid = QgsProject.instance().crs().authid().strip()
+            self.log(f"Using project CRS: {project_authid}")
+            return project_epsg
+
+        try:
+            las_epsg = self._epsg_from_las_header(input_las)
+        except Exception as exc:
+            self.log(f"Could not read LAS/LAZ CRS metadata from {input_las}: {exc}")
+            las_epsg = None
+
+        if las_epsg is not None:
+            self.log(
+                "Project CRS is not set to an EPSG code; "
+                f"falling back to LAS/LAZ header CRS: EPSG:{las_epsg}"
+            )
+            return las_epsg
+
+        self.log(
+            "Project CRS is not set to an EPSG code and the LAS/LAZ header has no usable CRS; "
+            "defaulting raster output CRS to EPSG:4326."
+        )
+        return 4326
 
     def _selected_vector_layers(self) -> List:
         """Collect all vector layers currently marked for export."""
@@ -852,9 +985,14 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
             use_item = self.layers_table.item(row, 0)
             use_layer = bool(use_item and use_item.checkState() == Qt.Checked)
-            ann_enabled = bool(self._annotation_checks[row].isChecked()) if row in self._annotation_checks else False
+            function_name = (
+                self._function_boxes[row].currentText()
+                if row in self._function_boxes
+                else self._function_options_for_geometry(self._geometry_label(layer))[0]
+            )
             title_field = self._annotation_title_boxes[row].currentText() if row in self._annotation_title_boxes else "(none)"
             desc_field = self._annotation_desc_boxes[row].currentText() if row in self._annotation_desc_boxes else "(none)"
+            annotation_enabled = self._is_annotation_function(function_name)
 
             layers_data.append(
                 {
@@ -862,11 +1000,18 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                     "name": layer.name(),
                     "use": use_layer,
                     "geometry": self._geometry_label(layer),
+                    "function": function_name,
                     "color": self._layer_color_hex(layer),
                     "annotation": {
-                        "enabled": ann_enabled,
-                        "title_field": "" if title_field == "(none)" else title_field,
-                        "description_field": "" if desc_field == "(none)" else desc_field,
+                        "enabled": annotation_enabled,
+                        "title_field": (
+                            "" if (not annotation_enabled or title_field == "(none)") else title_field
+                        ),
+                        "description_field": (
+                            ""
+                            if (not annotation_enabled or desc_field == "(none)")
+                            else desc_field
+                        ),
                     },
                 }
             )
@@ -996,17 +1141,12 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         if output_dir is None:
             return
 
-        project_authid = QgsProject.instance().crs().authid().strip()
-        if not project_authid.startswith("EPSG:"):
-            self._show_warning(
-                "PotreeCraft raster conversion requires the current QGIS project CRS to be an EPSG code."
-            )
+        output_epsg = self._resolve_raster_output_epsg(input_las)
+        if output_epsg is None:
             return
 
-        output_epsg = project_authid.split(":", 1)[1]
         self.log("Running LAS->GeoTIFF conversion:")
         self.log(f"Selected backend: {RASTER_BACKEND_LABELS[self._raster_backend]}")
-        self.log(f"Using project CRS: {project_authid}")
         self._start_raster_worker(
             RasterConversionWorker(
                 backend=self._raster_backend,
@@ -1014,7 +1154,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 mode=mode,
                 script_path_raw=script_path_raw,
                 output_dir=output_dir,
-                output_epsg=int(output_epsg),
+                output_epsg=output_epsg,
             )
         )
 

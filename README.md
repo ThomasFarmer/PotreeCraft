@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 2.1.4
+###### version 2.2.0
 
 *rework in progress*
 
@@ -13,14 +13,13 @@ and you can download PotreeConverter 2.1.1 stable release from the project's [gi
 This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-Early build of v 2.1.4. 
+Early build of v 2.2.0. 
 Missing features / present bugs: 
-- Annotation points not supported yet.
 - .laz not supported by default for tif generation. it might work in theory after we install the missing packages, but it was not tested yet.
 - for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux.
 - Plugin window is huge, might be a problem on older laptops. I might have to implement tabs once again.
 - Windows tests were minimal, but not extensive for now. blast2dem seems operational, but the popup command line window remains empty. User has to wait patiently with no information on how the process is progressing, but in the end when the process closes, the raster layer will be imported. There is no way to customize blast2dem functionality yet, so pointclouds imported with that method look way worse compared to core backend.
-- If we try to work with rasters on an empty project, the raster import gives an error for vector layers present in the project yet (user has to add one random vector layer for the import to function).
+- CLI tool is currently not up-to-date, and is lacking some features compared to the plugin.
 
 
 ## How to use the CLI tool
@@ -74,16 +73,19 @@ python3 potreecraft_cli.py -i /home/user/Documents/test_data/las/roadsection.las
 
 ## How to use the QGIS plugin
 
+The plugin can be found on the official QGIS repository, under the ID #4836. The plugin is still in experimental stage, so users must allow QGIS to extend plugin search in the software for experimental plugins as well.
+Link to the repository can be found here:  [plugins.qgis.org](https://plugins.qgis.org/plugins/potreecraft/#plugin-versions)
+Alternatively the installer can also be downloaded from this github repository, from the [Releases](https://github.com/ThomasFarmer/PotreeCraft/releases) section.
+
 After downloading the .zip file from releases (one marked as a plugin, not a cli tool), we can 
 ``` Plugins -> Manage and install plugins -> Install from .zip. ```
 After that, we may have to activate the plugin by going over to the ```Installed``` section and puttin a checkbox next to it.
 
-The interface in the current build looks like the following:
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/v213_plugin_interface.png)
+Due to clutter, the interface was split into two tabs. Let's discuss what we can see in when we lauch the plugin.
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/v220_plugin_interface_pointcloud.png)
 
-In the top section we have a list of our current vector layers in the project, with some information on their type and color assigned. Other options are grayed out due to missing backend implmenetation for now. 
 
-In the second section we have the core settings, such as:
+In the first section of the first tab we have the core settings, such as:
 - Project folder (previously output folder), this is where our files will be generated.
 - PotreeConverter: We have to point to our potreeconverter binary, so the plugin could reference it. Note, the whole project was written and tested using version 2.1.1. Other versions most likely will break the whole system.
 - Input LAS/LAZ: the pointcloud we'll use for conversion - both geotiff and potree. 
@@ -91,7 +93,7 @@ In the second section we have the core settings, such as:
 - Default pointcloud display: when the potree project is created, this property will be the default coloring the pointcloud will take. So far intensity, rbg, and elevation is supported.
 - Cesium map settings: We have the option to pull in an openstreetmap layer under our cloud, and set a default elevation level for this map layer. 
 
-Third section is related to the geotiff import:
+Second section is related to the geotiff import:
 - Built in converter / blast2dem: currently we have two options to import our pointcloud to qgis with this plugin. If neither works, a user might try to import it by hand through pdal.
 - Raster display mode: similar to pointcloud display, we have a few options on how to display our pointcloud as a raster layer: points should take intensity, rgb or elevation values. Currently rbg ends us being grayscale and not truly colorful, this is something i might have to look into later.
 - Run LAS->GeoTiff conversion and add as raster layer: quite self-explanatory, this will create a tif file, and import it as a raster to the project.
@@ -99,6 +101,14 @@ Third section is related to the geotiff import:
 Fourth section, actions: 
 - Convert selected vector layers into geojson: due to our implementation of potree's vector handling, we're relying on geojson format instead of shapefiles as we did in v. 1.0. This button exports our layers as geojson ones and puts them in our project folder. 
 - Compile Potree project: This is the button we want to push after we're done editing the settings. The project will convert and the files will be created in the project folder set in the first section.
+
+But before we do that, let's see what we can find on the second tab:
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/v220_plugin_interface_vectors.png)
+
+The second tab contains a list of our current vector layers in the project, with some information on their type and color assigned. Points can be displayed as circles, mesh spheres or mesh discs, with their radius value assigned in the top left corner. The function of each layer can be assigned here, by default they will be lines, points or polygons. Alternatively we can treat them as potree measurement features or annotations. Annotations require two set of values, one for title (always visible at the point's location), and one for description (only appearing on mouse hover). In this implementation these values are read out from the layer's attribute table. Users can select a field for each property, and the program will create annotations based on the contents of these.
+
+After selecting the role of each layer, we can go back to our first tab and compile the project.
+
 
 ## How to view the potree project
 
@@ -120,6 +130,8 @@ The vector layers all get a randomly generated color if we used the CLI, but wit
 
 ## Screenshots
 
+### Test projects
+
 **Test output of the roadsection pointcloud with vector data showing some test linestring and polygon vectors imported:**
 ![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/roadsection_with_lines.png)
 
@@ -128,3 +140,26 @@ The vector layers all get a randomly generated color if we used the CLI, but wit
 
 **Test output of the field pointcloud with drone flight path vector data:**
 ![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/hatari_flight_path.png)
+
+### Single features
+
+**A point layer feature as a mesh sphere:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_mesh_sphere.png)
+
+**A point layer as a mesh disc:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_mesh_disc.png)
+
+**A point layer as a circle:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_circle.png)
+
+**A point layer as an annotation:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_annotation.png)
+
+**A linestring layer as a profile measurement:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls_profile.png)
+
+**A linestring layer as a height measurement:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls_height.png)
+
+**A polygon layer as an area measurement:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/plg_area.png)
