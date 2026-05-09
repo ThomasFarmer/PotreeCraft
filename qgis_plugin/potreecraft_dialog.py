@@ -20,6 +20,7 @@ from qgis.PyQt.QtWidgets import (
     QComboBox,
     QDialog,
     QFileDialog,
+    QHeaderView,
     QMenu,
     QMessageBox,
     QProgressDialog,
@@ -296,6 +297,13 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         )
         self.layers_table.verticalHeader().setVisible(False)
         self.layers_table.horizontalHeader().setStretchLastSection(True)
+        self.layers_table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.layers_table.setColumnWidth(0, 55)
+        self.layers_table.setColumnWidth(1, 180)
+        self.layers_table.setColumnWidth(2, 95)
+        self.layers_table.setColumnWidth(3, 95)
+        self.layers_table.setColumnWidth(4, 210)
+        self.layers_table.setColumnWidth(5, 160)
         self.layers_table.setSelectionMode(QAbstractItemView.NoSelection)
         self.layers_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.copy_python_path_button.setMaximumWidth(90)

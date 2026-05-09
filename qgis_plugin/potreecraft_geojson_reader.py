@@ -120,6 +120,13 @@ def point_mesh_height_scale(function_name: str) -> float:
     return 1.0
 
 
+def line_vertices_3d(coorddata) -> list[list[float]]:
+    """Normalize a line coordinate sequence into XYZ vertex triplets."""
+    if not isinstance(coorddata, (list, tuple)):
+        return []
+    return [ensure_3d_coordinates(vertex) for vertex in coorddata if isinstance(vertex, (list, tuple))]
+
+
 def stringify_feature_property(properties: dict, field_name: str) -> str:
     """Extract a readable string value from feature properties for annotation text."""
     if not field_name:
@@ -197,31 +204,13 @@ class simple_geojson_reader:
             coorddata = geom.get("coordinates")
 
             if gtype == "LineString":
-                coordsmerged = []
-                for coordinates in coorddata:
-                    coordsmerged = coordsmerged + coordinates
                 linectr += 1
-                lns_gjs_feature_list.append(
-                    {
-                        "line_color": lcolor,
-                        "coordinates": coordsmerged,
-                        "linename": js_identifier(f"{self.name}_{linectr}"),
-                    }
-                )
+                self._store_line_feature(coorddata, lcolor, linectr)
 
             elif gtype == "MultiLineString":
                 for line in coorddata:
-                    coordsmerged = []
-                    for coordinates in line:
-                        coordsmerged = coordsmerged + coordinates
                     linectr += 1
-                    lns_gjs_feature_list.append(
-                        {
-                            "line_color": lcolor,
-                            "coordinates": coordsmerged,
-                            "linename": js_identifier(f"{self.name}_{linectr}"),
-                        }
-                    )
+                    self._store_line_feature(line, lcolor, linectr)
 
             elif gtype == "Point":
                 linectr += 1
@@ -243,6 +232,7 @@ class simple_geojson_reader:
                         "line_color": lcolor,
                         "coordinates": exterior_3d,
                         "linename": js_identifier(f"{self.name}_{linectr}"),
+                        "function": self.layer_config.get("function", "polygon"),
                     }
                 )
 
@@ -258,6 +248,7 @@ class simple_geojson_reader:
                             "line_color": lcolor,
                             "coordinates": exterior_3d,
                             "linename": js_identifier(f"{self.name}_{linectr}"),
+                            "function": self.layer_config.get("function", "polygon"),
                         }
                     )
 
@@ -284,6 +275,26 @@ class simple_geojson_reader:
                 "coordinates": ensure_3d_coordinates(coorddata),
                 "linename": js_identifier(f"{self.name}_{linectr}"),
                 "function": function_name,
+            }
+        )
+
+    def _store_line_feature(self, coorddata, layer_color: str, linectr: int) -> None:
+        """Store a line feature either as a vector line, measurement, or profile."""
+        vertices = line_vertices_3d(coorddata)
+        if len(vertices) < 2:
+            return
+
+        coordsmerged = []
+        for vertex in vertices:
+            coordsmerged.extend(vertex)
+
+        lns_gjs_feature_list.append(
+            {
+                "line_color": layer_color,
+                "coordinates": coordsmerged,
+                "vertices": vertices,
+                "linename": js_identifier(f"{self.name}_{linectr}"),
+                "function": self.layer_config.get("function", "linestring"),
             }
         )
 
@@ -635,11 +646,12 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
         }
 
         class CircleOnScreen {
-            constructor(center, radius, segments, color, opacity, groupname) {
+            constructor(center, radius, segments, color, lwidth, opacity, groupname) {
                 this.center = center;
                 this.radius = radius;
                 this.segments = segments;
                 this.color = color;
+                this.lwidth = lwidth;
                 this.opacity = opacity;
                 this.groupname = groupname;
             }
@@ -660,7 +672,7 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
                     color: this.color,
                     transparent: true,
                     opacity: this.opacity,
-                    linewidth: 1
+                    linewidth: this.lwidth
                 });
 
                 const circle = new THREE_CTX.LineLoop(geometry, material);
@@ -734,6 +746,57 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
             }
         }
 
+        function addLineVertices(target, vertices) {
+            for (const vertex of vertices) {
+                target.addMarker(new THREE_CTX.Vector3(vertex[0], vertex[1], vertex[2]));
+            }
+        }
+
+        function createDistanceMeasurement(vertices) {
+            const measure = new Potree.Measure();
+            measure.closed = false;
+            measure.showDistances = true;
+            measure.showCoordinates = false;
+            addLineVertices(measure, vertices);
+            activeViewer.scene.addMeasurement(measure);
+        }
+
+        function createHeightMeasurement(vertices) {
+            const measure = new Potree.Measure();
+            measure.closed = false;
+            measure.showDistances = false;
+            measure.showHeight = true;
+            measure.showCoordinates = false;
+            const endpoints = [vertices[0], vertices[vertices.length - 1]];
+            addLineVertices(measure, endpoints);
+            activeViewer.scene.addMeasurement(measure);
+        }
+
+        function createHeightProfile(vertices) {
+            const profile = new Potree.Profile();
+            profile.setWidth(6);
+            addLineVertices(profile, vertices);
+            activeViewer.scene.addProfile(profile);
+        }
+
+        function createCoordinateMeasurement(vertex) {
+            const measure = new Potree.Measure();
+            measure.showDistances = false;
+            measure.showCoordinates = true;
+            measure.maxMarkers = 1;
+            measure.addMarker(new THREE_CTX.Vector3(vertex[0], vertex[1], vertex[2]));
+            activeViewer.scene.addMeasurement(measure);
+        }
+
+        function createAreaMeasurement(vertices) {
+            const measure = new Potree.Measure();
+            measure.closed = true;
+            measure.showArea = true;
+            measure.showDistances = true;
+            addLineVertices(measure, vertices);
+            activeViewer.scene.addMeasurement(measure);
+        }
+
         class PolygonOnScreen {
             constructor(points, color, opacity, groupname) {
                 this.points = points;
@@ -787,8 +850,28 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
 ''')
 
     for ft in lns_gjs_feature_list:
-        rows.append(
-            """
+        function_name = ft.get("function", "linestring")
+        if function_name == "distance (measurement)":
+            rows.append(
+                """
+        createDistanceMeasurement({vertices});
+""".format(vertices=json.dumps(ft.get("vertices")))
+            )
+        elif function_name == "height (measurement)":
+            rows.append(
+                """
+        createHeightMeasurement({vertices});
+""".format(vertices=json.dumps(ft.get("vertices")))
+            )
+        elif function_name == "height (profile)":
+            rows.append(
+                """
+        createHeightProfile({vertices});
+""".format(vertices=json.dumps(ft.get("vertices")))
+            )
+        else:
+            rows.append(
+                """
         const {name} = new LineOnScreen(
             {coords},
             "{color}",
@@ -797,11 +880,17 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
             "vectorclass");
         {name}.displayline();
 """.format(name=ft.get("linename"), coords=ft.get("coordinates"), color=ft.get("line_color"))
-        )
+            )
 
     for ft in pts_gjs_feature_list:
         function_name = ft.get("function", "point (circle)")
-        if function_name in {"point (mesh sphere)", "point (mesh disc)"}:
+        if function_name == "coordinates (measurement)":
+            rows.append(
+                """
+        createCoordinateMeasurement({coords});
+""".format(coords=json.dumps(ft.get("coordinates")))
+            )
+        elif function_name in {"point (mesh sphere)", "point (mesh disc)"}:
             rows.append(
                 """
         const {name} = new MeshPointOnScreen(
@@ -828,6 +917,7 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
             {point_radius},
             32,
             "{color}",
+            3,
             0.75,
             "vectorclass");
         {name}.displaycircle();
@@ -855,8 +945,16 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
         )
 
     for ft in ply_gjs_feature_list:
-        rows.append(
-            """
+        function_name = ft.get("function", "polygon")
+        if function_name == "area (measurement)":
+            rows.append(
+                """
+        createAreaMeasurement({coords});
+""".format(coords=json.dumps(ft.get("coordinates")))
+            )
+        else:
+            rows.append(
+                """
         const {name} = new PolygonOnScreen(
             {coords},
             "{color}",
@@ -864,7 +962,7 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
             "vectorclass");
         {name}.displaypolygon();
 """.format(name=ft.get("linename"), coords=json.dumps(ft.get("coordinates")), color=ft.get("line_color"))
-        )
+            )
 
     rows.append(
         """
