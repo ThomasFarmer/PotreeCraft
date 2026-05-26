@@ -4,7 +4,12 @@ pytest.importorskip("qgis.core")
 
 
 def test_dialog_initializes_with_qgis(qgis_iface):
-    from qgis_plugin.potreecraft_dialog import POINTCLOUD_MODES, PotreeCraftDialog
+    from qgis_plugin.potreecraft_dialog import (
+        CAMERA_MODE_CUSTOM,
+        CAMERA_MODE_FIT_TO_SCREEN,
+        POINTCLOUD_MODES,
+        PotreeCraftDialog,
+    )
 
     dialog = PotreeCraftDialog(qgis_iface)
 
@@ -15,6 +20,10 @@ def test_dialog_initializes_with_qgis(qgis_iface):
         dialog.pointcloud_mode_combo.itemText(i)
         for i in range(dialog.pointcloud_mode_combo.count())
     ] == POINTCLOUD_MODES
+    assert dialog.default_camera_mode_combo.currentData() == CAMERA_MODE_FIT_TO_SCREEN
+    assert dialog.default_camera_mode_combo.itemData(1) == CAMERA_MODE_CUSTOM
+    assert dialog.camera_position_x_edit.isEnabled() is False
+    assert dialog.camera_target_z_edit.isEnabled() is False
 
 
 def test_clear_previous_vector_exports_removes_unchecked_layer_outputs(qgis_iface, tmp_path):

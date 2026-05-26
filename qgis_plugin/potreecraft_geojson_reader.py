@@ -11,12 +11,16 @@ import tempfile
 from pathlib import Path
 from os import listdir
 from os.path import join
+from typing import Optional, Tuple
 
 geojsonlist = []
 lns_gjs_feature_list = []
 pts_gjs_feature_list = []
 ply_gjs_feature_list = []
 annotation_gjs_feature_list = []
+
+CAMERA_MODE_FIT_TO_SCREEN = "fit_to_screen"
+CAMERA_MODE_CUSTOM = "custom_camera_position"
 
 
 def _writable_log_path(filename: str) -> Path:
@@ -311,6 +315,10 @@ class potree_html_generator:
         fallback_projection: str = "",
         cesium_map: bool = False,
         cesium_map_sea_level: float = 0.0,
+        default_camera_mode: str = CAMERA_MODE_FIT_TO_SCREEN,
+        default_camera_position: Optional[
+            Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+        ] = None,
         output_dir: Path | None = None,
     ):
         """Write the appropriate Potree HTML template into the output directory."""
@@ -329,10 +337,19 @@ class potree_html_generator:
                         fallback_projection,
                         cesium_map_sea_level,
                         point_radius,
+                        default_camera_mode,
+                        default_camera_position,
                     )
                 )
             else:
-                f.write(_template_default(pointcloud_name, pointcloud_display_mode))
+                f.write(
+                    _template_default(
+                        pointcloud_name,
+                        pointcloud_display_mode,
+                        default_camera_mode,
+                        default_camera_position,
+                    )
+                )
 
             f.write(_vector_classes_and_data(point_radius))
 
@@ -346,8 +363,35 @@ def _active_attribute_name(pointcloud_display_mode: str) -> str:
     return "rgba"
 
 
-def _template_default(pointcloud_name: str, pointcloud_display_mode: str) -> str:
+def _format_camera_js(
+    viewer_name: str,
+    default_camera_mode: str,
+    default_camera_position: Optional[
+        Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+    ],
+) -> str:
+    if default_camera_mode == CAMERA_MODE_CUSTOM and default_camera_position is not None:
+        camera_position, camera_target = default_camera_position
+        return (
+            f"            {viewer_name}.scene.view.setView(\n"
+            f"                {json.dumps(list(camera_position))},\n"
+            f"                {json.dumps(list(camera_target))}\n"
+            f"            );"
+        )
+
+    return f"            {viewer_name}.fitToScreen();"
+
+
+def _template_default(
+    pointcloud_name: str,
+    pointcloud_display_mode: str,
+    default_camera_mode: str,
+    default_camera_position: Optional[
+        Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+    ],
+) -> str:
     active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
+    camera_js = _format_camera_js("viewer", default_camera_mode, default_camera_position)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -412,7 +456,7 @@ def _template_default(pointcloud_name: str, pointcloud_display_mode: str) -> str
             material.shape = Potree.PointShape.SQUARE;
             material.activeAttributeName = {active_attribute_name};
             scene.addPointCloud(pointcloud);
-            viewer.fitToScreen();
+{camera_js}
         }});
     </script>
 '''
@@ -424,9 +468,14 @@ def _template_cesium(
     fallback_projection: str,
     sea_level: float,
     point_radius: float,
+    default_camera_mode: str,
+    default_camera_position: Optional[
+        Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+    ],
 ) -> str:
     active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
     safe_fallback_projection = json.dumps(fallback_projection or "")
+    camera_js = _format_camera_js("potreeViewer", default_camera_mode, default_camera_position)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -532,7 +581,7 @@ def _template_cesium(
             material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
             material.shape = Potree.PointShape.SQUARE;
             material.activeAttributeName = {active_attribute_name};
-            potreeViewer.fitToScreen();
+{camera_js}
 
             const normalizeProjectionCandidate = (candidate) => {{
                 if (!candidate) return "";
@@ -983,6 +1032,10 @@ def generate_potree_html(
     fallback_projection: str = "",
     cesium_map: bool = False,
     cesium_map_sea_level: float = 0.0,
+    default_camera_mode: str = CAMERA_MODE_FIT_TO_SCREEN,
+    default_camera_position: Optional[
+        Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+    ] = None,
     output_dir: str | Path | None = None,
     manifest_path: str | Path | None = None,
 ) -> int:
@@ -1020,6 +1073,8 @@ def generate_potree_html(
         fallback_projection=fallback_projection,
         cesium_map=cesium_map,
         cesium_map_sea_level=cesium_map_sea_level,
+        default_camera_mode=default_camera_mode,
+        default_camera_position=default_camera_position,
         output_dir=Path(output_dir) if output_dir else None,
     )
     print("potree_main.html generated")

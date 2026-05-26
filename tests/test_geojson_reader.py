@@ -1,6 +1,85 @@
 import json
 
-from qgis_plugin.potreecraft_geojson_reader import generate_potree_html
+from qgis_plugin.potreecraft_geojson_reader import (
+    CAMERA_MODE_CUSTOM,
+    CAMERA_MODE_FIT_TO_SCREEN,
+    generate_potree_html,
+)
+
+
+def test_generate_potree_html_uses_fit_to_screen_camera_by_default(tmp_path):
+    vector_dir = tmp_path / "vectors"
+    vector_dir.mkdir()
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    (vector_dir / "Test_Points.geojson").write_text(
+        json.dumps(
+            {
+                "name": "Test Points",
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {"type": "Point", "coordinates": [10, 20]},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = generate_potree_html(
+        vector_folder=vector_dir,
+        project_name="demo_cloud",
+        default_camera_mode=CAMERA_MODE_FIT_TO_SCREEN,
+        output_dir=output_dir,
+    )
+
+    html = (output_dir / "potree_main.html").read_text(encoding="utf-8")
+
+    assert result == 0
+    assert "viewer.fitToScreen();" in html
+
+
+def test_generate_potree_html_uses_custom_camera_position_when_requested(tmp_path):
+    vector_dir = tmp_path / "vectors"
+    vector_dir.mkdir()
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    (vector_dir / "Test_Points.geojson").write_text(
+        json.dumps(
+            {
+                "name": "Test Points",
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {"type": "Point", "coordinates": [10, 20]},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = generate_potree_html(
+        vector_folder=vector_dir,
+        project_name="demo_cloud",
+        default_camera_mode=CAMERA_MODE_CUSTOM,
+        default_camera_position=((628208.246, 134458.72, 152.999), (628215.346, 134467.899, 149.243)),
+        output_dir=output_dir,
+    )
+
+    html = (output_dir / "potree_main.html").read_text(encoding="utf-8")
+
+    assert result == 0
+    assert "viewer.scene.view.setView(" in html
+    assert "[628208.246, 134458.72, 152.999]" in html
+    assert "[628215.346, 134467.899, 149.243]" in html
 
 
 def test_generate_potree_html_renders_annotation_points_from_manifest(tmp_path):
