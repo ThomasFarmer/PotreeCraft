@@ -20,6 +20,7 @@ Missing features / present bugs:
 - Plugin window is huge, might be a problem on older laptops. I might have to implement tabs once again.
 - Windows tests were minimal, but not extensive for now. blast2dem seems operational, but the popup command line window remains empty. User has to wait patiently with no information on how the process is progressing, but in the end when the process closes, the raster layer will be imported. There is no way to customize blast2dem functionality yet, so pointclouds imported with that method look way worse compared to core backend.
 - CLI tool is currently not up-to-date, and is lacking some features compared to the plugin.
+- While rendering lines work well, rendering a filled out polygon might appear behind the always, which means the shape can only be seen through the gaps between points or when rendered in front of absolute empty space.  
 
 
 ## How to use the CLI tool
