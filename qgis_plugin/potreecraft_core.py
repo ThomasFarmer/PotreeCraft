@@ -3,7 +3,7 @@ from __future__ import annotations
 import subprocess
 import shutil
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, Tuple
 
 from .potreecraft_geojson_reader import generate_potree_html
 
@@ -90,6 +90,10 @@ def compile_potree_project(
     projection: str = "",
     cesium_map: bool = False,
     cesium_map_sea_level: float = 0.0,
+    default_camera_mode: str = "fit_to_screen",
+    default_camera_position: Optional[
+        Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+    ] = None,
     log_callback: LogCallback = None,
 ) -> int:
     converter_path = Path(potreeconverter_path).expanduser()
@@ -164,6 +168,8 @@ def compile_potree_project(
         fallback_projection=projection,
         cesium_map=cesium_map,
         cesium_map_sea_level=cesium_map_sea_level,
+        default_camera_mode=default_camera_mode,
+        default_camera_position=default_camera_position,
         output_dir=output_dir,
         manifest_path=manifest_path if manifest_path.exists() else None,
     )

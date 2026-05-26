@@ -7,12 +7,12 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import laspy
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QObject, QSettings, Qt, QThread, pyqtSignal
-from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtCore import QObject, QLocale, QSettings, Qt, QThread, pyqtSignal
+from qgis.PyQt.QtGui import QColor, QDoubleValidator
 from qgis.PyQt.QtWidgets import (
     QAbstractItemView,
     QActionGroup,
@@ -48,6 +48,8 @@ LEGACY_RASTER_MODE_FLAGS = {
     "elevation": "-elevation",
 }
 POTREECONVERTER_SETTINGS_KEY = "PotreeCraft/potreeconverter_path"
+CAMERA_MODE_FIT_TO_SCREEN = "fit_to_screen"
+CAMERA_MODE_CUSTOM = "custom_camera_position"
 VECTOR_FUNCTIONS = {
     "Point": [
         "point (circle)",
@@ -193,6 +195,10 @@ class CompileProjectWorker(QObject):
         projection: str,
         cesium_map: bool,
         cesium_map_sea_level: float,
+        default_camera_mode: str,
+        default_camera_position: Optional[
+            Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+        ],
     ):
         """Store project compilation options for later threaded execution."""
         super().__init__()
@@ -206,6 +212,8 @@ class CompileProjectWorker(QObject):
         self.projection = projection
         self.cesium_map = cesium_map
         self.cesium_map_sea_level = cesium_map_sea_level
+        self.default_camera_mode = default_camera_mode
+        self.default_camera_position = default_camera_position
 
     def run(self) -> None:
         """Compile the Potree project and forward progress messages to the UI."""
@@ -221,6 +229,8 @@ class CompileProjectWorker(QObject):
                 projection=self.projection,
                 cesium_map=self.cesium_map,
                 cesium_map_sea_level=self.cesium_map_sea_level,
+                default_camera_mode=self.default_camera_mode,
+                default_camera_position=self.default_camera_position,
                 log_callback=self.log_message.emit,
             )
             self.finished.emit({"output_dir": str(self.output_dir)})
@@ -273,6 +283,17 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.point_radius_spinbox.setToolTip(
             "Radius used for point vector overlays in the generated Potree HTML."
         )
+        self.default_camera_mode_combo.clear()
+        self.default_camera_mode_combo.addItem("Fit to Screen", CAMERA_MODE_FIT_TO_SCREEN)
+        self.default_camera_mode_combo.addItem("Custom Camera Position", CAMERA_MODE_CUSTOM)
+        self.default_camera_mode_combo.currentIndexChanged.connect(
+            self._on_default_camera_mode_changed
+        )
+        camera_validator = QDoubleValidator(self)
+        camera_validator.setNotation(QDoubleValidator.StandardNotation)
+        camera_validator.setLocale(QLocale.c())
+        for line_edit in self._camera_value_edits():
+            line_edit.setValidator(camera_validator)
         self.cesium_elevation_slider.setValue(0)
         self.cesium_elevation_spinbox.setValue(0.0)
         self.cesium_map_checkbox.toggled.connect(self._on_cesium_map_toggled)
@@ -313,6 +334,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self._update_project_crs_label()
 
         self.refresh_vector_layers()
+        self._update_default_camera_controls_enabled()
 
     def log(self, message: str) -> None:
         """Append a message to the dialog log and mirror it into QGIS logs."""
@@ -359,6 +381,50 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.log(
                 f"Cesium map elevation set to {self.cesium_elevation_spinbox.value():.1f} m."
             )
+
+    def _camera_value_edits(self):
+        """Return the six line edits used for custom default camera values."""
+        return [
+            self.camera_position_x_edit,
+            self.camera_position_y_edit,
+            self.camera_position_z_edit,
+            self.camera_target_x_edit,
+            self.camera_target_y_edit,
+            self.camera_target_z_edit,
+        ]
+
+    def _is_custom_camera_mode_selected(self) -> bool:
+        """Return whether the dialog is configured for a custom default camera."""
+        return self.default_camera_mode_combo.currentData() == CAMERA_MODE_CUSTOM
+
+    def _update_default_camera_controls_enabled(self) -> None:
+        """Enable custom camera inputs only when custom mode is selected."""
+        enabled = self._is_custom_camera_mode_selected()
+        for line_edit in self._camera_value_edits():
+            line_edit.setEnabled(enabled)
+
+    def _on_default_camera_mode_changed(self, *_args) -> None:
+        """React to camera mode changes and refresh related controls."""
+        self._update_default_camera_controls_enabled()
+
+    def _parse_camera_triplet(
+        self, fields, label: str
+    ) -> Optional[Tuple[float, float, float]]:
+        """Parse three float text boxes into a coordinate tuple."""
+        values = []
+        for axis_label, field in zip(("x", "y", "z"), fields):
+            raw_value = field.text().strip()
+            if not raw_value:
+                self._show_warning(f"Please enter {label} {axis_label}.")
+                field.setFocus()
+                return None
+            try:
+                values.append(float(raw_value.replace(",", ".")))
+            except ValueError:
+                self._show_warning(f"{label} {axis_label} must be a float value.")
+                field.setFocus()
+                return None
+        return (values[0], values[1], values[2])
 
     def _on_cesium_slider_changed(self, value: int) -> None:
         """Keep the Cesium elevation spin box synchronized with the slider."""
@@ -435,9 +501,13 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.project_name_edit.setEnabled(not busy)
         self.pointcloud_mode_combo.setEnabled(not busy)
         self.cesium_map_checkbox.setEnabled(not busy)
+        self.default_camera_mode_combo.setEnabled(not busy)
         cesium_controls_enabled = (not busy) and self.cesium_map_checkbox.isChecked()
         self.cesium_elevation_slider.setEnabled(cesium_controls_enabled)
         self.cesium_elevation_spinbox.setEnabled(cesium_controls_enabled)
+        camera_controls_enabled = (not busy) and self._is_custom_camera_mode_selected()
+        for line_edit in self._camera_value_edits():
+            line_edit.setEnabled(camera_controls_enabled)
 
     def _cleanup_compile_worker(self) -> None:
         """Tear down compile worker state after the background task ends."""
@@ -1191,11 +1261,49 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         project_name = self.project_name_edit.text().strip() or las_input.stem
         projection_authid = QgsProject.instance().crs().authid().strip()
         projection_value = projection_authid if projection_authid.startswith("EPSG:") else ""
+        default_camera_mode = (
+            self.default_camera_mode_combo.currentData() or CAMERA_MODE_FIT_TO_SCREEN
+        )
+        default_camera_position = None
+        if default_camera_mode == CAMERA_MODE_CUSTOM:
+            camera_position = self._parse_camera_triplet(
+                [
+                    self.camera_position_x_edit,
+                    self.camera_position_y_edit,
+                    self.camera_position_z_edit,
+                ],
+                "Camera position",
+            )
+            if camera_position is None:
+                return
+            camera_target = self._parse_camera_triplet(
+                [
+                    self.camera_target_x_edit,
+                    self.camera_target_y_edit,
+                    self.camera_target_z_edit,
+                ],
+                "Camera target",
+            )
+            if camera_target is None:
+                return
+            default_camera_position = (camera_position, camera_target)
 
         self.log("Running Potree project compilation:")
         self.log(f"Using PotreeConverter executable: {potreeconverter_path}")
         self.log(f"Selected default pointcloud display: {self.pointcloud_mode_combo.currentText()}")
         self.log(f"Selected point overlay radius: {self.point_radius_spinbox.value():.3f}")
+        self.log(
+            "Default camera position: "
+            + (
+                "fit to screen"
+                if default_camera_mode == CAMERA_MODE_FIT_TO_SCREEN
+                else "custom camera position"
+            )
+        )
+        if default_camera_position is not None:
+            self.log(
+                f"Camera position: {default_camera_position[0]} target: {default_camera_position[1]}"
+            )
         self.log(
             f"Cesium base map: {'enabled' if self.cesium_map_checkbox.isChecked() else 'disabled'}"
         )
@@ -1215,5 +1323,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 projection=projection_value,
                 cesium_map=self.cesium_map_checkbox.isChecked(),
                 cesium_map_sea_level=self.cesium_elevation_spinbox.value(),
+                default_camera_mode=default_camera_mode,
+                default_camera_position=default_camera_position,
             )
         )

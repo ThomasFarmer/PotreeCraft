@@ -179,6 +179,112 @@
             </layout>
            </widget>
           </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_default_camera_position">
+            <property name="text">
+             <string>Default Camera Position</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1" colspan="2">
+           <widget class="QWidget" name="default_camera_widget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_default_camera">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QComboBox" name="default_camera_mode_combo"/>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="camera_position_x_edit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximumWidth">
+                <number>90</number>
+               </property>
+               <property name="placeholderText">
+                <string>cam x</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="camera_position_y_edit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximumWidth">
+                <number>90</number>
+               </property>
+               <property name="placeholderText">
+                <string>cam y</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="camera_position_z_edit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximumWidth">
+                <number>90</number>
+               </property>
+               <property name="placeholderText">
+                <string>cam z</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="camera_target_x_edit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximumWidth">
+                <number>90</number>
+               </property>
+               <property name="placeholderText">
+                <string>target x</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="camera_target_y_edit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximumWidth">
+                <number>90</number>
+               </property>
+               <property name="placeholderText">
+                <string>target y</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="camera_target_z_edit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximumWidth">
+                <number>90</number>
+               </property>
+               <property name="placeholderText">
+                <string>target z</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
