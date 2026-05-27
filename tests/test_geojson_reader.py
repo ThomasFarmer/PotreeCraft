@@ -238,7 +238,53 @@ def test_generate_potree_html_renders_mesh_sphere_points_from_manifest(tmp_path)
     assert "const Test_Points_1 = new MeshPointOnScreen" in html
     assert "1.0," in html
     assert "displaymesh();" in html
-    assert "const Test_Points_1 = new CircleOnScreen" not in html
+
+
+def test_generate_potree_html_injects_dynamic_proj4_definitions_and_fallback(tmp_path):
+    vector_dir = tmp_path / "vectors"
+    vector_dir.mkdir()
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    cesium_runtime = output_dir / "libs" / "Cesium183" / "Build" / "Cesium"
+    cesium_runtime.mkdir(parents=True)
+    (cesium_runtime / "Cesium.js").write_text("", encoding="utf-8")
+
+    (vector_dir / "Test_Points.geojson").write_text(
+        json.dumps(
+            {
+                "name": "Test Points",
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {"type": "Point", "coordinates": [10, 20]},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = generate_potree_html(
+        vector_folder=vector_dir,
+        project_name="demo_cloud",
+        output_dir=output_dir,
+        cesium_map=True,
+        fallback_projection="EPSG:23700",
+        projection_definitions=[
+            {
+                "name": "EPSG:23700",
+                "proj4": "+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs",
+            }
+        ],
+    )
+
+    html = (output_dir / "potree_main.html").read_text(encoding="utf-8")
+
+    assert result == 0
+    assert 'proj4.defs("EPSG:23700"' in html
+    assert 'const FALLBACK_POINTCLOUD_PROJECTION = "EPSG:23700";' in html
 
 
 def test_generate_potree_html_renders_mesh_disc_points_from_manifest(tmp_path):

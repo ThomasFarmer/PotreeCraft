@@ -3,7 +3,7 @@ from __future__ import annotations
 import subprocess
 import shutil
 from pathlib import Path
-from typing import Callable, Optional, Tuple
+from typing import Callable, Optional, Sequence, Tuple
 
 from .potreecraft_geojson_reader import generate_potree_html
 
@@ -88,6 +88,7 @@ def compile_potree_project(
     pointcloud_display_mode: str = "rgb",
     point_radius: float = 5.0,
     projection: str = "",
+    projection_definitions: Optional[Sequence[dict[str, str]]] = None,
     cesium_map: bool = False,
     cesium_map_sea_level: float = 0.0,
     default_camera_mode: str = "fit_to_screen",
@@ -166,6 +167,7 @@ def compile_potree_project(
         pointcloud_display_mode=pointcloud_display_mode,
         point_radius=point_radius,
         fallback_projection=projection,
+        projection_definitions=projection_definitions,
         cesium_map=cesium_map,
         cesium_map_sea_level=cesium_map_sea_level,
         default_camera_mode=default_camera_mode,

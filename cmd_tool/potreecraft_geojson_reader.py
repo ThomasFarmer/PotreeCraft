@@ -11,6 +11,7 @@ import tempfile
 from pathlib import Path
 from os import listdir
 from os.path import join
+from typing import Optional, Sequence
 
 geojsonlist = []
 lns_gjs_feature_list = []
@@ -219,6 +220,7 @@ class potree_html_generator:
         cls,
         pointcloud_name: str,
         pointcloud_display_mode: str = "rgb",
+        projection_definitions: Optional[Sequence[dict[str, str]]] = None,
         fallback_projection: str = "",
         cesium_map: bool = False,
         cesium_map_sea_level: float = 0.0,
@@ -235,11 +237,18 @@ class potree_html_generator:
                         pointcloud_name,
                         pointcloud_display_mode,
                         fallback_projection,
+                        projection_definitions,
                         cesium_map_sea_level,
                     )
                 )
             else:
-                f.write(_template_default(pointcloud_name, pointcloud_display_mode))
+                f.write(
+                    _template_default(
+                        pointcloud_name,
+                        pointcloud_display_mode,
+                        projection_definitions,
+                    )
+                )
 
             f.write(_vector_classes_and_data())
 
@@ -253,8 +262,24 @@ def _active_attribute_name(pointcloud_display_mode: str) -> str:
     return "rgba"
 
 
-def _template_default(pointcloud_name: str, pointcloud_display_mode: str) -> str:
+def _format_proj4_defs_js(projection_definitions: Optional[Sequence[dict[str, str]]]) -> str:
+    rows = []
+    for definition in projection_definitions or []:
+        name = (definition.get("name") or "").strip()
+        proj4 = (definition.get("proj4") or "").strip()
+        if not name or not proj4:
+            continue
+        rows.append(f"        proj4.defs({json.dumps(name)}, {json.dumps(proj4)});")
+    return "\n".join(rows)
+
+
+def _template_default(
+    pointcloud_name: str,
+    pointcloud_display_mode: str,
+    projection_definitions: Optional[Sequence[dict[str, str]]],
+) -> str:
     active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
+    proj4_defs_js = _format_proj4_defs_js(projection_definitions)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -283,9 +308,7 @@ def _template_default(pointcloud_name: str, pointcloud_display_mode: str) -> str
     <script src="./libs/plasio/js/laslaz.js"></script>
     <script src="./libs/three.js_potreecraft/build/three.min.older.js"></script>
     <script>
-        proj4.defs('EPSG:23700', '+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs');
-        proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
-        proj4.defs('EPSG:2178', '+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+{proj4_defs_js}
     </script>
 
     <div class="potree_container" style="position:absolute;width:100%;height:100%;left:0;top:0;">
@@ -328,10 +351,12 @@ def _template_cesium(
     pointcloud_name: str,
     pointcloud_display_mode: str,
     fallback_projection: str,
+    projection_definitions: Optional[Sequence[dict[str, str]]],
     sea_level: float,
 ) -> str:
     active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
     safe_fallback_projection = json.dumps(fallback_projection or "")
+    proj4_defs_js = _format_proj4_defs_js(projection_definitions)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -363,9 +388,7 @@ def _template_cesium(
     <script src="./libs/Cesium183/Build/Cesium/Cesium.js"></script>
     <script src="./libs/three.js_potreecraft/build/three.min.older.js"></script>
     <script>
-        proj4.defs('EPSG:23700', '+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs');
-        proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
-        proj4.defs('EPSG:2178', '+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+{proj4_defs_js}
     </script>
 
     <div class="potree_container" style="position:absolute;width:100%;height:100%;left:0;top:0;">
