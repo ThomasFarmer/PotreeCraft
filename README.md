@@ -136,31 +136,47 @@ The vector layers all get a randomly generated color if we used the CLI, but wit
 **Test output of the roadsection pointcloud with vector data showing some test linestring and polygon vectors imported:**
 ![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/roadsection_with_lines.png)
 
-**Test output of the roadsection pointcloud with openstreetmap data pulled with cesium, map elevated to 150 meters above sea level:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/cesium_map_level.png)
+
 
 **Test output of the field pointcloud with drone flight path vector data:**
 ![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/hatari_flight_path.png)
 
 ### Single features
+#### Point 
+**A point layer as a circle:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt-circle.png)
 
 **A point layer feature as a mesh sphere:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_mesh_sphere.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt-mesh-sphere.png)
 
 **A point layer as a mesh disc:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_mesh_disc.png)
-
-**A point layer as a circle:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_circle.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt-mesh-disc.png)
 
 **A point layer as an annotation:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt_annotation.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt-anno.png)
 
-**A linestring layer as a profile measurement:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls_profile.png)
+**A point layer as an annotation:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/pt-coords.png)
+
+#### Linestring
+**A linestring layer as simple lines, with increased thickness:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls-line-thick.png)
+
+**A linestring layer as a length measurement:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls-length-ms.png)
 
 **A linestring layer as a height measurement:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls_height.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls-height-ms.png)
+
+**A linestring layer as a profile measurement:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/ls-profile-ms.png)
+
+#### Polygon
+**A polygon layer as a simple filled polygon:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/plg-filled.png)
 
 **A polygon layer as an area measurement:**
-![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/plg_area.png)
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/plg-area-ms.png)
+
+**Test output of the roadsection pointcloud with openstreetmap data pulled with cesium, map elevated to 150 meters above sea level:**
+![info](https://raw.githubusercontent.com/ThomasFarmer/PotreeCraft/refs/heads/master/_doc_/screenshots/cesium-map-elevated.png)
