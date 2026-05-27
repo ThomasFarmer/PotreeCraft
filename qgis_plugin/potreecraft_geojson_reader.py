@@ -11,7 +11,7 @@ import tempfile
 from pathlib import Path
 from os import listdir
 from os.path import join
-from typing import Optional, Tuple
+from typing import Optional, Sequence, Tuple
 
 geojsonlist = []
 lns_gjs_feature_list = []
@@ -313,6 +313,7 @@ class potree_html_generator:
         pointcloud_display_mode: str = "rgb",
         point_radius: float = 5.0,
         fallback_projection: str = "",
+        projection_definitions: Optional[Sequence[dict[str, str]]] = None,
         cesium_map: bool = False,
         cesium_map_sea_level: float = 0.0,
         default_camera_mode: str = CAMERA_MODE_FIT_TO_SCREEN,
@@ -335,6 +336,7 @@ class potree_html_generator:
                         pointcloud_name,
                         pointcloud_display_mode,
                         fallback_projection,
+                        projection_definitions,
                         cesium_map_sea_level,
                         point_radius,
                         default_camera_mode,
@@ -346,6 +348,7 @@ class potree_html_generator:
                     _template_default(
                         pointcloud_name,
                         pointcloud_display_mode,
+                        projection_definitions,
                         default_camera_mode,
                         default_camera_position,
                     )
@@ -382,9 +385,21 @@ def _format_camera_js(
     return f"            {viewer_name}.fitToScreen();"
 
 
+def _format_proj4_defs_js(projection_definitions: Optional[Sequence[dict[str, str]]]) -> str:
+    rows = []
+    for definition in projection_definitions or []:
+        name = (definition.get("name") or "").strip()
+        proj4 = (definition.get("proj4") or "").strip()
+        if not name or not proj4:
+            continue
+        rows.append(f"        proj4.defs({json.dumps(name)}, {json.dumps(proj4)});")
+    return "\n".join(rows)
+
+
 def _template_default(
     pointcloud_name: str,
     pointcloud_display_mode: str,
+    projection_definitions: Optional[Sequence[dict[str, str]]],
     default_camera_mode: str,
     default_camera_position: Optional[
         Tuple[Tuple[float, float, float], Tuple[float, float, float]]
@@ -392,6 +407,7 @@ def _template_default(
 ) -> str:
     active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
     camera_js = _format_camera_js("viewer", default_camera_mode, default_camera_position)
+    proj4_defs_js = _format_proj4_defs_js(projection_definitions)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -420,9 +436,7 @@ def _template_default(
     <script src="./libs/plasio/js/laslaz.js"></script>
     <script src="./libs/three.js_potreecraft/build/three.min.older.js"></script>
     <script>
-        proj4.defs('EPSG:23700', '+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs');
-        proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
-        proj4.defs('EPSG:2178', '+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+{proj4_defs_js}
     </script>
 
     <div class="potree_container" style="position:absolute;width:100%;height:100%;left:0;top:0;">
@@ -466,6 +480,7 @@ def _template_cesium(
     pointcloud_name: str,
     pointcloud_display_mode: str,
     fallback_projection: str,
+    projection_definitions: Optional[Sequence[dict[str, str]]],
     sea_level: float,
     point_radius: float,
     default_camera_mode: str,
@@ -476,6 +491,7 @@ def _template_cesium(
     active_attribute_name = json.dumps(_active_attribute_name(pointcloud_display_mode))
     safe_fallback_projection = json.dumps(fallback_projection or "")
     camera_js = _format_camera_js("potreeViewer", default_camera_mode, default_camera_position)
+    proj4_defs_js = _format_proj4_defs_js(projection_definitions)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -507,9 +523,7 @@ def _template_cesium(
     <script src="./libs/Cesium183/Build/Cesium/Cesium.js"></script>
     <script src="./libs/three.js_potreecraft/build/three.min.older.js"></script>
     <script>
-        proj4.defs('EPSG:23700', '+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9 +units=m +no_defs');
-        proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
-        proj4.defs('EPSG:2178', '+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+{proj4_defs_js}
     </script>
 
     <div class="potree_container" style="position:absolute;width:100%;height:100%;left:0;top:0;">
@@ -1030,6 +1044,7 @@ def generate_potree_html(
     pointcloud_display_mode: str = "rgb",
     point_radius: float = 5.0,
     fallback_projection: str = "",
+    projection_definitions: Optional[Sequence[dict[str, str]]] = None,
     cesium_map: bool = False,
     cesium_map_sea_level: float = 0.0,
     default_camera_mode: str = CAMERA_MODE_FIT_TO_SCREEN,
@@ -1071,6 +1086,7 @@ def generate_potree_html(
         pointcloud_display_mode=pointcloud_display_mode,
         point_radius=point_radius,
         fallback_projection=fallback_projection,
+        projection_definitions=projection_definitions,
         cesium_map=cesium_map,
         cesium_map_sea_level=cesium_map_sea_level,
         default_camera_mode=default_camera_mode,

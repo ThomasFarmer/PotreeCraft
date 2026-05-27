@@ -70,6 +70,22 @@ VECTOR_FUNCTIONS = {
     ],
 }
 
+LEGACY_PROJ4_OVERRIDES = {
+    "EPSG:23700": (
+        "+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 "
+        "+k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 "
+        "+towgs84=52.17,-71.82,-14.9 +units=m +no_defs"
+    ),
+    "EPSG:2177": (
+        "+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 "
+        "+ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs"
+    ),
+    "EPSG:2178": (
+        "+proj=tmerc +lat_0=0 +lon_0=21 +k=0.999923 +x_0=7500000 +y_0=0 "
+        "+ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs"
+    ),
+}
+
 
 class RasterConversionWorker(QObject):
     """Background worker that converts LAS/LAZ input into a GeoTIFF raster."""
@@ -193,6 +209,7 @@ class CompileProjectWorker(QObject):
         pointcloud_display_mode: str,
         point_radius: float,
         projection: str,
+        projection_definitions: Optional[Sequence[dict[str, str]]],
         cesium_map: bool,
         cesium_map_sea_level: float,
         default_camera_mode: str,
@@ -210,6 +227,7 @@ class CompileProjectWorker(QObject):
         self.pointcloud_display_mode = pointcloud_display_mode
         self.point_radius = point_radius
         self.projection = projection
+        self.projection_definitions = list(projection_definitions or [])
         self.cesium_map = cesium_map
         self.cesium_map_sea_level = cesium_map_sea_level
         self.default_camera_mode = default_camera_mode
@@ -227,6 +245,7 @@ class CompileProjectWorker(QObject):
                 pointcloud_display_mode=self.pointcloud_display_mode,
                 point_radius=self.point_radius,
                 projection=self.projection,
+                projection_definitions=self.projection_definitions,
                 cesium_map=self.cesium_map,
                 cesium_map_sea_level=self.cesium_map_sea_level,
                 default_camera_mode=self.default_camera_mode,
@@ -963,6 +982,192 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 return None
             return crs.to_epsg()
 
+    @staticmethod
+    def _normalize_proj_string(proj_string: str) -> str:
+        """Collapse redundant whitespace in PROJ strings for stable output."""
+        return " ".join((proj_string or "").strip().split())
+
+    @classmethod
+    def _apply_legacy_proj4_override(cls, authid: str, proj4: str) -> str:
+        """Prefer known legacy proj4 definitions where proj4js needs exact datum terms."""
+        normalized_authid = (authid or "").strip()
+        override = LEGACY_PROJ4_OVERRIDES.get(normalized_authid)
+        if not override:
+            return cls._normalize_proj_string(proj4)
+        return cls._normalize_proj_string(override)
+
+    @classmethod
+    def _proj_string_from_qgis_crs(cls, crs) -> str:
+        """Return a normalized PROJ string from a QGIS CRS when available."""
+        for method_name in ("toProj", "toProj4"):
+            method = getattr(crs, method_name, None)
+            if not callable(method):
+                continue
+            try:
+                value = cls._normalize_proj_string(method())
+            except Exception:
+                value = ""
+            if value:
+                return value
+        return ""
+
+    @classmethod
+    def _crs_info_from_qgis_crs(cls, crs) -> dict[str, str]:
+        """Return auth id and PROJ string for a QGIS CRS."""
+        authid = ""
+        try:
+            authid = (crs.authid() or "").strip()
+        except Exception:
+            authid = ""
+        proj4 = cls._proj_string_from_qgis_crs(crs)
+        return {"authid": authid, "proj4": cls._apply_legacy_proj4_override(authid, proj4)}
+
+    @classmethod
+    def _crs_info_from_las_header(cls, input_las: Path) -> dict[str, str]:
+        """Return auth id and PROJ string declared in the LAS/LAZ header."""
+        suffix = input_las.suffix.lower()
+
+        if suffix == ".laz":
+            available_backends = laspy.LazBackend.detect_available()
+            if not available_backends:
+                return {"authid": "", "proj4": ""}
+            las_handle = laspy.open(input_las, laz_backend=available_backends)
+        else:
+            las_handle = laspy.open(input_las)
+
+        with las_handle as las_file:
+            crs = las_file.header.parse_crs()
+            if crs is None:
+                return {"authid": "", "proj4": ""}
+
+            epsg = crs.to_epsg()
+            proj4 = ""
+            to_proj4 = getattr(crs, "to_proj4", None)
+            if callable(to_proj4):
+                try:
+                    proj4 = cls._normalize_proj_string(to_proj4())
+                except Exception:
+                    proj4 = ""
+
+            authid = f"EPSG:{epsg}" if epsg else ""
+            return {
+                "authid": authid,
+                "proj4": cls._apply_legacy_proj4_override(authid, proj4),
+            }
+
+    def _candidate_raster_layers(self, input_las: Path, output_dir: Path) -> List:
+        """Return raster layers ordered by how likely they belong to the selected cloud."""
+        project_layers = [
+            lyr
+            for lyr in QgsProject.instance().mapLayers().values()
+            if lyr.type() == QgsMapLayerType.RasterLayer
+        ]
+        preferred = []
+        others = []
+        las_stem = input_las.stem.lower()
+        raster_dir = (output_dir / "raster").resolve()
+
+        for layer in project_layers:
+            source = (layer.source() or "").split("|", 1)[0].strip()
+            source_path = Path(source).expanduser()
+            try:
+                resolved_source = source_path.resolve()
+            except Exception:
+                resolved_source = source_path
+
+            source_name = source_path.stem.lower()
+            try:
+                in_plugin_raster_dir = raster_dir in resolved_source.parents
+            except Exception:
+                in_plugin_raster_dir = False
+
+            matches_las_name = bool(las_stem and las_stem in source_name)
+            if in_plugin_raster_dir or matches_las_name:
+                preferred.append(layer)
+            else:
+                others.append(layer)
+
+        return preferred + others
+
+    @staticmethod
+    def _projection_value_from_crs_info(crs_info: dict[str, str]) -> str:
+        """Pick the best runtime CRS token from a CRS info payload."""
+        return crs_info.get("authid") or crs_info.get("proj4") or ""
+
+    @staticmethod
+    def _projection_definition_from_crs_info(crs_info: dict[str, str]) -> Optional[dict[str, str]]:
+        """Convert CRS info into a proj4.js registration payload when possible."""
+        authid = (crs_info.get("authid") or "").strip()
+        proj4 = (crs_info.get("proj4") or "").strip()
+        if not authid or not proj4:
+            return None
+        return {"name": authid, "proj4": proj4}
+
+    def _resolve_pointcloud_projection(
+        self, input_las: Path, output_dir: Path
+    ) -> tuple[str, List[dict[str, str]]]:
+        """Resolve fallback projection and proj4 definitions for the current workspace."""
+        definitions: List[dict[str, str]] = []
+        seen_definition_names = set()
+
+        def add_definition(definition: Optional[dict[str, str]]) -> None:
+            if not definition:
+                return
+            name = definition["name"]
+            if name in seen_definition_names:
+                return
+            seen_definition_names.add(name)
+            definitions.append(definition)
+
+        for layer in QgsProject.instance().mapLayers().values():
+            if layer.type() != QgsMapLayerType.VectorLayer:
+                continue
+            add_definition(
+                self._projection_definition_from_crs_info(
+                    self._crs_info_from_qgis_crs(layer.crs())
+                )
+            )
+
+        fallback_value = ""
+        fallback_source = ""
+
+        try:
+            las_crs_info = self._crs_info_from_las_header(input_las)
+        except Exception as exc:
+            self.log(f"Could not read LAS/LAZ CRS metadata from {input_las}: {exc}")
+            las_crs_info = {"authid": "", "proj4": ""}
+
+        add_definition(self._projection_definition_from_crs_info(las_crs_info))
+        fallback_value = self._projection_value_from_crs_info(las_crs_info)
+        if fallback_value:
+            fallback_source = "LAS/LAZ header"
+
+        if not fallback_value:
+            for raster_layer in self._candidate_raster_layers(input_las, output_dir):
+                raster_crs_info = self._crs_info_from_qgis_crs(raster_layer.crs())
+                add_definition(self._projection_definition_from_crs_info(raster_crs_info))
+                fallback_value = self._projection_value_from_crs_info(raster_crs_info)
+                if fallback_value:
+                    fallback_source = f"raster layer '{raster_layer.name()}'"
+                    break
+
+        project_crs_info = self._crs_info_from_qgis_crs(QgsProject.instance().crs())
+        add_definition(self._projection_definition_from_crs_info(project_crs_info))
+        if not fallback_value:
+            fallback_value = self._projection_value_from_crs_info(project_crs_info)
+            if fallback_value:
+                fallback_source = "project CRS"
+
+        if not fallback_value:
+            fallback_value = "EPSG:4326"
+            fallback_source = "default fallback"
+
+        self.log(
+            f"Resolved pointcloud fallback projection from {fallback_source}: {fallback_value}"
+        )
+        self.log(f"Collected {len(definitions)} proj4 definition(s) from the workspace.")
+        return fallback_value, definitions
+
     def _resolve_raster_output_epsg(self, input_las: Path) -> Optional[int]:
         """Resolve raster output EPSG from project CRS or fall back to the LAS header."""
         project_epsg = self._epsg_from_project_crs()
@@ -1259,8 +1464,9 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             return
 
         project_name = self.project_name_edit.text().strip() or las_input.stem
-        projection_authid = QgsProject.instance().crs().authid().strip()
-        projection_value = projection_authid if projection_authid.startswith("EPSG:") else ""
+        projection_value, projection_definitions = self._resolve_pointcloud_projection(
+            las_input, output_dir
+        )
         default_camera_mode = (
             self.default_camera_mode_combo.currentData() or CAMERA_MODE_FIT_TO_SCREEN
         )
@@ -1321,6 +1527,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 pointcloud_display_mode=self.pointcloud_mode_combo.currentText(),
                 point_radius=self.point_radius_spinbox.value(),
                 projection=projection_value,
+                projection_definitions=projection_definitions,
                 cesium_map=self.cesium_map_checkbox.isChecked(),
                 cesium_map_sea_level=self.cesium_elevation_spinbox.value(),
                 default_camera_mode=default_camera_mode,
