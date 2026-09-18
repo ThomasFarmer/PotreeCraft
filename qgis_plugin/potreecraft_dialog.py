@@ -4,12 +4,20 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
 
-import laspy
+try:
+    import laspy
+except ImportError:
+    laspy = None
+try:
+    import rasterio
+except ImportError:
+    rasterio = None
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QObject, QLocale, QSettings, Qt, QThread, pyqtSignal
 from qgis.PyQt.QtGui import QColor, QDoubleValidator
@@ -42,10 +50,35 @@ RASTER_BACKEND_LABELS = {
     RASTER_BACKEND_POTREECRAFT: "PotreeCraft (rasterio + numpy)",
     RASTER_BACKEND_BLAST2DEM: "Legacy blast2dem (LASTools v1.0)",
 }
+LASPY_AVAILABLE = laspy is not None
+RASTERIO_AVAILABLE = rasterio is not None
+
+
+def _missing_potreecraft_backend_dependencies() -> List[str]:
+    """Return Python packages required by the built-in raster backend that are missing."""
+    missing = []
+    if not LASPY_AVAILABLE:
+        missing.append("laspy")
+    if not RASTERIO_AVAILABLE:
+        missing.append("rasterio")
+    return missing
+
+
+def _potreecraft_backend_available() -> bool:
+    """Return whether all built-in raster backend dependencies can be imported."""
+    return not _missing_potreecraft_backend_dependencies()
+
+
 LEGACY_RASTER_MODE_FLAGS = {
     "rgb": "-rgb",
     "intensity": "-intensity",
     "elevation": "-elevation",
+}
+BLAST2DEM_COLOR_FLAGS = {
+    "Hillshade": "-hillshade",
+    "Gray": "-gray",
+    "False Color": "-false",
+    "RGB": "-rgb",
 }
 POTREECONVERTER_SETTINGS_KEY = "PotreeCraft/potreeconverter_path"
 CAMERA_MODE_FIT_TO_SCREEN = "fit_to_screen"
@@ -65,7 +98,8 @@ VECTOR_FUNCTIONS = {
         "height (profile)",
     ],
     "Polygon": [
-        "polygon",
+        "polygon (outline)",
+        "polygon (filled)",
         "area (measurement)",
     ],
 }
@@ -101,6 +135,8 @@ class RasterConversionWorker(QObject):
         script_path_raw: str,
         output_dir: Optional[Path] = None,
         output_epsg: Optional[int] = None,
+        blast2dem_step_size: float = 1.0,
+        blast2dem_coloring: str = "Hillshade",
     ):
         """Store raster conversion settings for threaded execution."""
         super().__init__()
@@ -110,6 +146,8 @@ class RasterConversionWorker(QObject):
         self.script_path_raw = script_path_raw
         self.output_dir = output_dir
         self.output_epsg = output_epsg
+        self.blast2dem_step_size = blast2dem_step_size
+        self.blast2dem_coloring = blast2dem_coloring
 
     def run(self) -> None:
         """Run the selected backend and emit either a result payload or an error."""
@@ -130,18 +168,29 @@ class RasterConversionWorker(QObject):
         raster_dir = self.output_dir / "raster"
         raster_dir.mkdir(parents=True, exist_ok=True)
         tif_out = raster_dir / f"{self.input_las.stem}_{self.mode}.tif"
-        blast2dem_path = self.script_path_raw or "blast2dem"
         if self.script_path_raw:
-            blast2dem_executable = Path(self.script_path_raw).expanduser()
-            if not blast2dem_executable.exists():
+            blast2dem_executable = Path(self.script_path_raw).expanduser().resolve()
+            if not blast2dem_executable.exists() or not blast2dem_executable.is_file():
                 raise FileNotFoundError(f"blast2dem executable not found:\n{blast2dem_executable}")
-            blast2dem_path = str(blast2dem_executable)
+        else:
+            discovered_executable = shutil.which("blast2dem")
+            if not discovered_executable:
+                raise FileNotFoundError(
+                    "blast2dem executable was not found on PATH. Select it using Browse."
+                )
+            blast2dem_executable = Path(discovered_executable).resolve()
+
+        blast2dem_path = str(blast2dem_executable)
 
         legacy_flag = LEGACY_RASTER_MODE_FLAGS.get(self.mode)
         if not legacy_flag:
             raise ValueError(
                 f"Raster mode '{self.mode}' is not supported by the legacy blast2dem backend."
             )
+
+        color_flag = BLAST2DEM_COLOR_FLAGS.get(self.blast2dem_coloring)
+        if not color_flag:
+            raise ValueError(f"Unsupported blast2dem coloring style: {self.blast2dem_coloring}")
 
         command = [
             blast2dem_path,
@@ -150,11 +199,21 @@ class RasterConversionWorker(QObject):
             "-o",
             str(tif_out),
             "-otif",
+            "-step",
+            format(self.blast2dem_step_size, "g"),
             "-v",
             legacy_flag,
+            color_flag,
         ]
 
-        process = subprocess.run(command, capture_output=True, text=True)
+        # The executable is resolved to an existing absolute file, arguments are passed
+        # as a list, and shell execution is explicitly disabled.
+        process = subprocess.run(  # nosec B603
+            command,
+            capture_output=True,
+            text=True,
+            shell=False,
+        )
         return {
             "backend": self.backend,
             "command": command,
@@ -173,8 +232,9 @@ class RasterConversionWorker(QObject):
             from .potreecraft_lasreader import convert_las_to_geotiff
         except ModuleNotFoundError as exc:
             raise ModuleNotFoundError(
-                "Built-in raster conversion is not available in the deployed plugin copy. "
-                "Redeploy or reload the plugin so potreecraft_lasreader.py is included."
+                "Built-in raster conversion is unavailable because a required Python package "
+                f"could not be imported: {exc.name or exc}. Use blast2dem or install the "
+                "missing package in the QGIS Python environment."
             ) from exc
 
         if self.output_dir is None:
@@ -266,7 +326,11 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.setupUi(self)
         self.iface = iface
         self._python_executable_path = sys.executable
-        self._raster_backend = RASTER_BACKEND_POTREECRAFT
+        self._raster_backend = (
+            RASTER_BACKEND_POTREECRAFT
+            if _potreecraft_backend_available()
+            else RASTER_BACKEND_BLAST2DEM
+        )
 
         self._function_boxes: Dict[int, QComboBox] = {}
         self._annotation_title_boxes: Dict[int, QComboBox] = {}
@@ -309,7 +373,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self._on_default_camera_mode_changed
         )
         camera_validator = QDoubleValidator(self)
-        camera_validator.setNotation(QDoubleValidator.StandardNotation)
+        camera_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
         camera_validator.setLocale(QLocale.c())
         for line_edit in self._camera_value_edits():
             line_edit.setValidator(camera_validator)
@@ -320,8 +384,26 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.cesium_elevation_spinbox.valueChanged.connect(self._on_cesium_spinbox_changed)
         self.raster_mode_combo.clear()
         self.raster_mode_combo.addItems(POINTCLOUD_MODES)
+        self.blast2dem_step_size_spinbox.setDecimals(3)
+        self.blast2dem_step_size_spinbox.setRange(0.001, 1_000_000.0)
+        self.blast2dem_step_size_spinbox.setSingleStep(0.5)
+        self.blast2dem_step_size_spinbox.setValue(1.0)
+        self.blast2dem_coloring_combo.clear()
+        self.blast2dem_coloring_combo.addItems(BLAST2DEM_COLOR_FLAGS)
+        self.blast2dem_coloring_combo.setCurrentText("Hillshade")
         self.raster_backend_status_edit.setMinimumWidth(120)
         self._init_raster_backend_menu()
+
+        missing_backend_dependencies = _missing_potreecraft_backend_dependencies()
+        if missing_backend_dependencies:
+            package_names = ", ".join(f"'{name}'" for name in missing_backend_dependencies)
+            self._show_warning(
+                f"The required Python package(s) {package_names} could not be imported in "
+                "the QGIS Python "
+                "environment. The built-in PotreeCraft raster backend has been disabled; "
+                "blast2dem is selected instead. Configure a LASTools blast2dem executable "
+                "before converting a point cloud."
+            )
 
         self.layers_table.setColumnCount(7)
         self.layers_table.setHorizontalHeaderLabels(
@@ -337,15 +419,17 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         )
         self.layers_table.verticalHeader().setVisible(False)
         self.layers_table.horizontalHeader().setStretchLastSection(True)
-        self.layers_table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.layers_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Interactive
+        )
         self.layers_table.setColumnWidth(0, 55)
         self.layers_table.setColumnWidth(1, 180)
         self.layers_table.setColumnWidth(2, 95)
         self.layers_table.setColumnWidth(3, 95)
         self.layers_table.setColumnWidth(4, 210)
         self.layers_table.setColumnWidth(5, 160)
-        self.layers_table.setSelectionMode(QAbstractItemView.NoSelection)
-        self.layers_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.layers_table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.layers_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.copy_python_path_button.setMaximumWidth(90)
 
         self._update_python_status()
@@ -358,16 +442,16 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
     def log(self, message: str) -> None:
         """Append a message to the dialog log and mirror it into QGIS logs."""
         self.log_box.appendPlainText(message)
-        self._log_qgis_message(message, Qgis.Info)
+        self._log_qgis_message(message, Qgis.MessageLevel.Info)
 
-    def _log_qgis_message(self, message: str, level=Qgis.Info) -> None:
+    def _log_qgis_message(self, message: str, level=Qgis.MessageLevel.Info) -> None:
         """Send a message to the QGIS message log under the plugin channel."""
         QgsMessageLog.logMessage(message, "PotreeCraft", level)
 
     def _show_warning(self, message: str) -> None:
         """Log a warning and display it to the user in a modal dialog."""
         self.log(message)
-        self._log_qgis_message(message, Qgis.Warning)
+        self._log_qgis_message(message, Qgis.MessageLevel.Warning)
         QMessageBox.warning(self, "PotreeCraft", message)
 
     def _show_conversion_progress_dialog(self) -> QProgressDialog:
@@ -382,7 +466,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         progress.setWindowTitle("PotreeCraft")
         progress.setCancelButton(None)
         progress.setMinimumDuration(0)
-        progress.setWindowModality(Qt.WindowModal)
+        progress.setWindowModality(Qt.WindowModality.WindowModal)
         progress.setAutoClose(False)
         progress.setAutoReset(False)
         progress.show()
@@ -473,7 +557,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         progress.setWindowTitle("PotreeCraft")
         progress.setCancelButton(None)
         progress.setMinimumDuration(0)
-        progress.setWindowModality(Qt.WindowModal)
+        progress.setWindowModality(Qt.WindowModality.WindowModal)
         progress.setAutoClose(False)
         progress.setAutoReset(False)
         progress.show()
@@ -489,6 +573,8 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.las_browse_button.setEnabled(not busy)
         self.output_browse_button.setEnabled(not busy)
         self.raster_script_browse_button.setEnabled(not busy and self._raster_backend == RASTER_BACKEND_BLAST2DEM)
+        blast2dem_enabled = not busy and self._raster_backend == RASTER_BACKEND_BLAST2DEM
+        self.blast2dem_parameters_widget.setEnabled(blast2dem_enabled)
 
     def _cleanup_raster_worker(self) -> None:
         """Tear down raster worker state after success, failure, or cancellation."""
@@ -741,6 +827,15 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             action = menu.addAction(RASTER_BACKEND_LABELS[backend_key])
             action.setCheckable(True)
             action.setData(backend_key)
+            if (
+                backend_key == RASTER_BACKEND_POTREECRAFT
+                and not _potreecraft_backend_available()
+            ):
+                action.setEnabled(False)
+                missing_packages = ", ".join(_missing_potreecraft_backend_dependencies())
+                action.setStatusTip(
+                    f"Unavailable because required Python packages are missing: {missing_packages}."
+                )
             action_group.addAction(action)
             if backend_key == self._raster_backend:
                 action.setChecked(True)
@@ -753,6 +848,11 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
     def _on_raster_backend_action_triggered(self, action) -> None:
         """Switch the active raster backend when the user picks a menu item."""
         backend_key = action.data()
+        if (
+            backend_key == RASTER_BACKEND_POTREECRAFT
+            and not _potreecraft_backend_available()
+        ):
+            return
         if backend_key:
             self._raster_backend = backend_key
             self._update_raster_backend_ui()
@@ -772,6 +872,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.raster_script_edit.setToolTip(
                 "Path to blast2dem. Leave blank to run blast2dem from the system PATH."
             )
+            self.blast2dem_parameters_widget.setEnabled(True)
         else:
             self.label_raster_script.setText("Built-in Converter")
             self.raster_script_edit.clear()
@@ -783,6 +884,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.raster_script_edit.setToolTip(
                 "PotreeCraft mode uses the built-in LAS reader and writes the GeoTIFF next to the LAS/LAZ file."
             )
+            self.blast2dem_parameters_widget.setEnabled(False)
 
     def refresh_vector_layers(self) -> None:
         """Reload vector layers from the current QGIS project into the table."""
@@ -827,12 +929,12 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         self.layers_table.insertRow(row)
 
         use_item = QTableWidgetItem()
-        use_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        use_item.setCheckState(Qt.Checked)
+        use_item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsUserCheckable)
+        use_item.setCheckState(Qt.CheckState.Checked)
         self.layers_table.setItem(row, 0, use_item)
 
         layer_item = QTableWidgetItem(layer.name())
-        layer_item.setData(Qt.UserRole, layer.id())
+        layer_item.setData(Qt.ItemDataRole.UserRole, layer.id())
         self.layers_table.setItem(row, 1, layer_item)
 
         geom_label = self._geometry_label(layer)
@@ -922,7 +1024,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         item = self.layers_table.item(row, 1)
         if item is None:
             return None
-        layer_id = item.data(Qt.UserRole)
+        layer_id = item.data(Qt.ItemDataRole.UserRole)
         if not layer_id:
             return None
         return QgsProject.instance().mapLayer(layer_id)
@@ -931,11 +1033,11 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
     def _geometry_label(layer) -> str:
         """Return a human-readable geometry label for a QGIS vector layer."""
         geom_type = QgsWkbTypes.geometryType(layer.wkbType())
-        if geom_type == QgsWkbTypes.PointGeometry:
+        if geom_type == QgsWkbTypes.GeometryType.PointGeometry:
             return "Point"
-        if geom_type == QgsWkbTypes.LineGeometry:
+        if geom_type == QgsWkbTypes.GeometryType.LineGeometry:
             return "LineString"
-        if geom_type == QgsWkbTypes.PolygonGeometry:
+        if geom_type == QgsWkbTypes.GeometryType.PolygonGeometry:
             return "Polygon"
         return "Unknown"
 
@@ -945,9 +1047,9 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         try:
             symbol = layer.renderer().symbol()
             if symbol and symbol.color().isValid():
-                return symbol.color().name(QColor.HexRgb)
-        except Exception:
-            pass
+                return symbol.color().name(QColor.NameFormat.HexRgb)
+        except (AttributeError, RuntimeError, TypeError):
+            return "#808080"
         return "#808080"
 
     @staticmethod
@@ -965,6 +1067,9 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
     @staticmethod
     def _epsg_from_las_header(input_las: Path) -> Optional[int]:
         """Return the EPSG code declared in the LAS/LAZ header, if present."""
+        if not LASPY_AVAILABLE:
+            return None
+
         suffix = input_las.suffix.lower()
 
         if suffix == ".laz":
@@ -1025,6 +1130,9 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
     @classmethod
     def _crs_info_from_las_header(cls, input_las: Path) -> dict[str, str]:
         """Return auth id and PROJ string declared in the LAS/LAZ header."""
+        if not LASPY_AVAILABLE:
+            return {"authid": "", "proj4": ""}
+
         suffix = input_las.suffix.lower()
 
         if suffix == ".laz":
@@ -1200,7 +1308,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         selected = []
         for row in range(self.layers_table.rowCount()):
             use_item = self.layers_table.item(row, 0)
-            if use_item and use_item.checkState() == Qt.Checked:
+            if use_item and use_item.checkState() == Qt.CheckState.Checked:
                 layer = self._layer_from_row(row)
                 if layer is not None:
                     selected.append((row, layer))
@@ -1259,7 +1367,9 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 continue
 
             use_item = self.layers_table.item(row, 0)
-            use_layer = bool(use_item and use_item.checkState() == Qt.Checked)
+            use_layer = bool(
+                use_item and use_item.checkState() == Qt.CheckState.Checked
+            )
             function_name = (
                 self._function_boxes[row].currentText()
                 if row in self._function_boxes
@@ -1341,7 +1451,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                 code = result
                 message = ""
 
-            if code != QgsVectorFileWriter.NoError:
+            if code != QgsVectorFileWriter.WriterError.NoError:
                 errors.append(f"{layer.name()}: {message or code}")
             else:
                 self._embed_layer_style_metadata(out_file, layer_color)
@@ -1368,6 +1478,20 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
 
     def run_las_to_tif_conversion(self) -> None:
         """Validate inputs and start LAS-to-GeoTIFF conversion in the background."""
+        if (
+            self._raster_backend == RASTER_BACKEND_POTREECRAFT
+            and not _potreecraft_backend_available()
+        ):
+            missing_packages = ", ".join(_missing_potreecraft_backend_dependencies())
+            self._raster_backend = RASTER_BACKEND_BLAST2DEM
+            self._update_raster_backend_ui()
+            self._show_warning(
+                "The built-in raster backend requires both 'laspy' and 'rasterio'. "
+                f"The following could not be imported: {missing_packages}. "
+                "blast2dem has been selected instead."
+            )
+            return
+
         script_path_raw = self.raster_script_edit.text().strip()
         input_las_raw = self.las_input_edit.text().strip()
 
@@ -1408,6 +1532,8 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
                     mode=mode,
                     script_path_raw=script_path_raw,
                     output_dir=output_dir,
+                    blast2dem_step_size=self.blast2dem_step_size_spinbox.value(),
+                    blast2dem_coloring=self.blast2dem_coloring_combo.currentText(),
                 )
             )
             return

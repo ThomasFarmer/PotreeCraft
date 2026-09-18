@@ -97,7 +97,7 @@ def compile_potree_project(
     ] = None,
     log_callback: LogCallback = None,
 ) -> int:
-    converter_path = Path(potreeconverter_path).expanduser()
+    converter_path = Path(potreeconverter_path).expanduser().resolve()
     if not converter_path.exists() or not converter_path.is_file():
         raise FileNotFoundError(f"PotreeConverter path is invalid:\n{converter_path}")
 
@@ -121,13 +121,16 @@ def compile_potree_project(
     _emit(log_callback, "Running PotreeConverter:")
     _emit(log_callback, " ".join(command))
 
-    process = subprocess.Popen(
+    # The executable is an existing absolute file selected by the user, arguments are
+    # passed as a list, and shell execution is explicitly disabled.
+    process = subprocess.Popen(  # nosec B603
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
         cwd=str(converter_path.parent),
         bufsize=1,
+        shell=False,
     )
 
     if process.stdout is not None:

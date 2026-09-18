@@ -5,7 +5,6 @@ import argparse
 import json
 import logging
 import os
-import random
 import re
 import tempfile
 from pathlib import Path
@@ -82,9 +81,9 @@ def js_identifier(value: str) -> str:
     return normalized
 
 
-def random_hex_color() -> str:
-    r, g, b = [random.randint(0, 255) for _ in range(3)]
-    return f"#{r:02x}{g:02x}{b:02x}"
+def default_hex_color() -> str:
+    """Return a predictable neutral color when a layer has no style metadata."""
+    return "#757575"
 
 
 def resolve_geojson_color(data: dict) -> str:
@@ -99,7 +98,7 @@ def resolve_geojson_color(data: dict) -> str:
             if isinstance(value, str) and value.strip():
                 return value.strip()
 
-    return random_hex_color()
+    return default_hex_color()
 
 
 def sanitized_layer_filename(layer_name: str) -> str:
@@ -236,7 +235,7 @@ class simple_geojson_reader:
                         "line_color": lcolor,
                         "coordinates": exterior_3d,
                         "linename": js_identifier(f"{self.name}_{linectr}"),
-                        "function": self.layer_config.get("function", "polygon"),
+                        "function": self.layer_config.get("function", "polygon (outline)"),
                     }
                 )
 
@@ -252,7 +251,7 @@ class simple_geojson_reader:
                             "line_color": lcolor,
                             "coordinates": exterior_3d,
                             "linename": js_identifier(f"{self.name}_{linectr}"),
-                            "function": self.layer_config.get("function", "polygon"),
+                            "function": self.layer_config.get("function", "polygon (outline)"),
                         }
                     )
 
@@ -860,7 +859,7 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
             activeViewer.scene.addMeasurement(measure);
         }
 
-        class PolygonOnScreen {
+        class FilledPolygonOnScreen {
             constructor(points, color, opacity, groupname) {
                 this.points = points;
                 this.color = color;
@@ -877,7 +876,6 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
 
                 const contour = this.points.map(p => new THREE_CTX.Vector2(p[0], p[1]));
                 const faces = THREE_CTX.ShapeUtils.triangulateShape(contour, []);
-
                 const positions = new Float32Array(this.points.length * 3);
                 for (let i = 0; i < this.points.length; i++) {
                     positions[i * 3] = this.points[i][0];
@@ -886,8 +884,8 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
                 }
 
                 const indices = [];
-                for (let i = 0; i < faces.length; i++) {
-                    indices.push(faces[i][0], faces[i][1], faces[i][2]);
+                for (const face of faces) {
+                    indices.push(face[0], face[1], face[2]);
                 }
 
                 const geometry = new THREE_CTX.BufferGeometry();
@@ -910,6 +908,7 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
                 activeViewer.scene.scene.add(polyGroup);
             }
         }
+
 ''')
 
     for ft in lns_gjs_feature_list:
@@ -1008,23 +1007,48 @@ def _vector_classes_and_data(point_radius: float = 5.0) -> str:
         )
 
     for ft in ply_gjs_feature_list:
-        function_name = ft.get("function", "polygon")
+        function_name = ft.get("function", "polygon (outline)")
         if function_name == "area (measurement)":
             rows.append(
                 """
         createAreaMeasurement({coords});
 """.format(coords=json.dumps(ft.get("coordinates")))
             )
-        else:
+        elif function_name in {"polygon (filled)", "polygon"}:
             rows.append(
                 """
-        const {name} = new PolygonOnScreen(
+        const {name} = new FilledPolygonOnScreen(
             {coords},
             "{color}",
             0.75,
             "vectorclass");
         {name}.displaypolygon();
-""".format(name=ft.get("linename"), coords=json.dumps(ft.get("coordinates")), color=ft.get("line_color"))
+""".format(
+                    name=ft.get("linename"),
+                    coords=json.dumps(ft.get("coordinates")),
+                    color=ft.get("line_color"),
+                )
+            )
+        else:
+            outline_coords = [
+                component
+                for vertex in ft.get("coordinates", [])
+                for component in vertex[:3]
+            ]
+            rows.append(
+                """
+        const {name} = new LineOnScreen(
+            {coords},
+            "{color}",
+            1,
+            0.75,
+            "vectorclass");
+        {name}.displayline();
+""".format(
+                    name=ft.get("linename"),
+                    coords=json.dumps(outline_coords),
+                    color=ft.get("line_color"),
+                )
             )
 
     rows.append(
