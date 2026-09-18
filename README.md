@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 2.2.1
+###### version 2.3.1
 
 *rework in progress*
 
@@ -13,14 +13,12 @@ and you can download PotreeConverter 2.1.1 stable release from the project's [gi
 This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-Early build of v 2.2.1. 
+Early build of v 2.3.1. 
 Missing features / present bugs: 
-- .laz not supported by default for tif generation. it might work in theory after we install the missing packages, but it was not tested yet.
-- for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux.
-- Plugin window is huge, might be a problem on older laptops. I might have to implement tabs once again.
-- Windows tests were minimal, but not extensive for now. blast2dem seems operational, but the popup command line window remains empty. User has to wait patiently with no information on how the process is progressing, but in the end when the process closes, the raster layer will be imported. There is no way to customize blast2dem functionality yet, so pointclouds imported with that method look way worse compared to core backend.
+- for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux. Users might have to install lasrs or laszip.
+- Windows tests were minimal, but not extensive for now. blast2dem seems operational, but the popup command line window remains empty. User has to wait patiently with no information on how the process is progressing, but in the end when the process closes, the raster layer will be imported.
 - CLI tool is currently not up-to-date, and is lacking some features compared to the plugin.
-- While rendering lines work well, rendering a filled out polygon might appear behind the always, which means the shape can only be seen through the gaps between points or when rendered in front of absolute empty space.  
+- While rendering lines work well, rendering a polygon layer with "polygon (filled), on some computers it might appear behind the always, which means the shape can only be seen through the gaps between points or when rendered in front of absolute empty space. It is recommended to use the "polygon (outline)" rendering option for now.
 
 
 ## How to use the CLI tool
