@@ -1,5 +1,5 @@
 # PotreeCraft
-###### version 2.3.1
+###### version 2.3.2
 
 *The software module discussed in my thesis titled "Processing and displaying pointclouds alongside vector data with a custom-built QGIS plugin".*
 
@@ -13,7 +13,7 @@ and you can download PotreeConverter 2.1.1 stable release from the project's [gi
 This project was created and tested with the version 2.1.1, and it was primarily made under a linux environment, but I intend to make it cross-platform and provide Windows support.
 
 ## Known issues
-Early build of v 2.3.1. 
+Early build of v 2.3.2. 
 Missing features / present bugs: 
 - for .laz to be processed, user has to select blast2dem to process it, but blast2dem does not work natively on linux. Users might have to install lasrs or laszip.
 - Windows tests were minimal, but not extensive for now. blast2dem seems operational, but the popup command line window remains empty. User has to wait patiently with no information on how the process is progressing, but in the end when the process closes, the raster layer will be imported.

@@ -3,8 +3,15 @@ import json
 from qgis_plugin.potreecraft_geojson_reader import (
     CAMERA_MODE_CUSTOM,
     CAMERA_MODE_FIT_TO_SCREEN,
+    default_hex_color,
     generate_potree_html,
+    resolve_geojson_color,
 )
+
+
+def test_unstyled_geojson_uses_predictable_neutral_color():
+    assert default_hex_color() == "#757575"
+    assert resolve_geojson_color({"type": "FeatureCollection", "features": []}) == "#757575"
 
 
 def test_generate_potree_html_uses_fit_to_screen_camera_by_default(tmp_path):
@@ -569,6 +576,102 @@ def test_generate_potree_html_renders_height_profile_lines_from_manifest(tmp_pat
     assert "const Test_Lines_1 = new LineOnScreen" not in html
 
 
+def test_generate_potree_html_renders_polygons_as_outlines_by_default(tmp_path):
+    vector_dir = tmp_path / "vectors"
+    vector_dir.mkdir()
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    (vector_dir / "Test_Polygons.geojson").write_text(
+        json.dumps(
+            {
+                "name": "Test Polygons",
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[[1, 2, 3], [4, 2, 3], [4, 5, 3], [1, 2, 3]]],
+                        },
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = generate_potree_html(
+        vector_folder=vector_dir,
+        project_name="demo_cloud",
+        output_dir=output_dir,
+    )
+
+    html = (output_dir / "potree_main.html").read_text(encoding="utf-8")
+
+    assert result == 0
+    assert "const Test_Polygons_1 = new LineOnScreen" in html
+    assert "[1, 2, 3, 4, 2, 3, 4, 5, 3, 1, 2, 3]" in html
+    assert "Test_Polygons_1.displayline();" in html
+    assert "const Test_Polygons_1 = new FilledPolygonOnScreen" not in html
+
+
+def test_generate_potree_html_keeps_filled_polygon_option(tmp_path):
+    vector_dir = tmp_path / "vectors"
+    vector_dir.mkdir()
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    (vector_dir / "Test_Polygons.geojson").write_text(
+        json.dumps(
+            {
+                "name": "Test Polygons",
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[[1, 2, 3], [4, 2, 3], [4, 5, 3], [1, 2, 3]]],
+                        },
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "potreecraft_project_manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "layers": [
+                    {
+                        "name": "Test Polygons",
+                        "function": "polygon (filled)",
+                        "annotation": {"enabled": False},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = generate_potree_html(
+        vector_folder=vector_dir,
+        project_name="demo_cloud",
+        output_dir=output_dir,
+        manifest_path=manifest_path,
+    )
+    html = (output_dir / "potree_main.html").read_text(encoding="utf-8")
+
+    assert result == 0
+    assert "const Test_Polygons_1 = new FilledPolygonOnScreen" in html
+    assert "Test_Polygons_1.displaypolygon();" in html
+    assert "const Test_Polygons_1 = new LineOnScreen" not in html
+
+
 def test_generate_potree_html_renders_area_measurement_polygons_from_manifest(tmp_path):
     vector_dir = tmp_path / "vectors"
     vector_dir.mkdir()
@@ -625,3 +728,30 @@ def test_generate_potree_html_renders_area_measurement_polygons_from_manifest(tm
     assert "measure.closed = true;" in html
     assert "measure.showArea = true;" in html
     assert "const Test_Polygons_1 = new PolygonOnScreen" not in html
+
+
+def test_empty_vectors_preserve_templates_and_definitions(tmp_path):
+    vector_dir = tmp_path / "vectors"
+    vector_dir.mkdir()
+    runtime = tmp_path / "libs/Cesium183/Build/Cesium/Cesium.js"
+    runtime.parent.mkdir(parents=True)
+    runtime.touch()
+
+    for cesium_map in (False, True):
+        assert generate_potree_html(
+            vector_folder=vector_dir,
+            project_name="cloud",
+            output_dir=tmp_path,
+            cesium_map=cesium_map,
+            projection_definitions=[{"name": "EPSG:TEST", "proj4": "+proj=longlat"}],
+        ) == 0
+        html = (tmp_path / "potree_main.html").read_text(encoding="utf-8")
+        assert 'proj4.defs("EPSG:TEST", "+proj=longlat");' in html
+        assert "class CircleOnScreen" in html
+        assert "class LineOnScreen" in html
+        assert "class FilledPolygonOnScreen" in html
+        assert "new CircleOnScreen(" not in html
+        assert "new LineOnScreen(" not in html
+        assert "new FilledPolygonOnScreen(" not in html
+        assert ("new Cesium.OpenStreetMapImageryProvider" in html) == cesium_map
+        assert html.rstrip().endswith("</html>")

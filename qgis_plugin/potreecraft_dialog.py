@@ -1410,14 +1410,16 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
         }
         manifest_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
-    def _export_selected_vectors(self, show_messages: bool = True) -> Optional[Path]:
+    def _export_selected_vectors(
+        self, show_messages: bool = True, allow_empty: bool = False
+    ) -> Optional[Path]:
         """Export checked vector layers to GeoJSON and update the project manifest."""
         output_dir = self._validate_common_paths()
         if output_dir is None:
             return None
 
         selected = self._selected_vector_layers()
-        if not selected:
+        if not selected and not allow_empty:
             if show_messages:
                 self._show_warning("No vector layers are selected.")
             return None
@@ -1466,6 +1468,7 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self.log("Vector export errors:\n" + error_text)
             if show_messages:
                 self._show_warning(f"Some exports failed:\n{error_text}")
+            return None
         elif show_messages:
             QMessageBox.information(self, "PotreeCraft", "Vector layers exported successfully.")
 
@@ -1584,9 +1587,20 @@ class PotreeCraftDialog(QDialog, FORM_CLASS):
             self._show_warning(f"LAS/LAZ not found:\n{las_input}")
             return
 
-        vector_dir = self._export_selected_vectors(show_messages=False)
+        if not self._selected_vector_layers():
+            answer = QMessageBox.question(
+                self,
+                "PotreeCraft",
+                "No vector layers are selected. Compile the project without vectors?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if answer != QMessageBox.StandardButton.Yes:
+                return
+
+        vector_dir = self._export_selected_vectors(show_messages=False, allow_empty=True)
         if vector_dir is None:
-            self._show_warning("Cannot compile without exported vector GeoJSON files.")
+            self._show_warning("Vector export failed. See the log for details.")
             return
 
         project_name = self.project_name_edit.text().strip() or las_input.stem

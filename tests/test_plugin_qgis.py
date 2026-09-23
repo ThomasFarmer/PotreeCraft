@@ -16,6 +16,8 @@ def test_dialog_initializes_with_qgis(qgis_iface):
     assert dialog.iface is qgis_iface
     assert dialog.pointcloud_mode_combo.count() == len(POINTCLOUD_MODES)
     assert dialog.raster_mode_combo.count() == len(POINTCLOUD_MODES)
+    assert dialog.blast2dem_step_size_spinbox.value() == 1.0
+    assert dialog.blast2dem_coloring_combo.currentText() == "Hillshade"
     assert [
         dialog.pointcloud_mode_combo.itemText(i)
         for i in range(dialog.pointcloud_mode_combo.count())
@@ -24,6 +26,94 @@ def test_dialog_initializes_with_qgis(qgis_iface):
     assert dialog.default_camera_mode_combo.itemData(1) == CAMERA_MODE_CUSTOM
     assert dialog.camera_position_x_edit.isEnabled() is False
     assert dialog.camera_target_z_edit.isEnabled() is False
+
+
+def test_missing_laspy_disables_builtin_raster_backend(qgis_iface, monkeypatch):
+    import qgis_plugin.potreecraft_dialog as dialog_module
+
+    warnings = []
+    monkeypatch.setattr(dialog_module, "LASPY_AVAILABLE", False)
+    monkeypatch.setattr(
+        dialog_module.QMessageBox,
+        "warning",
+        lambda _parent, _title, message: warnings.append(message),
+    )
+
+    dialog = dialog_module.PotreeCraftDialog(qgis_iface)
+    actions = {
+        action.data(): action for action in dialog._raster_backend_action_group.actions()
+    }
+
+    assert dialog._raster_backend == dialog_module.RASTER_BACKEND_BLAST2DEM
+    assert not actions[dialog_module.RASTER_BACKEND_POTREECRAFT].isEnabled()
+    assert actions[dialog_module.RASTER_BACKEND_BLAST2DEM].isChecked()
+    assert "laspy" in warnings[0]
+
+
+def test_missing_rasterio_disables_builtin_raster_backend(qgis_iface, monkeypatch):
+    import qgis_plugin.potreecraft_dialog as dialog_module
+
+    warnings = []
+    monkeypatch.setattr(dialog_module, "LASPY_AVAILABLE", True)
+    monkeypatch.setattr(dialog_module, "RASTERIO_AVAILABLE", False)
+    monkeypatch.setattr(
+        dialog_module.QMessageBox,
+        "warning",
+        lambda _parent, _title, message: warnings.append(message),
+    )
+
+    dialog = dialog_module.PotreeCraftDialog(qgis_iface)
+    actions = {
+        action.data(): action for action in dialog._raster_backend_action_group.actions()
+    }
+
+    assert dialog._raster_backend == dialog_module.RASTER_BACKEND_BLAST2DEM
+    assert not actions[dialog_module.RASTER_BACKEND_POTREECRAFT].isEnabled()
+    assert actions[dialog_module.RASTER_BACKEND_BLAST2DEM].isChecked()
+    assert "rasterio" in warnings[0]
+
+
+def test_blast2dem_worker_includes_step_size_and_coloring(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    import qgis_plugin.potreecraft_dialog as dialog_module
+
+    executable = tmp_path / "blast2dem.exe"
+    executable.touch()
+    input_las = tmp_path / "cloud.las"
+    input_las.touch()
+    captured = {}
+
+    def fake_run(command, **kwargs):
+        captured["command"] = command
+        captured["kwargs"] = kwargs
+        return SimpleNamespace(stdout="", stderr="", returncode=0)
+
+    monkeypatch.setattr(dialog_module.subprocess, "run", fake_run)
+    worker = dialog_module.RasterConversionWorker(
+        backend=dialog_module.RASTER_BACKEND_BLAST2DEM,
+        input_las=input_las,
+        mode="elevation",
+        script_path_raw=str(executable),
+        output_dir=tmp_path,
+        blast2dem_step_size=1.0,
+        blast2dem_coloring="Hillshade",
+    )
+
+    worker._run_blast2dem()
+
+    assert captured["command"][-5:] == [
+        "-step",
+        "1",
+        "-v",
+        "-elevation",
+        "-hillshade",
+    ]
+    assert captured["kwargs"] == {
+        "capture_output": True,
+        "text": True,
+        "shell": False,
+    }
 
 
 def test_clear_previous_vector_exports_removes_unchecked_layer_outputs(qgis_iface, tmp_path):
@@ -106,9 +196,11 @@ def test_vector_layer_functions_follow_geometry_and_annotation_state(qgis_iface)
         assert [
             polygon_functions.itemText(i) for i in range(polygon_functions.count())
         ] == [
-            "polygon",
+            "polygon (outline)",
+            "polygon (filled)",
             "area (measurement)",
         ]
+        assert polygon_functions.currentText() == "polygon (outline)"
 
         point_title = dialog._annotation_title_boxes[point_row]
         point_desc = dialog._annotation_desc_boxes[point_row]

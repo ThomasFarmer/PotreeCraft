@@ -1089,9 +1089,6 @@ def generate_potree_html(
     folderpath = str(vector_folder)
     layer_manifest_map = load_manifest_layer_map(Path(manifest_path) if manifest_path else None)
     geojsonlist = listdir(folderpath)
-    if len(geojsonlist) == 0:
-        print("This folder contains no data.")
-        return 1
 
     for gjs in geojsonlist:
         if not gjs.lower().endswith(".geojson"):

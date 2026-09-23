@@ -155,8 +155,6 @@ def compile_potree_project(
 
     vectors_output_dir, copied_count = prepare_vectors_folder(vector_data_dir, output_dir)
     _emit(log_callback, f"Copied {copied_count} GeoJSON file(s) into {vectors_output_dir}")
-    if copied_count == 0:
-        raise RuntimeError("No .geojson files found in exported vector-data folder.")
 
     pointcloud_name = resolve_pointcloud_name(output_dir, project_name)
     if not pointcloud_name:
